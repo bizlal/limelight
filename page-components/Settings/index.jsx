@@ -11,13 +11,13 @@ import toast from 'react-hot-toast';
 import styles from './Settings.module.css';
 
 const EmailVerify = ({ user }) => {
-  const [status, setStatus] = useState();
+  const [status, setStatus] = useState('');
   const verify = useCallback(async () => {
     try {
       setStatus('loading');
       await fetcher('/api/user/email/verify', { method: 'POST' });
       toast.success(
-        'An email has been sent to your mailbox. Follow the instruction to verify your email.'
+        'An email has been sent to your mailbox. Follow the instructions to verify your email.'
       );
       setStatus('success');
     } catch (e) {
@@ -25,7 +25,9 @@ const EmailVerify = ({ user }) => {
       setStatus('');
     }
   }, []);
+
   if (user.emailVerified) return null;
+
   return (
     <Container className={styles.note}>
       <Container flex={1}>
@@ -107,12 +109,30 @@ const Auth = () => {
 };
 
 const AboutYou = ({ user, mutate }) => {
+  // Refs for existing user fields
   const usernameRef = useRef();
   const nameRef = useRef();
   const bioRef = useRef();
   const profilePictureRef = useRef();
 
+  // --- New fields ---
+  const websiteRef = useRef();
+  const twitterRef = useRef();
+  const githubRef = useRef();
+  const linkedinRef = useRef();
+
+  // Location refs
+  const cityRef = useRef();
+  const stateRef = useRef();
+  const countryRef = useRef();
+
+  // For previewing avatar
   const [avatarHref, setAvatarHref] = useState(user.profilePicture);
+
+  // Loading state
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Handle avatar changes
   const onAvatarChange = useCallback((e) => {
     const file = e.currentTarget.files?.[0];
     if (!file) return;
@@ -123,8 +143,50 @@ const AboutYou = ({ user, mutate }) => {
     reader.readAsDataURL(file);
   }, []);
 
-  const [isLoading, setIsLoading] = useState(false);
+  // Fetch location from IP (example: using a custom /api/location endpoint).
+  // Modify this to match however you retrieve geo-data from IP.
+  useEffect(() => {
+    async function fetchLocation() {
+      try {
+        // If user already has location saved, you might skip or override.
+        if (user.city || user.state || user.country) {
+          return; // Use the existing user location if it exists
+        }
+        const res = await fetch('/api/location');
+        if (!res.ok) throw new Error('Unable to fetch location from IP');
+        const data = await res.json();
+        // Fill out the location fields automatically
+        if (cityRef.current) cityRef.current.value = data.city || '';
+        if (stateRef.current) stateRef.current.value = data.state || '';
+        if (countryRef.current)
+          countryRef.current.value = data.countryCode || '';
+      } catch (err) {
+        console.error(err);
+      }
+    }
+    fetchLocation();
+  }, [user.city, user.state, user.country]);
 
+  // Populate fields with existing user data when the component mounts
+  useEffect(() => {
+    usernameRef.current.value = user.username || '';
+    nameRef.current.value = user.name || '';
+    bioRef.current.value = user.bio || '';
+    websiteRef.current.value = user.website || '';
+    twitterRef.current.value = user.social?.twitter || '';
+    githubRef.current.value = user.social?.github || '';
+    linkedinRef.current.value = user.social?.linkedin || '';
+    cityRef.current.value = user.city || '';
+    stateRef.current.value = user.state || '';
+    countryRef.current.value = user.country || '';
+    setAvatarHref(user.profilePicture);
+    // Clear out the file input
+    if (profilePictureRef.current) {
+      profilePictureRef.current.value = '';
+    }
+  }, [user]);
+
+  // Handle form submission
   const onSubmit = useCallback(
     async (e) => {
       e.preventDefault();
@@ -134,9 +196,22 @@ const AboutYou = ({ user, mutate }) => {
         formData.append('username', usernameRef.current.value);
         formData.append('name', nameRef.current.value);
         formData.append('bio', bioRef.current.value);
+
+        // New fields
+        formData.append('website', websiteRef.current.value);
+        formData.append('twitter', twitterRef.current.value);
+        formData.append('github', githubRef.current.value);
+        formData.append('linkedin', linkedinRef.current.value);
+
+        // Location fields
+        formData.append('city', cityRef.current.value);
+        formData.append('state', stateRef.current.value);
+        formData.append('country', countryRef.current.value);
+
         if (profilePictureRef.current.files[0]) {
           formData.append('profilePicture', profilePictureRef.current.files[0]);
         }
+
         const response = await fetcher('/api/user', {
           method: 'PATCH',
           body: formData,
@@ -152,14 +227,6 @@ const AboutYou = ({ user, mutate }) => {
     [mutate]
   );
 
-  useEffect(() => {
-    usernameRef.current.value = user.username;
-    nameRef.current.value = user.name;
-    bioRef.current.value = user.bio;
-    profilePictureRef.current.value = '';
-    setAvatarHref(user.profilePicture);
-  }, [user]);
-
   return (
     <section className={styles.card}>
       <h4 className={styles.sectionTitle}>About You</h4>
@@ -170,6 +237,51 @@ const AboutYou = ({ user, mutate }) => {
         <Spacer size={0.5} axis="vertical" />
         <Textarea ref={bioRef} label="Your Bio" />
         <Spacer size={0.5} axis="vertical" />
+
+        {/* Website */}
+        <Input
+          ref={websiteRef}
+          label="Your Website"
+          placeholder="https://example.com"
+        />
+        <Spacer size={0.5} axis="vertical" />
+
+        {/* Social Links */}
+        <Input ref={twitterRef} label="Twitter" placeholder="@yourhandle" />
+        <Spacer size={0.5} axis="vertical" />
+        <Input
+          ref={githubRef}
+          label="GitHub"
+          placeholder="github.com/yourprofile"
+        />
+        <Spacer size={0.5} axis="vertical" />
+        <Input
+          ref={linkedinRef}
+          label="LinkedIn"
+          placeholder="linkedin.com/in/yourprofile"
+        />
+        <Spacer size={0.5} axis="vertical" />
+
+        {/* Location Fields */}
+        <Input ref={cityRef} label="City" placeholder="e.g. San Francisco" />
+        <Spacer size={0.5} axis="vertical" />
+        <Input
+          ref={stateRef}
+          label="State/Province"
+          placeholder="e.g. California"
+        />
+        <Spacer size={0.5} axis="vertical" />
+        <label className={styles.label}>Country</label>
+        <select ref={countryRef} defaultValue="">
+          <option value="">-- Select Country --</option>
+          <option value="US">United States</option>
+          <option value="CA">Canada</option>
+          <option value="GB">United Kingdom</option>
+          <option value="AU">Australia</option>
+          {/* Add more countries or use a library for a full list */}
+        </select>
+        <Spacer size={0.5} axis="vertical" />
+
         <span className={styles.label}>Your Avatar</span>
         <div className={styles.avatar}>
           <Avatar size={96} username={user.username} url={avatarHref} />
@@ -181,6 +293,7 @@ const AboutYou = ({ user, mutate }) => {
             onChange={onAvatarChange}
           />
         </div>
+
         <Spacer size={0.5} axis="vertical" />
         <Button
           htmlType="submit"
@@ -198,12 +311,15 @@ const AboutYou = ({ user, mutate }) => {
 export const Settings = () => {
   const { data, error, mutate } = useCurrentUser();
   const router = useRouter();
+
   useEffect(() => {
+    // If user is not logged in, redirect
     if (!data && !error) return;
-    if (!data.user) {
+    if (!data?.user) {
       router.replace('/login');
     }
   }, [router, data, error]);
+
   return (
     <Wrapper className={styles.wrapper}>
       <Spacer size={2} axis="vertical" />
