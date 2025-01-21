@@ -67,7 +67,7 @@ const Commenter = ({ post }) => {
     <div className={styles.root}>
       <h3 className={styles.heading}>
         Replying to{' '}
-        <Link legacyBehavior  href= {`/user/${post.creator.username}`} passHref>
+        <Link legacyBehavior href={`/user/${post.creator.username}`} passHref>
           <TextLink color="link">@{post.creator.username}</TextLink>
         </Link>
       </h3>
@@ -78,7 +78,7 @@ const Commenter = ({ post }) => {
       ) : (
         <Text color="secondary">
           Please{' '}
-          <Link legacyBehavior  href= "/login" passHref>
+          <Link legacyBehavior href="/login" passHref>
             <TextLink color="link" variant="highlight">
               sign in
             </TextLink>

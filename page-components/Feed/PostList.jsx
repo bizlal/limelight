@@ -18,7 +18,8 @@ const PostList = () => {
       <Spacer axis="vertical" size={1} />
       <Wrapper>
         {posts.map((post) => (
-          <Link legacyBehavior
+          <Link
+            legacyBehavior
             key={post._id}
             href={`/user/${post.creator.username}/post/${post._id}`}
             passHref

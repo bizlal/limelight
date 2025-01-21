@@ -99,7 +99,6 @@ export default function SignUp() {
             </select>
           </label>
 
-
           <Input
             ref={nameRef}
             autoComplete="name"

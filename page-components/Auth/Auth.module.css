@@ -32,7 +32,7 @@
 .formCard {
   background: var(--background); /* or #fff for a lighter theme */
   border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   padding: 1.5rem;
 }
 
@@ -102,7 +102,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border-top: 1px solid rgba(255,255,255,0.2);
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .label {
@@ -114,7 +114,8 @@
   gap: 0.25rem;
 }
 
-.select, .input {
+.select,
+.input {
   margin-top: 0.25rem;
   padding: 0.5rem;
   border-radius: 4px;

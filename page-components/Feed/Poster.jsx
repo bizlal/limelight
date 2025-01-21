@@ -74,7 +74,7 @@ const Poster = () => {
         ) : (
           <Text color="secondary">
             Please{' '}
-            <Link legacyBehavior  href= "/login" passHref>
+            <Link legacyBehavior href="/login" passHref>
               <TextLink color="link" variant="highlight">
                 sign in
               </TextLink>

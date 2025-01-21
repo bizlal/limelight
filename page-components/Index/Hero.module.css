@@ -30,7 +30,7 @@
   position: relative;
   z-index: 2;
 }
- 
+
 /* Hero content */
 .heroInner {
   text-align: center;
@@ -177,7 +177,7 @@
 }
 .roadmapList li::before {
   counter-increment: step;
-  content: counter(step) ". ";
+  content: counter(step) '. ';
   color: #fff;
   font-weight: 700;
   margin-right: 0.5rem;

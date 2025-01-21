@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import toast from 'react-hot-toast';
@@ -8,7 +9,7 @@ import { fetcher } from '@/lib/fetch';
 import { useCurrentUser } from '@/lib/user';
 
 import { Avatar } from '@/components/Avatar';
-import { Button, ButtonLink } from '@/components/Button';
+import { Button } from '@/components/Button';
 import { ThemeSwitcher } from '@/components/ThemeSwitcher';
 import Spacer from './Spacer';
 import Container from './Container';
@@ -126,16 +127,16 @@ const Nav = () => {
           {/* Logo */}
           <Container alignItems="center" className={styles.leftSection}>
             <Link legacyBehavior href="/">
-              <a className={styles.logo}>
-                <img
-                  src="./assets/icons/lmlt.jpg"
-                  alt="Limelight logo"
-                  className={styles.logoImage}
-                />
-                <span className={styles.logoText}>
-                  limelight <span className={styles.beta}>beta</span>
-                </span>
-              </a>
+              <Image
+                src="/assets/icons/lmlt.jpg"
+                alt="Limelight logo"
+                className={styles.logoImage}
+                width={32}
+                height={32}
+              />
+              <span className={styles.logoText}>
+                limelight <span className={styles.beta}>beta</span>
+              </span>
             </Link>
             {/* Hamburger for mobile */}
             <button

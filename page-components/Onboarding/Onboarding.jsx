@@ -1,12 +1,11 @@
 // pages/onboarding.js
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import toast from 'react-hot-toast';
 
 import { useCurrentUser } from '@/lib/user';
-import { fetcher } from '@/lib/fetch';
 
-import { Wrapper, Container, Spacer } from '@/components/Layout';
+import { Wrapper, Spacer } from '@/components/Layout';
 import { Button } from '@/components/Button';
 import { Input } from '@/components/Input';
 

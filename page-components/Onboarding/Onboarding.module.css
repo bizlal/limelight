@@ -50,7 +50,9 @@
   resize: vertical;
 }
 
-.select, .fileInput, .input {
+.select,
+.fileInput,
+.input {
   margin-top: 0.25rem;
   padding: 0.5rem;
   border-radius: 4px;

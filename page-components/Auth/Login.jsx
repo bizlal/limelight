@@ -83,7 +83,7 @@ const Login = () => {
             Log in
           </Button>
           <Spacer size={0.25} axis="vertical" />
-          <Link legacyBehavior href= "/forget-password" passHref>
+          <Link legacyBehavior href="/forget-password" passHref>
             <ButtonLink type="success" size="large" variant="ghost">
               Forget password
             </ButtonLink>
@@ -91,7 +91,7 @@ const Login = () => {
         </form>
       </div>
       <div className={styles.footer}>
-        <Link legacyBehavior href= "/sign-up" passHref>
+        <Link legacyBehavior href="/sign-up" passHref>
           <TextLink color="link" variant="highlight">
             Don&apos;t have an account? Sign Up
           </TextLink>
