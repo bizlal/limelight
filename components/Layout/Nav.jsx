@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import toast from 'react-hot-toast';
@@ -127,13 +126,6 @@ const Nav = () => {
           {/* Logo */}
           <Container alignItems="center" className={styles.leftSection}>
             <Link legacyBehavior href="/">
-              <Image
-                src="/assets/icons/lmlt.jpg"
-                alt="Limelight logo"
-                className={styles.logoImage}
-                width={32}
-                height={32}
-              />
               <span className={styles.logoText}>
                 limelight <span className={styles.beta}>beta</span>
               </span>
