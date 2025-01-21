@@ -14,7 +14,7 @@ const Comment = ({ comment, className }) => {
   }, [comment.createdAt]);
   return (
     <div className={clsx(styles.root, className)}>
-      <Link href={`/user/${comment.creator.username}`}>
+      <Link legacyBehavior href={`/user/${comment.creator.username}`}>
         <a>
           <Container className={styles.creator}>
             <Avatar

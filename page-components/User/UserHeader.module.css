@@ -1,30 +1,134 @@
-.root {
-  box-shadow: var(--shadow-large);
+.headerCard {
+  position: relative;
+  border: 2px solid #0d6efd; /* Blue outline from screenshot */
   border-radius: 8px;
-  margin: 0 auto 18px;
-  max-width: 720px;
-  padding: 32px;
-  background-color: var(--background);
+  overflow: hidden;
+  /* Ensure there's space to show the cover and content */
+  margin: 2rem 0;
+  background-color: #151515; /* fallback if cover doesn't load */
 }
 
-.avatar {
-  margin: 24px 0 12px;
+/* Cover background + overlay */
+.cover {
+  width: 100%;
+  height: 200px; /* Adjust as needed */
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+.coverOverlay {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.1),
+    rgba(0, 0, 0, 0.9)
+  );
 }
 
+/* Content sits below cover */
+.content {
+  padding: 1.5rem;
+  position: relative;
+}
+
+/* Avatar overlaps the cover */
+.avatarContainer {
+  position: absolute;
+  top: -60px; /* Move up to overlap the cover */
+  left: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Verified badge (if any) */
+.verifiedBadge {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
+/* Make space for the avatar in the layout */
 .name {
-  font-size: 2.5rem;
-  text-align: center;
-  color: var(--accents-8);
+  margin-top: 3rem; 
+  margin-bottom: 0.25rem;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #fff;
 }
-
-.username {
-  font-size: 1.5rem;
-  color: var(--success);
-  text-align: center;
-}
-
 .bio {
-  color: var(--secondary);
-  text-align: center;
-  line-height: 1.5;
+  margin: 0 0 1rem;
+  color: #ccc;
+  font-style: italic;
+}
+
+/* Social links row */
+.linksRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 2rem;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  color: #ccc;
+}
+
+.linksRow a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: #bbb;
+  text-decoration: none;
+  font-size: 0.95rem;
+  transition: color 0.2s;
+}
+.linksRow a:hover {
+  color: #fff;
+}
+
+.joined {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: #bbb;
+}
+
+/* Stats row */
+.statsRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  margin-top: 1rem;
+}
+
+.statItem h3 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #fff;
+  font-weight: 700;
+}
+.statItem p {
+  margin: 0;
+  color: #999;
+}
+
+/* 
+ * RESPONSIVE:
+ * For smaller screens, we may want to ensure the avatar 
+ * moves differently. 
+ */
+@media (max-width: 600px) {
+  .cover {
+    height: 150px;
+  }
+  .avatarContainer {
+    top: -40px;
+    left: 1rem;
+  }
+  .name {
+    margin-top: 2.5rem;
+  }
 }

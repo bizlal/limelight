@@ -27,8 +27,11 @@ export async function findUserById(db, userId) {
 
 export async function findUserByUsername(db, username) {
   return db
-    .collection('users')
-    .findOne({ username }, { projection: dbProjectionUsers() })
+    .collection('accounts')
+    .findOne(
+      { 'profile.username': username },
+      { projection: dbProjectionUsers() }
+    )
     .then((user) => user || null);
 }
 

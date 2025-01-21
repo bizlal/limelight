@@ -31,15 +31,17 @@ handler.get(async (req, res) => {
   if (!req.user) return res.json({ user: null });
   return res.json({ user: req.user });
 });
+const { username, name, bio } =
+  ValidateProps.user.properties.profile.properties;
 
 handler.patch(
   upload.single('profilePicture'),
   validateBody({
     type: 'object',
     properties: {
-      username: ValidateProps.user.username,
-      name: ValidateProps.user.name,
-      bio: ValidateProps.user.bio,
+      username,
+      name,
+      bio,
     },
     additionalProperties: true,
   }),

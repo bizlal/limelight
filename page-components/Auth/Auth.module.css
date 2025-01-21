@@ -1,55 +1,138 @@
+/* Auth.module.css */
+
+/* Root container: full height minus nav */
 .root {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  height: calc(100vh - var(--nav-height));
+  min-height: calc(100vh - var(--nav-height));
+  background: linear-gradient(
+    161deg,
+    #8d52cc 0%,
+    #a650b2 10.09%,
+    #bc4e9b 18.03%,
+    #cf4c87 30.98%,
+    #db4b7b 38.59%,
+    #a9638f 58.55%,
+    #8c719b 67.64%,
+    #727ea6 78.72%,
+    #4893b7 97.5%
+  );
+  padding: 2rem;
 }
 
 .main {
-  max-width: 400px;
+  max-width: 480px;
   width: 100%;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: 24px;
-  flex: 1 1;
   align-self: center;
+  position: relative;
 }
 
+/* A card wrapper around the form fields */
+.formCard {
+  background: var(--background); /* or #fff for a lighter theme */
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  padding: 1.5rem;
+}
+
+/* Title at top */
 .title {
-  font-size: 3rem;
-  font-weight: 700;
+  font-size: 2.25rem;
+  font-weight: 800;
   text-align: center;
+  margin-bottom: 1rem;
+  color: var(--foreground, #fff);
 }
 
-.submit {
-  width: 100%;
+/* The subtitles "About you", "Your login" */
+.subtitle {
+  font-size: 0.75rem;
+  letter-spacing: 0.2rem;
+  color: var(--secondary, #666);
+  font-weight: 700;
+  text-transform: uppercase;
+  margin: 0;
 }
 
-.footer {
-  width: 100%;
-  background: var(--background);
-  border-top: 1px solid var(--accents-2);
-  color: var(--foreground);
-  padding: 2em;
-  height: 100px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
+/* A horizontal line or "separator" */
 .seperator {
-  background-color: var(--accents-2);
+  background-color: var(--accents-2, #ccc);
   height: 1px;
   margin: 8px 0 8px 10px;
   flex: 1 1;
 }
 
-.subtitle {
-  font-size: 0.75rem;
-  letter-spacing: 0.2rem;
-  color: var(--secondary);
-  font-weight: 700;
-  text-transform: uppercase;
+/* Full-width submit button */
+.submit {
+  width: 100%;
+  font-weight: 600;
+  border: none;
+  border-radius: 4px;
+  color: #fff;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.submit:hover {
+  opacity: 0.9;
+}
+
+/* The gradient you requested for the button */
+.gradientBtn {
+  background: linear-gradient(
+      116.94deg,
+      #8d52cc -39.29%,
+      #a650b2 -26%,
+      #bc4e9b -15.53%,
+      #cf4c87 1.54%,
+      #db4b7b 11.57%,
+      #a9638f 37.88%,
+      #8c719b 49.86%,
+      #727ea6 64.46%,
+      #4893b7 89.21%
+    ),
+    linear-gradient(0deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2));
+}
+
+/* Footer area */
+.footer {
+  width: 100%;
+  padding: 2em;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-top: 1px solid rgba(255,255,255,0.2);
+}
+
+.label {
+  display: flex;
+  flex-direction: column;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  color: var(--foreground, #fff);
+  gap: 0.25rem;
+}
+
+.select, .input {
+  margin-top: 0.25rem;
+  padding: 0.5rem;
+  border-radius: 4px;
+  border: 1px solid var(--accents-2, #ccc);
+  background: var(--background, #fff);
+  color: var(--foreground, #000);
+  font-size: 1rem;
+}
+
+/* Make it responsive */
+@media (max-width: 600px) {
+  .main {
+    padding: 0 1rem;
+  }
+  .formCard {
+    padding: 1rem;
+  }
+  .title {
+    font-size: 1.75rem;
+  }
 }

@@ -79,7 +79,7 @@ const ForgetPasswordIndex = () => {
           </>
         )}
         <Spacer size={0.25} axis="vertical" />
-        <Link href="/login" passHref>
+        <Link legacyBehavior  href= "/login" passHref>
           <ButtonLink type="success" size="large" variant="ghost">
             Return to login
           </ButtonLink>

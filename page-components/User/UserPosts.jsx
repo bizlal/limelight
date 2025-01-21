@@ -20,7 +20,7 @@ const UserPosts = ({ user }) => {
       <Spacer axis="vertical" size={1} />
       <Wrapper>
         {posts.map((post) => (
-          <Link
+          <Link legacyBehavior
             key={post._id}
             href={`/user/${post.creator.username}/post/${post._id}`}
           >

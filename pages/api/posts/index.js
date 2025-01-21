@@ -25,7 +25,7 @@ handler.post(
   validateBody({
     type: 'object',
     properties: {
-      content: ValidateProps.post.content,
+      content: ValidateProps.post.properties.content,
     },
     required: ['content'],
     additionalProperties: false,

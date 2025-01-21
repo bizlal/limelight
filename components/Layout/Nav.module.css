@@ -1,17 +1,15 @@
+
+
 .nav {
+  width: 100%;
+  background-color: var(--nav-bg);
+  color: var(--nav-fg);
   height: var(--nav-height);
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
   z-index: 10;
-  background-color: var(--header-background);
-  box-shadow: inset 0 -1px 0 0 rgba(0, 0, 0, 0.1);
-  backdrop-filter: saturate(180%) blur(5px);
-}
-
-[data-theme='dark'] .nav {
-  box-shadow: inset 0 -1px 0 0 hsla(0, 0%, 100%, 0.1);
+  backdrop-filter: saturate(180%) blur(5px) brightness(0.5); /* Added brightness to make it darker */
 }
 
 .wrapper {
@@ -19,65 +17,244 @@
 }
 
 .content {
-  padding-left: 1.5rem;
-  padding-right: 1.5rem;
-  height: 100%;
   width: 100%;
+  height: 100%;
+  padding: 0 1rem;
+}
+
+/* Left: Logo + Hamburger */
+.leftSection {
+  gap: 1rem;
 }
 
 .logo {
-  font-weight: 800;
-  color: var(--foreground);
+  display: flex;
+  align-items: center;
   text-decoration: none;
+  color: var(--nav-fg);
 }
 
-.user {
+.logoImage {
+  width: var(--logo-size);
+  height: var(--logo-size);
+  margin-right: 0.5rem;
+  object-fit: contain;
+}
+
+.logoText {
+  font-weight: 700;
+  font-size: 1.25rem;
+  text-transform: lowercase; /* or uppercase if desired */
+}
+
+.beta {
+  font-size: 0.75rem;
+  margin-left: 4px;
+  opacity: 0.8;
+}
+
+.hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 3px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  margin-left: 1rem;
+}
+
+.hamburgerLine {
+  width: 20px;
+  height: 2px;
+  background: var(--nav-fg);
+}
+
+/* Middle nav container: links + search
+   We will do a "flex" in desktop, "vertical" in mobile. 
+*/
+.navCenter {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  /* Hide in mobile by default; we'll override in media queries. */
+}
+
+/* nav links area */
+.navLinks {
+  display: flex;
+  gap: 1rem;
+}
+
+/* individual link style */
+.navLink {
+  text-decoration: none;
+  color: var(--nav-fg);
+  font-size: 1rem;
+  position: relative;
+  padding: 0.25rem 0;
+  transition: color 0.2s;
+}
+.navLink:hover {
+  color: #ccc;
+}
+
+/* Search container */
+.searchContainer {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.searchInput {
+  background-color: #1b1b1b;
+  border: 1px solid #333;
+  color: #fff;
+  padding: 0.45rem 1rem;
+  border-radius: 20px;
+  width: 180px;
+  transition: width 0.2s;
+}
+
+.searchInput::placeholder {
+  color: #999;
+}
+.searchInput:focus {
+  outline: none;
+  border-color: #555;
+  width: 220px; /* expands on focus */
+}
+
+/* Right: user menu or login */
+.rightSection {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* user menu container */
+.userMenu {
   position: relative;
 }
 
+/* user menu trigger */
 .trigger {
   background: none;
   border: none;
-  padding: 0;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  color: var(--nav-fg);
+  gap: 0.5rem;
 }
 
+/* avatar & name side-by-side */
+.avatarContainer {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.userName {
+  font-weight: 500;
+}
+
+/* popover menu */
 .popover {
+  position: absolute;
   top: 100%;
   right: 0;
-  position: absolute;
-  z-index: 20;
+  margin-top: 8px;
+  z-index: 999;
 }
 
 .menu {
-  background: var(--background);
-  color: var(--foreground);
-  box-shadow: var(--shadow-medium);
-  border-radius: 5px;
-  display: inline-block;
-  min-width: 220px;
+  background: #222;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  border-radius: 6px;
+  min-width: 200px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding: 0.25rem 0;
 }
 
-.item {
+.menuItem {
   background: none;
   border: none;
-  padding: 0;
+  padding: 0.75rem 1rem;
   cursor: pointer;
-  color: var(--accents-5);
-  display: block;
   width: 100%;
-  align-items: center;
-  text-decoration: none;
-  padding: 14px 20px;
-  font-size: 14px;
   text-align: left;
-  transition: ease 0.2s;
-  transition-property: background color;
-  font-weight: medium;
+  text-decoration: none;
+  color: #eee;
+  transition: background 0.2s;
+}
+.menuItem:hover {
+  background: var(--hover-bg);
+}
+.menuItem:focus {
+  outline: none;
+  background: var(--hover-bg);
 }
 
-.item:focus,
-.item:hover {
-  color: var(--foreground);
-  background: var(--accents-1);
+/* Auth Buttons when user not logged in */
+.authButtons {
+  display: flex;
+  align-items: center;
+}
+
+.loginBtn {
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.9rem;
+}
+
+/* ========== MOBILE STYLES ========== */
+@media (max-width: 900px) {
+  /* show hamburger */
+  .hamburger {
+    display: flex;
+  }
+
+  /* hide .navCenter by default */
+  .navCenter {
+    position: absolute;
+    top: var(--nav-height);
+    left: 0;
+    background: var(--nav-bg);
+    width: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+    padding: 1rem;
+    transform: translateY(-200%);
+    transition: transform 0.3s;
+  }
+  
+  /* open .navCenter if .navCenterOpen class is present */
+  .navCenterOpen {
+    transform: translateY(0);
+  }
+
+  /* nav links become vertical */
+  .navLinks {
+    flex-direction: column;
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+  .navLink {
+    display: block;
+    width: 100%;
+    padding: 0.5rem 0;
+  }
+
+  /* search bar moves below links */
+  .searchContainer {
+    width: 100%;
+  }
+  .searchInput {
+    width: 100%;
+    border-radius: 4px;
+  }
 }
