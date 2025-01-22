@@ -1,65 +1,77 @@
-import { ValidateProps } from '@/api-lib/constants';
-import { findUserByEmail, findUserByUsername, insertUser } from '@/api-lib/db';
-import { auths, validateBody } from '@/api-lib/middlewares';
+import nc from 'next-connect';
 import { getMongoDb } from '@/api-lib/mongodb';
 import { ncOpts } from '@/api-lib/nc';
 import { slugUsername } from '@/lib/user';
-import nc from 'next-connect';
-import isEmail from 'validator/lib/isEmail';
-import normalizeEmail from 'validator/lib/normalizeEmail';
+import { validateBody } from '@/api-lib/middlewares';
+import { fetcher } from '@/lib/fetch'; // or your Privy client
+import { PrivyClient } from '@privy-io/server-auth';
+import { ObjectId } from 'mongodb';
+import { constants } from '@/api-lib/constants';
+
+// Make sure you have your Privy credentials
+const PRIVY_APP_ID = process.env.NEXT_PUBLIC_PRIVY_APP_ID;
+const PRIVY_APP_SECRET = process.env.PRIVY_APP_SECRET;
+const privyClient = new PrivyClient(PRIVY_APP_ID, PRIVY_APP_SECRET);
+
+// Reuse or create a helper function
+async function verifyPrivyToken(req) {
+  const headerAuthToken = req.headers.authorization?.replace(/^Bearer\s/, '');
+  const cookieAuthToken = req.cookies['privy-token'];
+  const token = cookieAuthToken || headerAuthToken;
+  if (!token) throw new Error('Missing Privy token');
+
+  const claims = await privyClient.verifyAuthToken(token);
+  if (!claims) throw new Error('Invalid Privy token');
+  // claims.sub = "did:privy:XXXXXXXXX"
+  return claims;
+}
 
 const handler = nc(ncOpts);
 
 handler.post(
-  validateBody({
-    type: 'object',
-    properties: {
-      username: ValidateProps.user.username,
-      name: ValidateProps.user.name,
-      password: ValidateProps.user.password,
-      email: ValidateProps.user.email,
-    },
-    required: ['username', 'name', 'password', 'email'],
-    additionalProperties: false,
-  }),
-  ...auths,
-  async (req, res) => {
-    const db = await getMongoDb();
+  validateBody(constants.ValidateProps.signUpUser),
 
-    let { username, name, email, password } = req.body;
-    username = slugUsername(req.body.username);
-    email = normalizeEmail(req.body.email);
-    if (!isEmail(email)) {
-      res
-        .status(400)
-        .json({ error: { message: 'The email you entered is invalid.' } });
-      return;
+  // No ...auths if you don’t need session-based checks; we’ll handle privy token manually
+  async (req, res) => {
+    try {
+      const db = await getMongoDb();
+
+      // 1) Verify Privy token, get privyId
+      const claims = await verifyPrivyToken(req);
+      const privyId = claims.userId; // e.g. "did:privy:cm65nf7it01h5rnkv5esk5hl4"
+
+      // 2) Extract form fields
+      let { username, name, userType, hometown, genres } = req.body;
+      username = slugUsername(username || '');
+
+      // 3) Upsert the user doc by privyId
+      //    If a doc with this privyId already exists, update it; else insert a new one.
+      const now = new Date();
+      const result = await db.collection('users').findOneAndUpdate(
+        { privyId }, // match the doc with this privyId
+        {
+          $setOnInsert: {
+            privyId,
+            createdAt: now,
+          },
+          $set: {
+            username,
+            name: name || '',
+            userType: userType || 'fan',
+            hometown: hometown || '',
+            genres: genres || [],
+            updatedAt: now,
+            // If you also want to store the user's email from Privy, you could set it here if known
+          },
+        },
+        { upsert: true, returnDocument: 'after' }
+      );
+
+      return res.status(201).json({ user: result.value });
+    } catch (err) {
+      console.error('Sign-up error:', err);
+      return res.status(500).json({ error: err.message });
     }
-    if (await findUserByEmail(db, email)) {
-      res
-        .status(403)
-        .json({ error: { message: 'The email has already been used.' } });
-      return;
-    }
-    if (await findUserByUsername(db, username)) {
-      res
-        .status(403)
-        .json({ error: { message: 'The username has already been taken.' } });
-      return;
-    }
-    const user = await insertUser(db, {
-      email,
-      originalPassword: password,
-      bio: '',
-      name,
-      username,
-    });
-    req.logIn(user, (err) => {
-      if (err) throw err;
-      res.status(201).json({
-        user,
-      });
-    });
   }
 );
 

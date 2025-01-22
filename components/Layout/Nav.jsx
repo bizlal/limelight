@@ -1,3 +1,4 @@
+// Nav.js
 import { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -5,8 +6,6 @@ import toast from 'react-hot-toast';
 import { usePrivy } from '@privy-io/react-auth';
 
 import { fetcher } from '@/lib/fetch';
-import { useCurrentUser } from '@/lib/user';
-
 import { Avatar } from '@/components/Avatar';
 import { Button } from '@/components/Button';
 import { ThemeSwitcher } from '@/components/ThemeSwitcher';
@@ -16,7 +15,8 @@ import Wrapper from './Wrapper';
 
 import styles from './Nav.module.css';
 
-const UserMenu = ({ user, mutate }) => {
+// A small sub-component for the user dropdown
+const UserMenu = ({ user, onLogout }) => {
   const menuRef = useRef(null);
   const avatarRef = useRef(null);
   const [visible, setVisible] = useState(false);
@@ -48,18 +48,6 @@ const UserMenu = ({ user, mutate }) => {
       document.removeEventListener('mousedown', onMouseDown);
     };
   }, []);
-
-  const onSignOut = useCallback(async () => {
-    try {
-      await fetcher('/api/auth', {
-        method: 'DELETE',
-      });
-      toast.success('You have been signed out');
-      mutate({ user: null });
-    } catch (e) {
-      toast.error(e.message);
-    }
-  }, [mutate]);
 
   return (
     <div className={styles.userMenu}>
@@ -98,7 +86,7 @@ const UserMenu = ({ user, mutate }) => {
                 <ThemeSwitcher />
               </Container>
             </div>
-            <button onClick={onSignOut} className={styles.menuItem}>
+            <button onClick={onLogout} className={styles.menuItem}>
               Sign out
             </button>
           </div>
@@ -109,10 +97,50 @@ const UserMenu = ({ user, mutate }) => {
 };
 
 const Nav = () => {
+  const router = useRouter();
+
+  // 1) Pull info from Privy
+  const { ready, authenticated, user: privyUser, login, logout } = usePrivy();
+  const [localUser, setLocalUser] = useState(null); // your DB user doc
   const [mobileOpen, setMobileOpen] = useState(false);
-  const { data: { user } = {}, mutate } = useCurrentUser();
-  const { ready, authenticated, login } = usePrivy();
-  // Disable login when Privy is not ready or the user is already authenticated
+
+  // 2) If user is authenticated with Privy, fetch your local user doc by privyId
+  useEffect(() => {
+    if (!ready) return; // wait until Privy is ready
+    if (!authenticated || !privyUser?.id) {
+      // Not logged in, or no ID yet
+      setLocalUser(null);
+      return;
+    }
+
+    // Example: /api/user?privyId=<did:privy:XXXX>
+    // Your backend route should verify the token or trust
+    // the client for this simple read.
+    fetcher(`/api/user?privyId=${encodeURIComponent(privyUser.id)}`)
+      .then((res) => {
+        // e.g. { user: { username, profilePicture, ... } }
+        setLocalUser(res.user || null);
+      })
+      .catch((err) => {
+        console.error('Error fetching local user doc:', err);
+        setLocalUser(null);
+      });
+  }, [ready, authenticated, privyUser?.id]);
+
+  // 3) Sign out -> call Privy logout
+  const handleSignOut = useCallback(async () => {
+    try {
+      await logout(); // end Privy session
+      setLocalUser(null);
+      toast.success('Signed out');
+      router.push('/');
+    } catch (err) {
+      console.error(err);
+      toast.error('Error signing out');
+    }
+  }, [logout, router]);
+
+  // If Privy isn't ready or user is already authenticated, we adjust login button state
   const disableLogin = !ready || (ready && authenticated);
 
   return (
@@ -170,10 +198,10 @@ const Nav = () => {
             </div>
           </div>
 
-          {/* Right section: user menu or login */}
+          {/* Right section: show user menu if we have localUser, else login/signup */}
           <div className={styles.rightSection}>
-            {user ? (
-              <UserMenu user={user} mutate={mutate} />
+            {localUser ? (
+              <UserMenu user={localUser} onLogout={handleSignOut} />
             ) : (
               <div className={styles.authButtons}>
                 <button

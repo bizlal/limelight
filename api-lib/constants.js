@@ -2,113 +2,34 @@ export const ValidateProps = {
   user: {
     type: 'object',
     properties: {
-      _id: { type: 'string' },
-      migrated: { type: 'boolean' },
-      uid: { type: 'string' },
-      fcmToken: { type: 'string' },
-      isCreator: { type: 'boolean' },
-      metrics: {
-        type: 'object',
-        properties: {
-          music_web_app: {
-            type: 'object',
-            properties: {
-              signInCount: { type: 'number' },
-            },
-            additionalProperties: false,
-          },
-          music_ios_app: {
-            type: 'object',
-            properties: {
-              version: { type: 'string' },
-              openCount: { type: 'number' },
-            },
-            additionalProperties: false,
-          },
-          lastLogin: { type: 'number' },
-          profile_visits: { type: 'number' },
-        },
-        additionalProperties: false,
+      username: { type: 'string', minLength: 4, maxLength: 20 },
+      name: { type: 'string' },
+      userType: { type: 'string' },
+      hometown: { type: 'string' },
+      profileImage: { type: 'string' },
+      headerImage: { type: 'string' },
+      genres: {
+        type: 'array',
+        items: { type: 'string' },
       },
-      profile: {
+      bio: { type: 'string', minLength: 0, maxLength: 160 },
+      total_following: { type: 'number' },
+      total_followers: { type: 'number' },
+      links: {
         type: 'object',
         properties: {
-          image: { type: 'string' },
-          cover: { type: 'string' },
-          name: { type: 'string', minLength: 1, maxLength: 50 },
-          username: { type: 'string', minLength: 4, maxLength: 20 },
-          bio: { type: 'string', minLength: 0, maxLength: 160 },
-          total_following: { type: 'number' },
-          total_followers: { type: 'number' },
-          email_address: { type: 'string' },
-          links: {
-            type: 'object',
-            properties: {
-              website: { type: 'string', nullable: true },
-              spotify: { type: 'string', nullable: true },
-              itunes: { type: 'string', nullable: true },
-              instagram: { type: 'string', nullable: true },
-              twitter: { type: 'string', nullable: true },
-              tiktok: { type: 'string', nullable: true },
-              youtube: { type: 'string', nullable: true },
-            },
-            additionalProperties: false,
-          },
-          web3: {
-            type: 'object',
-            properties: {
-              public_address: { type: 'string' },
-            },
-            additionalProperties: false,
-          },
-          location: { type: 'string' },
-          unread_notifications: { type: 'number' },
+          website: { type: 'string', nullable: true },
+          spotify: { type: 'string', nullable: true },
+          itunes: { type: 'string', nullable: true },
+          instagram: { type: 'string', nullable: true },
+          twitter: { type: 'string', nullable: true },
+          tiktok: { type: 'string', nullable: true },
+          youtube: { type: 'string', nullable: true },
         },
-        additionalProperties: false,
-      },
-      location: {
-        type: 'object',
-        properties: {
-          city: { type: 'string' },
-          state: { type: 'string' },
-          country: { type: 'string', nullable: true },
-          latitude: { type: 'number' },
-          longitude: { type: 'number' },
-          geohash: { type: 'string' },
-          country_code: { type: 'string' },
-        },
-        additionalProperties: false,
-      },
-      artist: {
-        type: 'object',
-        properties: {
-          plan: { type: 'string' },
-          isActive: { type: 'boolean' },
-          total_uploads: { type: 'number' },
-          total_uploads_today: { type: 'number' },
-          available_uploads: { type: 'number' },
-          available_uploads_today: { type: 'number' },
-          dsp_links: { type: 'boolean' },
-          videos: { type: 'boolean' },
-          custom_location: { type: 'boolean' },
-        },
-        additionalProperties: false,
-      },
-      onboarding: {
-        type: 'object',
-        properties: {
-          userType: { type: 'string' },
-          didEnableLocation: { type: 'boolean' },
-          didEnablePush: { type: 'boolean' },
-          didEnableAdTracking: { type: 'boolean' },
-          selectedGenres: { type: 'array', items: { type: 'string' } },
-        },
-        additionalProperties: false,
       },
     },
     additionalProperties: false,
   },
-
   post: {
     type: 'object',
     properties: {

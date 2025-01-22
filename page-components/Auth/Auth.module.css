@@ -1,6 +1,4 @@
-/* Auth.module.css */
-
-/* Root container: full height minus nav */
+/* Root container: keeps your gradient background */
 .root {
   display: flex;
   flex-direction: column;
@@ -21,6 +19,7 @@
   padding: 2rem;
 }
 
+/* Centers the card container */
 .main {
   max-width: 480px;
   width: 100%;
@@ -28,39 +27,126 @@
   position: relative;
 }
 
-/* A card wrapper around the form fields */
+/* The glass-like card wrapper */
 .formCard {
-  background: var(--background); /* or #fff for a lighter theme */
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  padding: 1.5rem;
+  /* Semi-transparent “glass” background */
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10px);
+
+  /* A subtle border & rounding for a more modern feel */
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+
+  /* Slightly larger padding for breathing room */
+  padding: 2rem;
+
+  /* A softer box shadow */
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+
+  /* Animations on hover/focus can be optional */
+  transition: transform 0.3s ease;
+}
+.formCard:hover {
+  transform: translateY(-2px);
 }
 
 /* Title at top */
 .title {
-  font-size: 2.25rem;
+  font-size: 2.5rem;
   font-weight: 800;
   text-align: center;
   margin-bottom: 1rem;
-  color: var(--foreground, #fff);
+  color: #fff; /* stands out against dark background */
 }
 
-/* The subtitles "About you", "Your login" */
+/* Subtitles: “About you” etc. */
 .subtitle {
   font-size: 0.75rem;
   letter-spacing: 0.2rem;
-  color: var(--secondary, #666);
+  color: #e1e1e1;
   font-weight: 700;
   text-transform: uppercase;
   margin: 0;
+  opacity: 0.85;
 }
 
 /* A horizontal line or "separator" */
 .seperator {
-  background-color: var(--accents-2, #ccc);
+  background-color: rgba(255, 255, 255, 0.2);
   height: 1px;
   margin: 8px 0 8px 10px;
   flex: 1 1;
+}
+
+/* Label styling */
+.label {
+  display: flex;
+  flex-direction: column;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #fff;
+  gap: 0.25rem;
+}
+
+/* Base styles for all inputs & selects */
+.select,
+.input {
+  margin-top: 0.25rem;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #fff;
+  font-size: 1rem;
+  outline: none;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+.select:focus,
+.input:focus {
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+/* Pill container for genres */
+.genresGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+/* Genre pill styling */
+.genrePill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.6rem 1.2rem;
+  border-radius: 9999px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  background-color: rgba(255, 255, 255, 0.08);
+  cursor: pointer;
+  transition: all 0.25s;
+}
+.genrePill:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.6);
+}
+.genrePill.selected {
+  background-color: #cf4c87; /* A bright accent color from your gradient */
+  border-color: #cf4c87;
+  color: #fff;
+  position: relative;
+}
+.genrePill.selected::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  font-size: 0.8rem;
 }
 
 /* Full-width submit button */
@@ -72,12 +158,14 @@
   color: #fff;
   cursor: pointer;
   transition: opacity 0.2s;
+  font-size: 1rem;
+  padding: 0.75rem 1rem;
 }
 .submit:hover {
   opacity: 0.9;
 }
 
-/* The gradient you requested for the button */
+/* Gradient for the main Sign Up button */
 .gradientBtn {
   background: linear-gradient(
       116.94deg,
@@ -98,31 +186,15 @@
 .footer {
   width: 100%;
   padding: 2em;
-  height: 100px;
+  min-height: 80px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-top: 1px solid rgba(255, 255, 255, 0.2);
 }
-
-.label {
-  display: flex;
-  flex-direction: column;
+.footer a {
+  color: #fff;
   font-weight: 500;
-  margin-bottom: 0.5rem;
-  color: var(--foreground, #fff);
-  gap: 0.25rem;
-}
-
-.select,
-.input {
-  margin-top: 0.25rem;
-  padding: 0.5rem;
-  border-radius: 4px;
-  border: 1px solid var(--accents-2, #ccc);
-  background: var(--background, #fff);
-  color: var(--foreground, #000);
-  font-size: 1rem;
 }
 
 /* Make it responsive */
@@ -131,9 +203,9 @@
     padding: 0 1rem;
   }
   .formCard {
-    padding: 1rem;
+    padding: 1.5rem;
   }
   .title {
-    font-size: 1.75rem;
+    font-size: 1.85rem;
   }
 }

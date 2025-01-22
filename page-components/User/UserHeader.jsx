@@ -1,3 +1,4 @@
+// /components/UserHeader.js
 import { Avatar } from '@/components/Avatar';
 import { Container } from '@/components/Layout';
 import {
@@ -13,25 +14,73 @@ import { MdCalendarToday } from 'react-icons/md';
 
 import styles from './UserHeader.module.css';
 
+/**
+ * user schema (for reference):
+ * {
+ *   username: string,
+ *   name: string,
+ *   userType: string,
+ *   hometown: string,
+ *   profileImage: string,
+ *   headerImage: string,
+ *   genres: string[],
+ *   bio: string,
+ *   total_following: number,
+ *   total_followers: number,
+ *   links: {
+ *     website?: string,
+ *     spotify?: string,
+ *     itunes?: string,
+ *     instagram?: string,
+ *     twitter?: string,
+ *     tiktok?: string,
+ *     youtube?: string
+ *   }
+ *   // Possibly createdAt or isVerified, etc., if your DB includes these
+ * }
+ */
+
 const UserHeader = ({ user }) => {
-  // Just for example: Hardcode some "stats" here.
-  // You can pull these from `user` if you have them in your db.
+  // Build a stats array from user's actual numeric fields
+  // Adjust or remove as you prefer:
   const stats = [
-    { label: 'Releases', value: '7' },
-    { label: 'LMLT Stacked', value: '32k' },
-    { label: 'Following', value: '20' },
-    { label: 'Followers', value: '71' },
+    {
+      label: 'Following',
+      value: user.total_following ?? 0,
+    },
+    {
+      label: 'Followers',
+      value: user.total_followers ?? 0,
+    },
+    {
+      label: 'Type',
+      value: user.userType ?? '',
+    },
+    {
+      label: 'Location',
+      value: user.hometown ?? '',
+    },
   ];
 
-  // A helper function to strip "https://" to keep links tidy
+  // A helper function to strip "https://" to keep link text tidy
   const formatLink = (url) => url.replace(/^https?:\/\//, '');
+
+  // Example: if you have a field for "joined" date in user,
+  // you can show it below. If not, remove or hardcode.
+  // We’ll assume "createdAt" is an ISO date string.
+  const joinedDateString = user.createdAt
+    ? new Date(user.createdAt).toLocaleString('default', {
+        month: 'long',
+        year: 'numeric',
+      })
+    : 'Unknown';
 
   return (
     <div className={styles.headerCard}>
-      {/* Cover image background */}
+      {/* Cover / Header image as background */}
       <div
         className={styles.cover}
-        style={{ backgroundImage: `url(${user.profile.cover})` }}
+        style={{ backgroundImage: `url(${user.headerImage || ''})` }}
       >
         <div className={styles.coverOverlay} />
       </div>
@@ -40,13 +89,9 @@ const UserHeader = ({ user }) => {
       <div className={styles.content}>
         {/* Avatar + optional verified badge */}
         <div className={styles.avatarContainer}>
-          <Avatar
-            size={128}
-            username={user.profile.username}
-            url={user.profile.image}
-          />
-          {/* Example: show a verified badge if user.profile.isVerified is true */}
-          {user.profile.isVerified && (
+          <Avatar size={128} username={user.username} url={user.profileImage} />
+          {/* Show a verified badge if your user has "isVerified" */}
+          {user.isVerified && (
             <img
               src="/verified-badge.png"
               alt="Verified"
@@ -56,27 +101,26 @@ const UserHeader = ({ user }) => {
         </div>
 
         {/* Name & Bio */}
-        <h1 className={styles.name}>{user.profile.name}</h1>
-        {user.profile.bio && <p className={styles.bio}>"{user.profile.bio}"</p>}
+        <h1 className={styles.name}>{user.name || user.username}</h1>
+        {user.bio && <p className={styles.bio}>“{user.bio}”</p>}
 
         {/* Social / External Links Row */}
         <div className={styles.linksRow}>
           {/* Website */}
-          {user.profile.links.website && (
+          {user.links?.website && (
             <a
-              href={user.profile.links.website}
+              href={user.links.website}
               target="_blank"
               rel="noopener noreferrer"
             >
               <FaLink />
-              <span>{formatLink(user.profile.links.website)}</span>
+              <span>{formatLink(user.links.website)}</span>
             </a>
           )}
-
           {/* Spotify */}
-          {user.profile.links.spotify && (
+          {user.links?.spotify && (
             <a
-              href={user.profile.links.spotify}
+              href={user.links.spotify}
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -84,11 +128,10 @@ const UserHeader = ({ user }) => {
               <span>Spotify</span>
             </a>
           )}
-
           {/* iTunes / Apple Music */}
-          {user.profile.links.itunes && (
+          {user.links?.itunes && (
             <a
-              href={user.profile.links.itunes}
+              href={user.links.itunes}
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -96,11 +139,10 @@ const UserHeader = ({ user }) => {
               <span>Apple</span>
             </a>
           )}
-
           {/* Instagram */}
-          {user.profile.links.instagram && (
+          {user.links?.instagram && (
             <a
-              href={user.profile.links.instagram}
+              href={user.links.instagram}
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -108,11 +150,10 @@ const UserHeader = ({ user }) => {
               <span>Instagram</span>
             </a>
           )}
-
           {/* Twitter */}
-          {user.profile.links.twitter && (
+          {user.links?.twitter && (
             <a
-              href={user.profile.links.twitter}
+              href={user.links.twitter}
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -120,11 +161,10 @@ const UserHeader = ({ user }) => {
               <span>Twitter</span>
             </a>
           )}
-
           {/* TikTok */}
-          {user.profile.links.tiktok && (
+          {user.links?.tiktok && (
             <a
-              href={user.profile.links.tiktok}
+              href={user.links.tiktok}
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -132,11 +172,10 @@ const UserHeader = ({ user }) => {
               <span>TikTok</span>
             </a>
           )}
-
           {/* YouTube */}
-          {user.profile.links.youtube && (
+          {user.links?.youtube && (
             <a
-              href={user.profile.links.youtube}
+              href={user.links.youtube}
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -145,10 +184,10 @@ const UserHeader = ({ user }) => {
             </a>
           )}
 
-          {/* Example joined date */}
+          {/* Joined Date (if available) */}
           <div className={styles.joined}>
             <MdCalendarToday />
-            <span>Joined January 2021</span>
+            <span>Joined {joinedDateString}</span>
           </div>
         </div>
 
@@ -161,6 +200,17 @@ const UserHeader = ({ user }) => {
             </div>
           ))}
         </div>
+
+        {/* Optional: Display user's genres */}
+        {user.genres && user.genres.length > 0 && (
+          <div className={styles.genresList}>
+            {user.genres.map((genre) => (
+              <span key={genre} className={styles.genreTag}>
+                {genre}
+              </span>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

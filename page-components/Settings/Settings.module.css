@@ -1,65 +1,262 @@
-.card {
-  margin-bottom: 1rem;
-  background: var(--background);
-  border-radius: 5px;
-  border: 1px solid var(--accents-2);
-  padding: 24px;
+/* Settings.module.css */
+
+/* Root container for your entire page: gradient background */
+.root {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: calc(100vh - var(--nav-height));
+  background: linear-gradient(
+    161deg,
+    #8d52cc 0%,
+    #a650b2 10.09%,
+    #bc4e9b 18.03%,
+    #cf4c87 30.98%,
+    #db4b7b 38.59%,
+    #a9638f 58.55%,
+    #8c719b 67.64%,
+    #727ea6 78.72%,
+    #4893b7 97.5%
+  );
+  padding: 2rem;
 }
 
-.wrapper {
-  width: 640px;
-}
-
-.sectionTitle {
-  font-size: 1.25rem;
-  font-weight: 600;
-}
-
-.submit {
+/* Centers the glass card */
+.main {
+  max-width: 480px;
   width: 100%;
-}
-
-.label {
-  display: block;
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: var(--secondary);
-  text-transform: uppercase;
-  margin-bottom: 8px;
-  max-width: 100%;
-}
-
-.avatar {
+  align-self: center;
   position: relative;
+}
+
+/* The glass-like card wrapper */
+.formCard {
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  transition: transform 0.3s ease;
+}
+.formCard:hover {
+  transform: translateY(-2px);
+}
+
+/* 2-column grid inside the .formCard */
+.formGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem; /* space between columns */
+}
+
+.columnLeft,
+.columnRight {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Big title */
+.title {
+  font-size: 2rem;
+  font-weight: 800;
+  text-align: center;
+  margin-bottom: 1rem;
+  color: #fff;
+}
+
+/* Subtitle for “About you”, etc. */
+.subtitle {
+  font-size: 0.75rem;
+  letter-spacing: 0.2rem;
+  color: #e1e1e1;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin: 0;
+  opacity: 0.85;
+  margin-bottom: 0.5rem;
+}
+
+/* Label styling */
+.label {
+  display: flex;
+  flex-direction: column;
+  font-weight: 600;
+  margin: 1rem 0 0.5rem;
+  color: #fff;
+  gap: 0.25rem;
+}
+
+/* Avatars or images container */
+.avatarContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.avatarPreview {
   width: 96px;
   height: 96px;
-  transition: ease 0.2s opacity;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #eee;
+  border: 2px solid rgba(255, 255, 255, 0.3);
 }
 
-.avatar:hover {
-  opacity: 0.5;
-}
-
-.avatar input {
-  position: absolute;
-  inset: 0;
+/* If you want a bigger header preview */
+.headerPreview {
   width: 100%;
-  height: 100%;
-  opacity: 0;
-  z-index: 1;
-  cursor: pointer;
+  max-width: 300px;
+  border-radius: 8px;
+  object-fit: cover;
+  background: #eee;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  margin-top: 0.5rem;
 }
 
+/* Base styles for inputs & selects (local classes only!) */
+.input,
+.select {
+  margin-top: 0.25rem;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #fff;
+  font-size: 1rem;
+  outline: none;
+  width: 100%;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+.input:focus,
+.select:focus {
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+/* If you want to style textareas similarly, just add className={styles.input} */
+
+/* Pill container for genres */
+.genresGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+/* Genre pill styling */
+.genrePill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.6rem 1.2rem;
+  border-radius: 9999px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  background-color: rgba(255, 255, 255, 0.08);
+  cursor: pointer;
+  transition: all 0.25s;
+}
+.genrePill:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.6);
+}
+.genrePillSelected {
+  background-color: #cf4c87; /* Or any accent color */
+  border-color: #cf4c87;
+  color: #fff;
+}
+
+/* Full-width submit button */
+.submit {
+  width: 100%;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  color: #fff;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  font-size: 1rem;
+  padding: 0.75rem 1rem;
+  margin-top: 1.5rem;
+  text-align: center;
+}
+.submit:hover {
+  opacity: 0.9;
+}
+
+/* Gradient for the main Sign Up / Save button */
+.gradientBtn {
+  background: linear-gradient(
+      116.94deg,
+      #8d52cc -39.29%,
+      #a650b2 -26%,
+      #bc4e9b -15.53%,
+      #cf4c87 1.54%,
+      #db4b7b 11.57%,
+      #a9638f 37.88%,
+      #8c719b 49.86%,
+      #727ea6 64.46%,
+      #4893b7 89.21%
+    ),
+    linear-gradient(0deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2));
+}
+
+/* Note/warning area (e.g. unverified email) */
 .note {
-  padding: 7px 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  color: #fff;
+  font-size: 0.9rem;
   display: flex;
   align-items: center;
-  border-radius: 5px;
-  border: 1px solid var(--accents-2);
-  font-size: 14px;
-  margin-bottom: 1rem;
+}
+.link {
+  color: #fbcaca;
+  text-decoration: underline;
+  margin: 0 4px;
 }
 
-.note .link {
-  color: var(--link);
+/* Social links container & row */
+.socialLinks {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1.25rem;
+}
+.socialRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.socialIcon {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 1px rgba(255, 255, 255, 0.3));
+}
+
+/* Make it responsive */
+@media (max-width: 600px) {
+  .main {
+    padding: 0 1rem;
+  }
+  .formCard {
+    padding: 1.5rem;
+  }
+  .title {
+    font-size: 1.85rem;
+  }
+
+  /* For mobile, you can collapse columns into 1 */
+  .formGrid {
+    grid-template-columns: 1fr; /* single column on smaller screens */
+  }
 }

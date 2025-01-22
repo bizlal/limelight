@@ -1,15 +1,17 @@
-import { ValidateProps } from '@/api-lib/constants';
-import { findUserByUsername, updateUserById } from '@/api-lib/db';
-import { auths, validateBody } from '@/api-lib/middlewares';
-import { getMongoDb } from '@/api-lib/mongodb';
-import { ncOpts } from '@/api-lib/nc';
-import { slugUsername } from '@/lib/user';
-import { v2 as cloudinary } from 'cloudinary';
+// /pages/api/user/index.js
 import multer from 'multer';
 import nc from 'next-connect';
+import { v2 as cloudinary } from 'cloudinary';
+
+import { getMongoDb } from '@/api-lib/mongodb';
+import { findUserByUsername, updateUserById } from '@/api-lib/db';
+import { slugUsername } from '@/lib/user';
+import { ncOpts } from '@/api-lib/nc';
+import { ValidateProps } from '@/api-lib/constants';
+// A custom helper that verifies the Privy token and fetches the user doc
+import { verifyPrivyAndGetUser } from '@/api-lib/privy';
 
 const upload = multer({ dest: '/tmp' });
-const handler = nc(ncOpts);
 
 if (process.env.CLOUDINARY_URL) {
   const {
@@ -25,71 +27,118 @@ if (process.env.CLOUDINARY_URL) {
   });
 }
 
-handler.use(...auths);
+const handler = nc(ncOpts);
 
+/**
+ * GET /api/user
+ *  - Verifies Privy token
+ *  - Returns { user } if found, or { user: null } if not
+ */
 handler.get(async (req, res) => {
-  if (!req.user) return res.json({ user: null });
-  return res.json({ user: req.user });
+  try {
+    const { dbUser } = await verifyPrivyAndGetUser(req);
+    if (!dbUser) {
+      return res.json({ user: null });
+    }
+    return res.json({ user: dbUser });
+  } catch (err) {
+    console.error('GET /api/user error:', err);
+    return res.status(401).json({ error: err.message });
+  }
 });
-const { username, name, bio } =
-  ValidateProps.user.properties.profile.properties;
 
+/**
+ * PATCH /api/user
+ *  - Verifies Privy token
+ *  - Expects multipart form-data with optional files (profilePicture, headerImage)
+ *  - Validates username, name, bio
+ *  - Uploads images to Cloudinary
+ *  - Updates user doc
+ */
 handler.patch(
-  upload.single('profilePicture'),
-  validateBody({
-    type: 'object',
-    properties: {
-      username,
-      name,
-      bio,
-    },
-    additionalProperties: true,
-  }),
-  async (req, res) => {
-    if (!req.user) {
-      req.status(401).end();
-      return;
-    }
+  upload.single('profilePicture'), // or .fields([{ name: 'profilePicture' }, { name: 'headerImage' }]) if multiple
+  async (req, res, next) => {
+    // Minimal manual parse of text fields from form-data
+    try {
+      const { username, name, bio } = ValidateProps.user.properties;
 
-    const db = await getMongoDb();
+      const parsedBody = {
+        username: req.body.username,
+        name: req.body.name,
+        bio: req.body.bio,
+      };
 
-    let profilePicture;
-    if (req.file) {
-      const image = await cloudinary.uploader.upload(req.file.path, {
-        width: 512,
-        height: 512,
-        crop: 'fill',
-      });
-      profilePicture = image.secure_url;
-    }
-    const { name, bio } = req.body;
-
-    let username;
-
-    if (req.body.username) {
-      username = slugUsername(req.body.username);
+      // Example basic validation
       if (
-        username !== req.user.username &&
-        (await findUserByUsername(db, username))
+        parsedBody.username &&
+        parsedBody.username.length < username.minLength
       ) {
-        res
-          .status(403)
-          .json({ error: { message: 'The username has already been taken.' } });
-        return;
+        throw new Error('Username too short');
       }
+
+      req.parsedBody = parsedBody;
+      return next();
+    } catch (err) {
+      console.error('Validation error:', err);
+      return res.status(400).json({ error: err.message });
     }
+  },
+  async (req, res) => {
+    try {
+      // 1) Verify Privy token + get local user
+      const { dbUser } = await verifyPrivyAndGetUser(req);
+      if (!dbUser) {
+        return res.status(404).json({ error: 'User not found' });
+      }
 
-    const user = await updateUserById(db, req.user._id, {
-      ...(username && { username }),
-      ...(name && { name }),
-      ...(typeof bio === 'string' && { bio }),
-      ...(profilePicture && { profilePicture }),
-    });
+      const db = await getMongoDb();
 
-    res.json({ user });
+      // 2) Upload profile picture if provided
+      let profilePicture;
+      if (req.file) {
+        // Example: If you want to rename the field to 'profilePicture' in Cloudinary
+        const image = await cloudinary.uploader.upload(req.file.path, {
+          width: 512,
+          height: 512,
+          crop: 'fill',
+        });
+        profilePicture = image.secure_url;
+      }
+
+      // 3) Prepare updated fields
+      const { name, bio } = req.parsedBody;
+      let { username } = req.parsedBody;
+
+      if (username) {
+        username = slugUsername(username);
+        if (username !== dbUser.username) {
+          // Check uniqueness
+          const existing = await findUserByUsername(db, username);
+          if (existing) {
+            return res.status(403).json({ error: 'That username is taken.' });
+          }
+        }
+      }
+
+      const updatedData = {};
+      if (username) updatedData.username = username;
+      if (typeof name === 'string') updatedData.name = name;
+      if (typeof bio === 'string') updatedData.bio = bio;
+      if (profilePicture) updatedData.profilePicture = profilePicture;
+      updatedData.updatedAt = new Date();
+
+      // 4) Update user
+      const user = await updateUserById(db, dbUser._id, updatedData);
+
+      return res.json({ user });
+    } catch (err) {
+      console.error('PATCH /api/user error:', err);
+      return res.status(500).json({ error: err.message });
+    }
   }
 );
 
+// Because we use multer, disable the default Next.js body parser
 export const config = {
   api: {
     bodyParser: false,

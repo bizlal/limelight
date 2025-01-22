@@ -27,11 +27,8 @@ export async function findUserById(db, userId) {
 
 export async function findUserByUsername(db, username) {
   return db
-    .collection('accounts')
-    .findOne(
-      { 'profile.username': username },
-      { projection: dbProjectionUsers() }
-    )
+    .collection('users')
+    .findOne({ username: username }, { projection: dbProjectionUsers() })
     .then((user) => user || null);
 }
 
@@ -56,20 +53,17 @@ export async function updateUserById(db, id, data) {
 
 export async function insertUser(
   db,
-  { email, originalPassword, bio = '', name, profilePicture, username }
+  { username, name, userType, hometown, genres, originalPassword }
 ) {
   const user = {
-    emailVerified: false,
-    profilePicture,
-    email,
-    name,
     username,
-    bio,
+    name,
+    userType,
+    hometown,
+    genres,
+    emailVerified: false,
   };
-  const password = await bcrypt.hash(originalPassword, 10);
-  const { insertedId } = await db
-    .collection('users')
-    .insertOne({ ...user, password });
+  const { insertedId } = await db.collection('users').insertOne({ ...user });
   user._id = insertedId;
   return user;
 }
