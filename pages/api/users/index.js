@@ -3,9 +3,7 @@ import { getMongoDb } from '@/api-lib/mongodb';
 import { ncOpts } from '@/api-lib/nc';
 import { slugUsername } from '@/lib/user';
 import { validateBody } from '@/api-lib/middlewares';
-import { fetcher } from '@/lib/fetch'; // or your Privy client
 import { PrivyClient } from '@privy-io/server-auth';
-import { ObjectId } from 'mongodb';
 import { constants } from '@/api-lib/constants';
 
 // Make sure you have your Privy credentials

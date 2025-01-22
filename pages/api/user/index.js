@@ -60,7 +60,7 @@ handler.patch(
   async (req, res, next) => {
     // Minimal manual parse of text fields from form-data
     try {
-      const { username, name, bio } = ValidateProps.user.properties;
+      const { username } = ValidateProps.user.properties;
 
       const parsedBody = {
         username: req.body.username,
