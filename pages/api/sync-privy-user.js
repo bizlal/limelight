@@ -41,9 +41,7 @@ handler.post(async (req, res) => {
     console.log('claims.sub:', claims.sub);
     console.log('uid:', uid);
     if (claims.userId !== uid) {
-      return res
-        .status(403)
-        .json({ error: 'Token sub does not match uid' });
+      return res.status(403).json({ error: 'Token sub does not match uid' });
     }
 
     // 5. Upsert into your local MongoDB

@@ -5,7 +5,6 @@ import { slugUsername } from '@/lib/user';
 import { validateBody } from '@/api-lib/middlewares';
 import { PrivyClient } from '@privy-io/server-auth';
 
-import { ValidateProps } from '@/api-lib/constants';
 // Make sure you have your Privy credentials
 const PRIVY_APP_ID = process.env.NEXT_PUBLIC_PRIVY_APP_ID;
 const PRIVY_APP_SECRET = process.env.PRIVY_APP_SECRET;
