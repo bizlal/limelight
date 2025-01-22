@@ -111,7 +111,8 @@ const UserMenu = ({ user, mutate }) => {
 const Nav = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { data: { user } = {}, mutate } = useCurrentUser();
-  const { ready, authenticated, login } = usePrivy();
+  const { ready, authenticated, login, user: privyUser } = usePrivy();
+  console.log(privyUser);
   // Disable login when Privy is not ready or the user is already authenticated
   const disableLogin = !ready || (ready && authenticated);
 
