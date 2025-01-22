@@ -26,14 +26,22 @@ export async function verifyPrivyAndGetUser(req) {
   if (!claims) {
     throw new Error('Invalid Privy token');
   }
-  // claims.sub should be something like "did:privy:xxxx"
-  const privyId = claims.sub;
+  // claims.userId should be something like "did:privy:xxxx"
+  const uid = claims.userId.split(':')[2];
+  if (!uid) {
+    throw new Error('Invalid Privy userId format');
+  }
 
   // 3) Look up user in MongoDB
   const db = await getMongoDb();
-  const dbUser = await db.collection('users').findOne({ privyId });
-  // If you want to require that the user doc must exist, otherwise 404:
-  // if (!dbUser) throw new Error('User not found in DB');
+  const dbUser = await db.collection('users').findOne({ uid });
+  if (!dbUser) {
+    throw new Error('User not found in DB');
+  }
 
+  req.user = dbUser; // Attach user to the request
+
+  console.log('User found:', dbUser);
+  console.log('Privy claims:', claims);
   return { dbUser, claims };
 }

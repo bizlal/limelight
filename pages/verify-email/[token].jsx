@@ -27,7 +27,7 @@ export async function getServerSideProps(context) {
 
   if (!deletedToken) return { props: { valid: false } };
 
-  await updateUserById(db, deletedToken.creatorId, {
+  await updateUserById(db, deletedToken.uid, {
     emailVerified: true,
   });
 

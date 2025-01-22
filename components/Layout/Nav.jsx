@@ -1,4 +1,3 @@
-// Nav.js
 import { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -16,7 +15,7 @@ import Wrapper from './Wrapper';
 import styles from './Nav.module.css';
 
 // A small sub-component for the user dropdown
-const UserMenu = ({ user, onLogout }) => {
+const UserMenu = ({ user, onDisconnect }) => {
   const menuRef = useRef(null);
   const avatarRef = useRef(null);
   const [visible, setVisible] = useState(false);
@@ -31,8 +30,8 @@ const UserMenu = ({ user, onLogout }) => {
     };
   }, [router.events]);
 
+  // Detect outside click to close menu
   useEffect(() => {
-    // detect outside click to close menu
     const onMouseDown = (event) => {
       if (
         menuRef.current &&
@@ -59,8 +58,8 @@ const UserMenu = ({ user, onLogout }) => {
         <div className={styles.avatarContainer}>
           <Avatar
             size={32}
-            username={user.username}
-            url={user.profilePicture}
+            url={user.profilePicture || '/default-avatar.png'}
+            username={user.username || 'NoUsername'}
           />
           <span className={styles.userName}>{user.username}</span>
         </div>
@@ -86,8 +85,8 @@ const UserMenu = ({ user, onLogout }) => {
                 <ThemeSwitcher />
               </Container>
             </div>
-            <button onClick={onLogout} className={styles.menuItem}>
-              Sign out
+            <button onClick={onDisconnect} className={styles.menuItem}>
+              Disconnect
             </button>
           </div>
         </div>
@@ -100,48 +99,104 @@ const Nav = () => {
   const router = useRouter();
 
   // 1) Pull info from Privy
-  const { ready, authenticated, user: privyUser, login, logout } = usePrivy();
-  const [localUser, setLocalUser] = useState(null); // your DB user doc
+  const {
+    ready,
+    authenticated,
+    user: privyUser,
+    login,
+    logout,
+    getAccessToken, // we'll use this to fetch the Privy token for our server login
+  } = usePrivy();
+
+  // 2) Local DB user doc
+  const [localUser, setLocalUser] = useState(null);
+
+  // 3) For mobile menu
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  // 2) If user is authenticated with Privy, fetch your local user doc by privyId
+  // 4) Track if we've already done the server-side login
+  const [serverLoggedIn, setServerLoggedIn] = useState(false);
+
+  // 5) If Privy is connected, fetch local user doc
   useEffect(() => {
-    if (!ready) return; // wait until Privy is ready
-    if (!authenticated || !privyUser?.id) {
-      // Not logged in, or no ID yet
+    // If not ready or not authenticated => clear local user
+    if (!ready || !authenticated || !privyUser?.id) {
       setLocalUser(null);
+      setServerLoggedIn(false); // reset because user might have changed
       return;
     }
 
-    // Example: /api/user?privyId=<did:privy:XXXX>
-    // Your backend route should verify the token or trust
-    // the client for this simple read.
-    fetcher(`/api/user?privyId=${encodeURIComponent(privyUser.id)}`)
+    // Avoid infinite loop if we're on the sign-up page
+    if (router.pathname === '/sign-up') {
+      return;
+    }
+
+    fetcher(`/api/user?uid=${encodeURIComponent(privyUser.id)}`)
       .then((res) => {
-        // e.g. { user: { username, profilePicture, ... } }
-        setLocalUser(res.user || null);
+        // If no user => redirect to sign-up
+        if (!res.user) {
+          router.push('/sign-up');
+          return;
+        }
+        // If user but no username => also sign-up
+        if (!res.user.username) {
+          router.push('/sign-up');
+          return;
+        }
+        // Otherwise we have a valid local user
+        setLocalUser(res.user);
       })
       .catch((err) => {
         console.error('Error fetching local user doc:', err);
-        setLocalUser(null);
+        // e.g. 401 => sign-up
+        router.push('/sign-up');
       });
-  }, [ready, authenticated, privyUser?.id]);
+  }, [ready, authenticated, privyUser?.id, router]);
 
-  // 3) Sign out -> call Privy logout
-  const handleSignOut = useCallback(async () => {
+  // 6) Once we have a valid localUser with username, do server-based login if not done yet
+  useEffect(() => {
+    const doServerSideLogin = async () => {
+      try {
+        const token = await getAccessToken();
+        if (!token) {
+          console.warn('No Privy token found, cannot server-login');
+          return;
+        }
+        // Call your /api/auth/privy endpoint, passing the token in Bearer
+        await fetch('/api/privy', {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setServerLoggedIn(true);
+      } catch (err) {
+        console.error('Server login via /api/auth/privy failed:', err);
+      }
+    };
+
+    // If localUser has a username and we haven't done the server login yet, do it
+    if (localUser?.username && !serverLoggedIn) {
+      doServerSideLogin();
+    }
+  }, [localUser?.username, serverLoggedIn, getAccessToken]);
+
+  // 7) Disconnect from Privy
+  const handleDisconnect = useCallback(async () => {
     try {
-      await logout(); // end Privy session
+      await logout(); // clear Privy session on the client
       setLocalUser(null);
-      toast.success('Signed out');
+      setServerLoggedIn(false);
+      toast.success('Disconnected');
       router.push('/');
     } catch (err) {
       console.error(err);
-      toast.error('Error signing out');
+      toast.error('Error disconnecting');
     }
   }, [logout, router]);
 
-  // If Privy isn't ready or user is already authenticated, we adjust login button state
-  const disableLogin = !ready || (ready && authenticated);
+  // 8) If not ready or user is already connected, we adjust connect button state
+  const disableConnect = !ready || (ready && authenticated);
 
   return (
     <nav className={styles.nav}>
@@ -151,14 +206,27 @@ const Nav = () => {
           alignItems="center"
           justifyContent="space-between"
         >
-          {/* Logo */}
+          {/* LEFT SECTION: Logo, maybe user avatar if you like */}
           <Container alignItems="center" className={styles.leftSection}>
             <Link legacyBehavior href="/">
               <span className={styles.logoText}>
                 limelight <span className={styles.beta}>beta</span>
               </span>
             </Link>
-            {/* Hamburger for mobile */}
+
+            {authenticated && localUser?.username && (
+              <div className={styles.leftUserDisplay}>
+                <Avatar
+                  size={32}
+                  url={localUser.profilePicture || '/default-avatar.png'}
+                  username={localUser.username}
+                />
+                <span className={styles.userNameLeft}>
+                  {localUser.username}
+                </span>
+              </div>
+            )}
+
             <button
               className={styles.hamburger}
               onClick={() => setMobileOpen(!mobileOpen)}
@@ -169,7 +237,7 @@ const Nav = () => {
             </button>
           </Container>
 
-          {/* Middle Nav: Nav links + Search */}
+          {/* MIDDLE SECTION: Nav links + search */}
           <div
             className={`${styles.navCenter} ${
               mobileOpen ? styles.navCenterOpen : ''
@@ -198,18 +266,24 @@ const Nav = () => {
             </div>
           </div>
 
-          {/* Right section: show user menu if we have localUser, else login/signup */}
+          {/* RIGHT SECTION: If connected => user menu or "Disconnect", else "Connect / Sign Up" */}
           <div className={styles.rightSection}>
-            {localUser ? (
-              <UserMenu user={localUser} onLogout={handleSignOut} />
+            {authenticated ? (
+              localUser?.username ? (
+                <UserMenu user={localUser} onDisconnect={handleDisconnect} />
+              ) : (
+                <Button size="small" onClick={handleDisconnect} type="error">
+                  Disconnect
+                </Button>
+              )
             ) : (
               <div className={styles.authButtons}>
                 <button
-                  disabled={disableLogin}
+                  disabled={disableConnect}
                   onClick={login}
                   className={styles.loginBtn}
                 >
-                  Log in
+                  Connect
                 </button>
                 <Spacer axis="horizontal" size={0.5} />
                 <Link legacyBehavior passHref href="/sign-up">

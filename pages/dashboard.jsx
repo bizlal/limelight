@@ -16,7 +16,7 @@ export default function DashboardPage() {
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
-            privyId: user.id,
+            uid: user.id,
             email: user.email?.address,
           }),
         });

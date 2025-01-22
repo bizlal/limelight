@@ -31,15 +31,15 @@ handler.post(
     additionalProperties: false,
   }),
   async (req, res) => {
-    if (!req.user) {
-      return res.status(401).end();
-    }
+    // if (!req.user) {
+    //   return res.status(401).end();
+    // }
 
     const db = await getMongoDb();
-
+    console.log(req);
     const post = await insertPost(db, {
       content: req.body.content,
-      creatorId: req.user._id,
+      uid: req.user.uid,
     });
 
     return res.json({ post });

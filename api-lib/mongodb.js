@@ -10,7 +10,7 @@ async function createIndexes(client) {
       .createIndex({ expireAt: -1 }, { expireAfterSeconds: 0 }),
     db
       .collection('posts')
-      .createIndexes([{ key: { createdAt: -1 } }, { key: { creatorId: -1 } }]),
+      .createIndexes([{ key: { createdAt: -1 } }, { key: { uid: -1 } }]),
     db
       .collection('comments')
       .createIndexes([{ key: { createdAt: -1 } }, { key: { postId: -1 } }]),

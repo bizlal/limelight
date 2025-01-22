@@ -16,7 +16,7 @@ export async function findComments(db, postId, before, limit = 10) {
       {
         $lookup: {
           from: 'users',
-          localField: 'creatorId',
+          localField: 'uid',
           foreignField: '_id',
           as: 'creator',
         },
@@ -27,11 +27,11 @@ export async function findComments(db, postId, before, limit = 10) {
     .toArray();
 }
 
-export async function insertComment(db, postId, { content, creatorId }) {
+export async function insertComment(db, postId, { content, uid }) {
   const comment = {
     content,
     postId: new ObjectId(postId),
-    creatorId,
+    uid,
     createdAt: new Date(),
   };
   const { insertedId } = await db.collection('comments').insertOne(comment);

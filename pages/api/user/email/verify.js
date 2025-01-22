@@ -18,7 +18,7 @@ handler.post(async (req, res) => {
   const db = await getMongoDb();
 
   const token = await createToken(db, {
-    creatorId: req.user._id,
+    uid: req.user._id,
     type: 'emailVerify',
     expireAt: new Date(Date.now() + 1000 * 60 * 60 * 24),
   });

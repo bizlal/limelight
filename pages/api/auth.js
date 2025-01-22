@@ -7,7 +7,7 @@ const handler = nc(ncOpts);
 
 handler.use(...auths);
 
-handler.post(passport.authenticate('local'), (req, res) => {
+handler.post(passport.authenticate('privy'), (req, res) => {
   res.json({ user: req.user });
 });
 

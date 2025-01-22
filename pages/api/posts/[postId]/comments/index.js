@@ -53,7 +53,7 @@ handler.post(
     }
 
     const comment = await insertComment(db, post._id, {
-      creatorId: req.user._id,
+      uid: req.user._id,
       content,
     });
 

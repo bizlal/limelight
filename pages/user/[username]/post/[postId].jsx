@@ -40,7 +40,7 @@ export async function getServerSideProps(context) {
     };
   }
   post._id = String(post._id);
-  post.creatorId = String(post.creatorId);
+  post.uid = String(post.uid);
   post.creator._id = String(post.creator._id);
   post.createdAt = post.createdAt.toJSON();
   return { props: { post } };

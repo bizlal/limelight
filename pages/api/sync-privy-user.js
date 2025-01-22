@@ -31,28 +31,28 @@ handler.post(async (req, res) => {
     }
     console.log(claims);
     // 3. Pull the relevant fields from the request body
-    const { privyId, email } = req.body;
-    if (!privyId) {
-      return res.status(400).json({ error: 'Missing privyId in request body' });
+    const { uid, email } = req.body;
+    if (!uid) {
+      return res.status(400).json({ error: 'Missing uid in request body' });
     }
 
-    // 4. Confirm privyId matches the token claims
+    // 4. Confirm uid matches the token claims
     //    Typically, claims.sub == 'did:privy:xxxx'
     console.log('claims.sub:', claims.sub);
-    console.log('privyId:', privyId);
-    if (claims.userId !== privyId) {
+    console.log('uid:', uid);
+    if (claims.userId !== uid) {
       return res
         .status(403)
-        .json({ error: 'Token sub does not match privyId' });
+        .json({ error: 'Token sub does not match uid' });
     }
 
     // 5. Upsert into your local MongoDB
     const db = await getMongoDb();
     const result = await db.collection('users').findOneAndUpdate(
-      { privyId }, // Query by privyId
+      { uid }, // Query by uid
       {
         $setOnInsert: {
-          privyId,
+          uid,
           createdAt: new Date(),
         },
         $set: {

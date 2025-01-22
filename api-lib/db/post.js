@@ -10,7 +10,7 @@ export async function findPostById(db, id) {
       {
         $lookup: {
           from: 'users',
-          localField: 'creatorId',
+          localField: 'uid',
           foreignField: '_id',
           as: 'creator',
         },
@@ -29,7 +29,7 @@ export async function findPosts(db, before, by, limit = 10) {
     .aggregate([
       {
         $match: {
-          ...(by && { creatorId: new ObjectId(by) }),
+          ...(by && { uid: new ObjectId(by) }),
           ...(before && { createdAt: { $lt: before } }),
         },
       },
@@ -38,7 +38,7 @@ export async function findPosts(db, before, by, limit = 10) {
       {
         $lookup: {
           from: 'users',
-          localField: 'creatorId',
+          localField: 'uid',
           foreignField: '_id',
           as: 'creator',
         },
@@ -49,10 +49,10 @@ export async function findPosts(db, before, by, limit = 10) {
     .toArray();
 }
 
-export async function insertPost(db, { content, creatorId }) {
+export async function insertPost(db, { content, uid }) {
   const post = {
     content,
-    creatorId,
+    uid,
     createdAt: new Date(),
   };
   const { insertedId } = await db.collection('posts').insertOne(post);

@@ -232,7 +232,7 @@ function AboutYou({ user, mutate }) {
 
         // Images
         if (profileImageRef.current.files?.[0]) {
-          formData.append('profilePicture', profileImageRef.current.files[0]);
+          formData.append('profileImage', profileImageRef.current.files[0]);
         }
         if (headerImageRef.current.files?.[0]) {
           formData.append('headerImage', headerImageRef.current.files[0]);
@@ -452,7 +452,7 @@ function AboutYou({ user, mutate }) {
           className={`${styles.submit} ${styles.gradientBtn}`}
           disabled={isSaving}
         >
-          {isSaving ? 'Saving...' : 'Sign up'}
+          {isSaving ? 'Saving...' : 'Save'}
         </button>
       </form>
     </div>

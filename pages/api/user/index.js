@@ -8,7 +8,6 @@ import { findUserByUsername, updateUserById } from '@/api-lib/db';
 import { slugUsername } from '@/lib/user';
 import { ncOpts } from '@/api-lib/nc';
 import { ValidateProps } from '@/api-lib/constants';
-// A custom helper that verifies the Privy token and fetches the user doc
 import { verifyPrivyAndGetUser } from '@/api-lib/privy';
 
 const upload = multer({ dest: '/tmp' });
@@ -50,33 +49,24 @@ handler.get(async (req, res) => {
 /**
  * PATCH /api/user
  *  - Verifies Privy token
- *  - Expects multipart form-data with optional files (profilePicture, headerImage)
- *  - Validates username, name, bio
- *  - Uploads images to Cloudinary
+ *  - Expects multipart form-data with optional files (profileImage, headerImage)
+ *  - Handles all user fields: userType, username, name, bio, hometown, links, genres, images
+ *  - Uploads images to Cloudinary if present
  *  - Updates user doc
  */
 handler.patch(
-  upload.single('profilePicture'), // or .fields([{ name: 'profilePicture' }, { name: 'headerImage' }]) if multiple
+  upload.fields([{ name: 'profileImage' }, { name: 'headerImage' }]),
+  // (Optional) minimal validation step
   async (req, res, next) => {
-    // Minimal manual parse of text fields from form-data
     try {
-      const { username } = ValidateProps.user.properties;
+      // Check the minimal length for username from your constants
+      const { username: usernameProps } = ValidateProps.user.properties;
+      const rawUsername = req.body.username || '';
 
-      const parsedBody = {
-        username: req.body.username,
-        name: req.body.name,
-        bio: req.body.bio,
-      };
-
-      // Example basic validation
-      if (
-        parsedBody.username &&
-        parsedBody.username.length < username.minLength
-      ) {
+      if (rawUsername && rawUsername.length < usernameProps.minLength) {
         throw new Error('Username too short');
       }
 
-      req.parsedBody = parsedBody;
       return next();
     } catch (err) {
       console.error('Validation error:', err);
@@ -85,49 +75,114 @@ handler.patch(
   },
   async (req, res) => {
     try {
-      // 1) Verify Privy token + get local user
+      // 1) Verify Privy token & get local user
       const { dbUser } = await verifyPrivyAndGetUser(req);
       if (!dbUser) {
         return res.status(404).json({ error: 'User not found' });
       }
-
       const db = await getMongoDb();
 
-      // 2) Upload profile picture if provided
-      let profilePicture;
-      if (req.file) {
-        // Example: If you want to rename the field to 'profilePicture' in Cloudinary
-        const image = await cloudinary.uploader.upload(req.file.path, {
-          width: 512,
-          height: 512,
-          crop: 'fill',
-        });
-        profilePicture = image.secure_url;
-      }
+      // 2) Pull text fields from req.body
+      let {
+        userType,
+        username,
+        name,
+        bio,
+        hometown,
+        website,
+        spotify,
+        itunes,
+        instagram,
+        twitter,
+        tiktok,
+        youtube,
+        genres,
+      } = req.body;
 
-      // 3) Prepare updated fields
-      const { name, bio } = req.parsedBody;
-      let { username } = req.parsedBody;
-
+      // Slugify the username if provided
       if (username) {
         username = slugUsername(username);
-        if (username !== dbUser.username) {
-          // Check uniqueness
-          const existing = await findUserByUsername(db, username);
-          if (existing) {
-            return res.status(403).json({ error: 'That username is taken.' });
+      }
+
+      // Parse genres JSON if provided
+      let parsedGenres = [];
+      if (genres) {
+        try {
+          parsedGenres = JSON.parse(genres);
+          if (!Array.isArray(parsedGenres)) {
+            throw new Error('Genres must be an array');
           }
+        } catch (err) {
+          console.error('Could not parse genres:', err);
+          return res
+            .status(400)
+            .json({ error: 'Genres must be valid JSON array' });
         }
       }
 
-      const updatedData = {};
-      if (username) updatedData.username = username;
-      if (typeof name === 'string') updatedData.name = name;
-      if (typeof bio === 'string') updatedData.bio = bio;
-      if (profilePicture) updatedData.profilePicture = profilePicture;
-      updatedData.updatedAt = new Date();
+      // 3) If username changed, check uniqueness
+      if (username && username !== dbUser.username) {
+        const existing = await findUserByUsername(db, username);
+        if (existing) {
+          return res.status(403).json({ error: 'That username is taken.' });
+        }
+      }
 
-      // 4) Update user
+      // 4) Upload images to Cloudinary (if files present)
+      let profileImage, headerImage;
+      if (req.files) {
+        if (req.files.profileImage) {
+          const uploadRes = await cloudinary.uploader.upload(
+            req.files.profileImage[0].path,
+            {
+              width: 512,
+              height: 512,
+              crop: 'fill',
+            }
+          );
+          profileImage = uploadRes.secure_url;
+        }
+        if (req.files.headerImage) {
+          const uploadRes = await cloudinary.uploader.upload(
+            req.files.headerImage[0].path,
+            {
+              width: 1500,
+              height: 500,
+              crop: 'fill',
+            }
+          );
+          headerImage = uploadRes.secure_url;
+        }
+      }
+
+      // 5) Build the updatedData object
+      const updatedData = {
+        updatedAt: new Date(),
+      };
+      if (userType) updatedData.userType = userType;
+      if (username) updatedData.username = username;
+      if (name !== undefined) updatedData.name = name;
+      if (bio !== undefined) updatedData.bio = bio;
+      if (hometown !== undefined) updatedData.hometown = hometown;
+      if (parsedGenres.length > 0) updatedData.genres = parsedGenres;
+      if (profileImage) updatedData.profileImage = profileImage;
+      if (headerImage) updatedData.headerImage = headerImage;
+
+      // Handle links as a nested object
+      const linksObj = {
+        website: website || '',
+        spotify: spotify || '',
+        itunes: itunes || '',
+        instagram: instagram || '',
+        twitter: twitter || '',
+        tiktok: tiktok || '',
+        youtube: youtube || '',
+      };
+      // If you want to do partial updates, you'd merge with existing `dbUser.links`
+      // But for simplicity, let's just overwrite the entire object:
+      updatedData.links = linksObj;
+
+      // 6) Update the user in DB
       const user = await updateUserById(db, dbUser._id, updatedData);
 
       return res.json({ user });
@@ -138,7 +193,7 @@ handler.patch(
   }
 );
 
-// Because we use multer, disable the default Next.js body parser
+// Disable default body parser because we use multer
 export const config = {
   api: {
     bodyParser: false,

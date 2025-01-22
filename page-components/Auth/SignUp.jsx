@@ -145,7 +145,7 @@ export default function SignUp() {
 
         mutate({ user: response.user }, false);
         toast.success('Your account details have been updated!');
-        router.replace('/onboarding');
+        router.replace('/settings');
       } catch (err) {
         toast.error(err.message);
       } finally {

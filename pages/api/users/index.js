@@ -4,8 +4,8 @@ import { ncOpts } from '@/api-lib/nc';
 import { slugUsername } from '@/lib/user';
 import { validateBody } from '@/api-lib/middlewares';
 import { PrivyClient } from '@privy-io/server-auth';
-import { constants } from '@/api-lib/constants';
 
+import { ValidateProps } from '@/api-lib/constants';
 // Make sure you have your Privy credentials
 const PRIVY_APP_ID = process.env.NEXT_PUBLIC_PRIVY_APP_ID;
 const PRIVY_APP_SECRET = process.env.PRIVY_APP_SECRET;
@@ -27,29 +27,69 @@ async function verifyPrivyToken(req) {
 const handler = nc(ncOpts);
 
 handler.post(
-  validateBody(constants.ValidateProps.signUpUser),
+  validateBody({
+    type: 'object',
+    properties: {
+      username: { type: 'string', minLength: 4, maxLength: 20 },
+      name: { type: 'string' },
+      userType: { type: 'string' },
+      hometown: { type: 'string' },
+      profileImage: { type: 'string' },
+      headerImage: { type: 'string' },
+      genres: {
+        type: 'array',
+        items: { type: 'string' },
+      },
+      bio: { type: 'string', minLength: 0, maxLength: 160 },
+      total_following: { type: 'number' },
+      total_followers: { type: 'number' },
+      links: {
+        type: 'object',
+        properties: {
+          website: { type: 'string', nullable: true },
+          spotify: { type: 'string', nullable: true },
+          itunes: { type: 'string', nullable: true },
+          instagram: { type: 'string', nullable: true },
+          twitter: { type: 'string', nullable: true },
+          tiktok: { type: 'string', nullable: true },
+          youtube: { type: 'string', nullable: true },
+        },
+      },
+    },
+    additionalProperties: false,
+  }),
 
-  // No ...auths if you don’t need session-based checks; we’ll handle privy token manually
   async (req, res) => {
     try {
       const db = await getMongoDb();
 
-      // 1) Verify Privy token, get privyId
+      // 1) Verify Privy token, get uid
       const claims = await verifyPrivyToken(req);
-      const privyId = claims.userId; // e.g. "did:privy:cm65nf7it01h5rnkv5esk5hl4"
+      const uid = claims.userId.split(':')[2]; // Extract the third part of "did:privy:{userid}"
 
       // 2) Extract form fields
-      let { username, name, userType, hometown, genres } = req.body;
+      let {
+        username,
+        name,
+        userType,
+        hometown,
+        profileImage,
+        headerImage,
+        genres,
+        bio,
+        total_following,
+        total_followers,
+        links,
+      } = req.body;
       username = slugUsername(username || '');
 
-      // 3) Upsert the user doc by privyId
-      //    If a doc with this privyId already exists, update it; else insert a new one.
+      // 3) Upsert the user doc by uid
       const now = new Date();
       const result = await db.collection('users').findOneAndUpdate(
-        { privyId }, // match the doc with this privyId
+        { uid },
         {
           $setOnInsert: {
-            privyId,
+            uid,
             createdAt: now,
           },
           $set: {
@@ -57,9 +97,14 @@ handler.post(
             name: name || '',
             userType: userType || 'fan',
             hometown: hometown || '',
+            profileImage: profileImage || '',
+            headerImage: headerImage || '',
             genres: genres || [],
+            bio: bio || '',
+            total_following: total_following || 0,
+            total_followers: total_followers || 0,
+            links: links || {},
             updatedAt: now,
-            // If you also want to store the user's email from Privy, you could set it here if known
           },
         },
         { upsert: true, returnDocument: 'after' }
