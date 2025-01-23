@@ -144,7 +144,7 @@ function LeftColumn({
 
       <hr className={styles.separator} />
 
-      <h3 className={styles.leftTitle}>Master File</h3>
+      <h3 className={styles.leftTitle}>Master Audio File</h3>
       <input
         className={styles.input}
         type="file"

@@ -208,6 +208,99 @@
   font-size: 0.9rem;
 }
 
+/* Existing nav styles omitted for brevity... */
+
+/* ========== USER MENU POPUP ========== */
+.userMenu {
+  position: relative;
+}
+
+.trigger {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  color: var(--nav-fg);
+  gap: 0.5rem;
+}
+
+.popover {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 8px;
+  z-index: 999;
+}
+
+.menu {
+  background: #222; /* or your dark color */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  border-radius: 8px;
+  min-width: 220px;
+  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem; /* space between rows */
+}
+
+/* === Top row (Profile + Settings) side by side === */
+.menuTopRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+/* Shared item styling */
+.menuItem {
+  display: flex;
+  align-items: center;
+  background: none;
+  color: #eee;
+  text-decoration: none; /* for anchor links */
+  border: none;
+  padding: 0.65rem 0.75rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s;
+  font-size: 0.95rem;
+}
+.menuItem:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Icons in each menu item */
+.menuIcon {
+  margin-right: 8px;
+  font-size: 1rem;
+}
+
+/* Big upload button in the middle */
+.uploadBtn {
+  justify-content: center;
+  font-weight: 600;
+  background: #444;
+  text-align: center;
+  margin: 0.5rem 0;
+}
+.uploadBtn:hover {
+  background: #555;
+}
+
+/* Theme row (icon + text + switcher) */
+.themeRow {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* or space-between */
+}
+
+/* Additional spacing for sign-out if desired */
+.menuItem:last-child {
+  margin-top: 0.25rem;
+}
+
+/* Tweak as needed */
+
 /* ========== MOBILE STYLES ========== */
 @media (max-width: 900px) {
   /* show hamburger */

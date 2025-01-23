@@ -29,7 +29,7 @@ export async function findPosts(db, before, by, limit = 10) {
     .aggregate([
       {
         $match: {
-          ...(by && { uid: new ObjectId(by) }),
+          ...(by && { uid: by }),
           ...(before && { createdAt: { $lt: before } }),
         },
       },
@@ -39,7 +39,7 @@ export async function findPosts(db, before, by, limit = 10) {
         $lookup: {
           from: 'users',
           localField: 'uid',
-          foreignField: '_id',
+          foreignField: 'uid',
           as: 'creator',
         },
       },

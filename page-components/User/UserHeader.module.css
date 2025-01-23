@@ -1,134 +1,165 @@
-.headerCard {
-  position: relative;
-  border: 2px solid #0d6efd; /* Blue outline from screenshot */
-  border-radius: 8px;
-  overflow: hidden;
-  /* Ensure there's space to show the cover and content */
+.profileWrapper {
+  /* This container can control overall margin/padding around the profile card */
   margin: 2rem 0;
-  background-color: #151515; /* fallback if cover doesn't load */
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
-/* Cover background + overlay */
-.cover {
+/* Optional sub-title or role text at the top (e.g. "Listener Profile") */
+.roleLabel {
+  font-size: 0.85rem;
+  color: var(--text-muted, #ccc);
+  margin-left: 0.5rem;
+}
+
+/* The card itself */
+.profileCard {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: #1b1b1b; /* fallback color under the cover image */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+/* Cover image area */
+.coverImage {
   width: 100%;
-  height: 200px; /* Adjust as needed */
+  height: 200px; /* Adjust as desired */
   background-size: cover;
   background-position: center;
   position: relative;
 }
-.coverOverlay {
+
+/* Back arrow button in the top-left corner */
+.backButton {
   position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  background: linear-gradient(
-    to bottom,
-    rgba(0, 0, 0, 0.1),
-    rgba(0, 0, 0, 0.9)
-  );
+  top: 1rem;
+  left: 1rem;
+  background: rgba(0, 0, 0, 0.6);
+  border: none;
+  border-radius: 50%;
+  color: #fff;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1.1rem;
+}
+.backButton:hover {
+  background: rgba(0, 0, 0, 0.8);
 }
 
-/* Content sits below cover */
-.content {
+/* Edit & More actions in the top-right corner */
+.actions {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  display: flex;
+  gap: 0.5rem;
+}
+.actionBtn {
+  background: rgba(0, 0, 0, 0.6);
+  border: none;
+  border-radius: 50%;
+  color: #fff;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.actionBtn:hover {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+/* Main content below the cover image */
+.profileContent {
   padding: 1.5rem;
   position: relative;
+  /* push the entire content up so the avatar overlaps the cover a bit */
+  margin-top: -40px;
 }
 
 /* Avatar overlaps the cover */
-.avatarContainer {
-  position: absolute;
-  top: -60px; /* Move up to overlap the cover */
-  left: 1.5rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+.avatarSection {
+  position: relative;
+  margin-bottom: 0.5rem;
 }
 
-/* Verified badge (if any) */
-.verifiedBadge {
-  width: 24px;
-  height: 24px;
-  object-fit: contain;
-}
-
-/* Make space for the avatar in the layout */
-.name {
-  margin-top: 3rem;
-  margin-bottom: 0.25rem;
-  font-size: 1.75rem;
+/* User name and bio */
+.userName {
+  margin: 0.25rem 0;
+  font-size: 1.5rem;
   font-weight: 700;
   color: #fff;
 }
-.bio {
-  margin: 0 0 1rem;
+.userBio {
+  margin: 0 0 1rem 0;
+  font-size: 1rem;
   color: #ccc;
   font-style: italic;
 }
 
-/* Social links row */
-.linksRow {
+/* Row of metadata / social links */
+.metaRow {
   display: flex;
   flex-wrap: wrap;
-  gap: 1rem 2rem;
-  align-items: center;
+  gap: 1rem;
   margin-bottom: 1.5rem;
-  color: #ccc;
 }
-
-.linksRow a {
+.metaItem {
   display: inline-flex;
   align-items: center;
-  gap: 0.25rem;
-  color: #bbb;
+  gap: 0.3rem;
+  color: #aaa;
+  font-size: 0.9rem;
   text-decoration: none;
-  font-size: 0.95rem;
-  transition: color 0.2s;
 }
-.linksRow a:hover {
+.metaItem svg {
+  font-size: 1rem;
+}
+.metaItem:hover {
   color: #fff;
 }
 
-.joined {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  color: #bbb;
-}
-
-/* Stats row */
+/* Stats row: tracks, LMLT, following, followers */
 .statsRow {
   display: flex;
-  flex-wrap: wrap;
   gap: 2rem;
-  margin-top: 1rem;
+  flex-wrap: wrap;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 1rem;
 }
-
 .statItem h3 {
   margin: 0;
-  font-size: 1.5rem;
   color: #fff;
+  font-size: 1.25rem;
   font-weight: 700;
 }
 .statItem p {
   margin: 0;
-  color: #999;
+  color: #888;
+  font-size: 0.8rem;
 }
 
-/* 
- * RESPONSIVE:
- * For smaller screens, we may want to ensure the avatar 
- * moves differently. 
- */
+/* Responsive adjustments */
 @media (max-width: 600px) {
-  .cover {
+  .coverImage {
     height: 150px;
   }
-  .avatarContainer {
-    top: -40px;
-    left: 1rem;
+  .backButton,
+  .actionBtn {
+    width: 32px;
+    height: 32px;
   }
-  .name {
-    margin-top: 2.5rem;
+  .userName {
+    font-size: 1.25rem;
+  }
+  .statsRow {
+    gap: 1.5rem;
   }
 }

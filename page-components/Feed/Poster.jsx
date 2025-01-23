@@ -26,7 +26,10 @@ const PosterInner = ({ user }) => {
         await fetcher('/api/posts', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ content: contentRef.current.value }),
+          body: JSON.stringify({
+            content: contentRef.current.value,
+            uid: user.uid,
+          }),
         });
         toast.success('You have posted successfully');
         contentRef.current.value = '';
@@ -44,7 +47,7 @@ const PosterInner = ({ user }) => {
   return (
     <form onSubmit={onSubmit}>
       <Container className={styles.poster}>
-        <Avatar size={40} username={user.username} url={user.profilePicture} />
+        <Avatar size={40} username={user.username} url={user.profileImage} />
         <Input
           ref={contentRef}
           className={styles.input}

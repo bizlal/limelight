@@ -34,6 +34,7 @@ export const ValidateProps = {
     type: 'object',
     properties: {
       content: { type: 'string', minLength: 1, maxLength: 280 },
+      uid: { type: 'string', minLength: 1, maxLength: 280 },
     },
     additionalProperties: false,
   },
