@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/hoangvvo/nextjs-mongodb-app#readme",
   "dependencies": {
+    "@alexvcasillas/react-onboarding": "^1.0.0",
     "@lukeed/ms": "^2.0.0",
     "@privy-io/react-auth": "^2.0.4",
     "@privy-io/server-auth": "^1.18.1",

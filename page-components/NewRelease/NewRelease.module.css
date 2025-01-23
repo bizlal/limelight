@@ -1,0 +1,250 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: calc(100vh - var(--nav-height));
+  background: linear-gradient(
+    161deg,
+    #8d52cc 0%,
+    #a650b2 10.09%,
+    #bc4e9b 18.03%,
+    #cf4c87 30.98%,
+    #db4b7b 38.59%,
+    #a9638f 58.55%,
+    #8c719b 67.64%,
+    #727ea6 78.72%,
+    #4893b7 97.5%
+  );
+  padding: 2rem;
+  position: relative;
+}
+
+.main {
+  max-width: 1000px;
+  margin: 0 auto;
+  width: 100%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.formCard {
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  transition: transform 0.3s ease;
+}
+.formCard:hover {
+  transform: translateY(-2px);
+}
+
+.progressBar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  color: #fff;
+  font-size: 0.85rem;
+}
+
+.progressTrack {
+  flex: 1;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  position: relative;
+}
+
+.progressFill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 8px;
+  background: #cf4c87; /* accent color from your gradient */
+  border-radius: 4px;
+  width: 0%;
+  transition: width 0.3s;
+}
+
+.stepWrapper {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 1rem;
+}
+
+.leftSide {
+  border-right: 1px solid rgba(255, 255, 255, 0.2);
+  padding-right: 1rem;
+  margin-right: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.leftTitle {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+
+.rightSide {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.title {
+  font-size: 1.8rem;
+  font-weight: 800;
+  text-align: center;
+  margin-bottom: 1.2rem;
+  color: #fff;
+}
+
+.stepHeading {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #fff;
+}
+
+.fieldGroup {
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.fieldGroup label {
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 0.25rem;
+  font-size: 0.9rem;
+}
+
+.input,
+.select {
+  padding: 0.75rem;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #fff;
+  font-size: 0.9rem;
+  outline: none;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+.input:focus,
+.select:focus {
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+.input::placeholder {
+  color: #ccc;
+}
+
+.checkGroup {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #fff;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+
+.fileList {
+  list-style: none;
+  margin: 0.5rem 0;
+  padding: 0;
+  font-size: 0.85rem;
+  color: #eee;
+}
+.fileItem {
+  display: flex;
+  justify-content: space-between;
+  margin: 0.25rem 0;
+}
+.removeBtn {
+  background: transparent;
+  border: none;
+  color: #bbb;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: color 0.2s;
+}
+.removeBtn:hover {
+  color: #fff;
+}
+
+.separator {
+  background-color: rgba(255, 255, 255, 0.2);
+  height: 1px;
+  border: none;
+  margin: 1rem 0;
+}
+
+.stepNav {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1.5rem;
+}
+.button {
+  padding: 0.75rem 1.25rem;
+  border-radius: 4px;
+  border: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  background: #0070f3;
+  color: #fff;
+  transition: background 0.2s;
+}
+.button:hover {
+  background: #005bb5;
+}
+.button[disabled] {
+  background: #555;
+  cursor: not-allowed;
+}
+
+.finishBtn {
+  background: linear-gradient(
+    116.94deg,
+    #8d52cc -39.29%,
+    #a650b2 -26%,
+    #bc4e9b -15.53%,
+    #cf4c87 1.54%,
+    #db4b7b 11.57%,
+    #a9638f 37.88%,
+    #8c719b 49.86%,
+    #727ea6 64.46%,
+    #4893b7 89.21%
+  ) !important;
+  border: none;
+  color: #fff;
+}
+
+.doneMessage {
+  text-align: center;
+  margin-top: 2rem;
+  color: #fff;
+}
+
+/* Responsive tweaks */
+@media (max-width: 768px) {
+  .stepWrapper {
+    grid-template-columns: 1fr;
+  }
+  .leftSide {
+    border-right: none;
+    margin-right: 0;
+    padding-right: 0;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    padding-bottom: 1rem;
+  }
+}
