@@ -1,8 +1,10 @@
+
 import { useState, useEffect } from 'react';
 import { ButtonLink } from '@/components/Button';
 import { Container, Spacer, Wrapper } from '@/components/Layout';
 import Link from 'next/link';
 import styles from './Hero.module.css';
+import { useSpring, animated } from 'react-spring';
 
 /**
  * Simple equirectangular projection for a 1000 x 500 map:
@@ -15,6 +17,10 @@ function latLonToXY(lat, lon, width, height) {
   return [x, y];
 }
 
+function AnimatedNumber({ value }) {
+  const props = useSpring({ number: value, from: { number: 0 }, config: { duration: 2000 } });
+  return <animated.span>{props.number.to(n => n.toLocaleString())}</animated.span>;
+}
 export default function Hero({
   totalUsers = 24010,
   totalArtists = 3450,
@@ -22,45 +28,14 @@ export default function Hero({
   totalCities = 820,
   totalFanbaseGrowth = 12000,
 }) {
-  const [userLatLon, setUserLatLon] = useState({ lat: 0, lon: 0 });
-  const [hasLocation, setHasLocation] = useState(false);
-
-  // Example track markers
-  const [nearbyTracks] = useState([
-    {
-      id: 'track1',
-      title: 'Song A',
-      artist: 'Artist A',
-      latitude: 34.0522,
-      longitude: -118.2437, // Los Angeles
-    },
-    {
-      id: 'track2',
-      title: 'Song B',
-      artist: 'Artist B',
-      latitude: 40.7128,
-      longitude: -74.006, // New York
-    },
-  ]);
-
-  // Fetch user lat/lon via IP
-  useEffect(() => {
-    fetch('https://ipapi.co/json/')
-      .then((res) => res.json())
-      .then((data) => {
-        if (data && data.latitude && data.longitude) {
-          setUserLatLon({ lat: data.latitude, lon: data.longitude });
-          setHasLocation(true);
-        }
-      })
-      .catch((err) => {
-        console.error('Failed to fetch IP location', err);
-      });
-  }, []);
 
   return (
+
     <div className={styles.heroWrapper}>
       <Wrapper>
+    
+<br></br>
+<br></br>
         {/* -- Hero Heading & Subtitle -- */}
         <div className={styles.heroInner}>
           <h1 className={styles.title}>Welcome to Limelight</h1>
@@ -88,23 +63,23 @@ export default function Hero({
           {/* -- Stats Section -- */}
           <div className={styles.statsContainer}>
             <div className={styles.statItem}>
-              <h3>{totalUsers.toLocaleString()}</h3>
+              <h3><AnimatedNumber value={totalUsers} /></h3>
               <p>Users</p>
             </div>
             <div className={styles.statItem}>
-              <h3>{totalArtists.toLocaleString()}</h3>
+              <h3><AnimatedNumber value={totalArtists} /></h3>
               <p>Artists</p>
             </div>
             <div className={styles.statItem}>
-              <h3>{totalFans.toLocaleString()}</h3>
-              <p>Fans</p>
+              <h3><AnimatedNumber value={totalFans} /></h3>
+              <p>Total Streams</p>
             </div>
             <div className={styles.statItem}>
-              <h3>{totalCities.toLocaleString()}</h3>
+              <h3><AnimatedNumber value={totalCities} /></h3>
               <p>Cities Reached</p>
             </div>
             <div className={styles.statItem}>
-              <h3>{totalFanbaseGrowth.toLocaleString()}</h3>
+              <h3><AnimatedNumber value={totalFanbaseGrowth} /></h3>
               <p>Fanbase Growth</p>
             </div>
           </div>
@@ -243,6 +218,8 @@ export default function Hero({
           </p>
         </div>
       </Wrapper>
+
+    
     </div>
   );
 }
