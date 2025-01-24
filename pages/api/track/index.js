@@ -7,17 +7,14 @@ import nc from 'next-connect';
 
 const handler = nc(ncOpts);
 
-handler.post(
-  ...auths,
-  async (req, res) => {
-    const db = await getMongoDb();
-    const track = req.body.track;
+handler.post(...auths, async (req, res) => {
+  const db = await getMongoDb();
+  const track = req.body.track;
 
-    const release = await createNewReleaseFinal(db, { track });
+  const release = await createNewReleaseFinal(db, { track });
 
-    console.log(release);
-    return res.json({ release });
-  }
-);
+  console.log(release);
+  return res.json({ release });
+});
 
 export default handler;

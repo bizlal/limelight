@@ -12,7 +12,7 @@ handler.get(async (req, res) => {
     req.db,
     req.query.trackId,
     req.query.uid,
-    req.query.content,
+    req.query.content
   );
   res.json({ comments });
 });

@@ -254,7 +254,8 @@ export default function NewRelease() {
           params: { query: searchQuery, limit: '10' },
           headers: {
             // Replace with your own RapidAPI credentials
-            'x-rapidapi-key': '9391c1e74fmsh37008868797f7bap1aae4djsnf4d43714c835',
+            'x-rapidapi-key':
+              '9391c1e74fmsh37008868797f7bap1aae4djsnf4d43714c835',
             'x-rapidapi-host': 'shazam-api6.p.rapidapi.com',
           },
         }
@@ -311,63 +312,63 @@ export default function NewRelease() {
   // Finish
   // =================
   // Replace this function to call the new API
-async function submitNewTrack(track) {
-  return axios
-    .post('/api/track/', track)
-    .then((response) => response.data)
-    .catch((err) => {
-      console.error('API Error:', err);
-      throw err;
-    });
-}
-
-const { data, error, mutate } = useCurrentUser();
-
-// Update handleFinish function
-const handleFinish = async () => {
-  try {
-    // 1) Construct the `track` object from form inputs
-    const track = {
-      uid: data?.user.uid,
-      track_title: release.metadata.track_title,
-      album_title: release.metadata.album_title,
-      language: release.metadata.language,
-      release_type: release.metadata.release_type,
-      isrc: release.metadata.isrc,
-      bpm: release.metadata.bpm,
-      artist,
-      featured_artists: featuredArtists.split(',').map((a) => a.trim()),
-      writing_credits: writingCredits.split(',').map((w) => w.trim()),
-      producing_credits: producingCredits.split(',').map((p) => p.trim()),
-      is_instrumental: release.is_instrumental,
-      is_explicit: release.is_explicit,
-      dsp_links: {
-        spotify: release.dsp_links.spotify,
-        apple_music_url: release.dsp_links.apple_music_url,
-      },
-      release_location: {
-        city: release.release_location.city,
-        state: release.release_location.state,
-        country: release.release_location.country,
-      },
-      audio_url: masterFile
-        ? await uploadFileToFirebase(masterFile)
-        : release.audio_url,
-      image_url: coverArtFile
-        ? await uploadFileToFirebase(coverArtFile)
-        : release.image_url,
-    };
-
-    // 2) Call the new API with the constructed `track` object
-    const result = await submitNewTrack({ track });
-    console.log('API Response:', result);
-
-    setDone(true);
-  } catch (err) {
-    console.error('Error during submission:', err);
-    alert('Failed to submit release. See console for details.');
+  async function submitNewTrack(track) {
+    return axios
+      .post('/api/track/', track)
+      .then((response) => response.data)
+      .catch((err) => {
+        console.error('API Error:', err);
+        throw err;
+      });
   }
-};
+
+  const { data, error, mutate } = useCurrentUser();
+
+  // Update handleFinish function
+  const handleFinish = async () => {
+    try {
+      // 1) Construct the `track` object from form inputs
+      const track = {
+        uid: data?.user.uid,
+        track_title: release.metadata.track_title,
+        album_title: release.metadata.album_title,
+        language: release.metadata.language,
+        release_type: release.metadata.release_type,
+        isrc: release.metadata.isrc,
+        bpm: release.metadata.bpm,
+        artist,
+        featured_artists: featuredArtists.split(',').map((a) => a.trim()),
+        writing_credits: writingCredits.split(',').map((w) => w.trim()),
+        producing_credits: producingCredits.split(',').map((p) => p.trim()),
+        is_instrumental: release.is_instrumental,
+        is_explicit: release.is_explicit,
+        dsp_links: {
+          spotify: release.dsp_links.spotify,
+          apple_music_url: release.dsp_links.apple_music_url,
+        },
+        release_location: {
+          city: release.release_location.city,
+          state: release.release_location.state,
+          country: release.release_location.country,
+        },
+        audio_url: masterFile
+          ? await uploadFileToFirebase(masterFile)
+          : release.audio_url,
+        image_url: coverArtFile
+          ? await uploadFileToFirebase(coverArtFile)
+          : release.image_url,
+      };
+
+      // 2) Call the new API with the constructed `track` object
+      const result = await submitNewTrack({ track });
+      console.log('API Response:', result);
+
+      setDone(true);
+    } catch (err) {
+      console.error('Error during submission:', err);
+      alert('Failed to submit release. See console for details.');
+    }
+  };
   // Done screen
   if (done) {
     return (
@@ -610,7 +611,10 @@ const handleFinish = async () => {
             onChange={(e) =>
               setRelease((prev) => ({
                 ...prev,
-                dsp_links: { ...prev.dsp_links, apple_music_url: e.target.value },
+                dsp_links: {
+                  ...prev.dsp_links,
+                  apple_music_url: e.target.value,
+                },
               }))
             }
           />
@@ -641,7 +645,10 @@ const handleFinish = async () => {
             onChange={(e) =>
               setRelease((prev) => ({
                 ...prev,
-                release_location: { ...prev.release_location, city: e.target.value },
+                release_location: {
+                  ...prev.release_location,
+                  city: e.target.value,
+                },
               }))
             }
           />
@@ -656,7 +663,10 @@ const handleFinish = async () => {
             onChange={(e) =>
               setRelease((prev) => ({
                 ...prev,
-                release_location: { ...prev.release_location, state: e.target.value },
+                release_location: {
+                  ...prev.release_location,
+                  state: e.target.value,
+                },
               }))
             }
           />
@@ -758,7 +768,9 @@ const handleFinish = async () => {
       <div className={styles.main}>
         {/* Search Card */}
         <div className={styles.formCard}>
-          <h2 style={{ color: '#fff', marginBottom: '1rem' }}>Search for a Track</h2>
+          <h2 style={{ color: '#fff', marginBottom: '1rem' }}>
+            Search for a Track
+          </h2>
 
           <div className={styles.fieldGroup}>
             <label style={{ color: '#fff' }}>
@@ -819,12 +831,18 @@ const handleFinish = async () => {
               {/* Middle text: track + artist */}
               <div className={styles.previewText}>
                 <div className={styles.previewTitle}>{selectedTrack.title}</div>
-                <div className={styles.previewArtist}>{selectedTrack.artist}</div>
+                <div className={styles.previewArtist}>
+                  {selectedTrack.artist}
+                </div>
               </div>
 
               {/* Audio controls */}
               {selectedTrack.audioUrl ? (
-                <audio controls src={selectedTrack.audioUrl} className={styles.audioPlayer}>
+                <audio
+                  controls
+                  src={selectedTrack.audioUrl}
+                  className={styles.audioPlayer}
+                >
                   Your browser does not support the audio element.
                 </audio>
               ) : (

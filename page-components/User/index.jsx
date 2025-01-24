@@ -6,7 +6,7 @@ export const User = ({ user }) => {
   return (
     <div className={styles.root}>
       <UserHeader user={user} />
-      <Poster  />
+      <Poster />
       <UserPosts user={user} />
     </div>
   );

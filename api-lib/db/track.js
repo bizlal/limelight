@@ -137,13 +137,13 @@ export async function postTrackComment(db, trackId, uid, content) {
     .collection('track_comments')
     .insertOne(data)
     .then((result) =>
-      console.log(`Successfully inserted item with _id: ${result.insertedId}`),
+      console.log(`Successfully inserted item with _id: ${result.insertedId}`)
     )
     .catch((err) => console.error(`Failed to insert item: ${err}`));
   await all_tracks_collection
     .updateOne(
       { track_id: trackId },
-      { $inc: { 'release_metrics.total_comments': 1 } },
+      { $inc: { 'release_metrics.total_comments': 1 } }
     )
     .then((result) => {
       const { matchedCount, modifiedCount } = result;
@@ -276,7 +276,7 @@ export async function getTrackActivity(db, trackId) {
  */
 export async function checkIfTrackInUserDiscovered(db, trackId, { uid }) {
   const user_discovered_tracks_collection = db.collection(
-    'user_discovered_tracks',
+    'user_discovered_tracks'
   );
 
   const query = {
@@ -288,7 +288,7 @@ export async function checkIfTrackInUserDiscovered(db, trackId, { uid }) {
     .findOne(query, { projection: { metrics: 0 } })
     .then((doc) => {
       console.log(
-        `${doc} documents match the specified query in user_discovered_tracks_collection`,
+        `${doc} documents match the specified query in user_discovered_tracks_collection`
       );
       return doc;
     })
@@ -309,7 +309,7 @@ export async function checkIfTrackInUserSaved(db, trackId, { uid }) {
     .findOne(query, { projection: { metrics: 0 } })
     .then((doc) => {
       console.log(
-        `${doc} documents match the specified query in user_saved_tracks_collection`,
+        `${doc} documents match the specified query in user_saved_tracks_collection`
       );
       return doc;
     })
@@ -330,7 +330,7 @@ export async function checkIfTrackInUseReposted(db, trackId, { uid }) {
     .findOne(query, { projection: { metrics: 0 } })
     .then((doc) => {
       console.log(
-        `${doc} documents match the specified query inuser_reposted_tracks_collection`,
+        `${doc} documents match the specified query inuser_reposted_tracks_collection`
       );
       return doc;
     })
@@ -347,7 +347,7 @@ export async function checkIfTrackInUseReposted(db, trackId, { uid }) {
  */
 export async function checkIfUserLikedTrack(db, { uid, trackId }) {
   const user_discovered_tracks_collection = db.collection(
-    'user_discovered_tracks',
+    'user_discovered_tracks'
   );
 
   const query = {
@@ -360,7 +360,7 @@ export async function checkIfUserLikedTrack(db, { uid, trackId }) {
     .count(query)
     .then((numDocs) => {
       console.log(
-        `${numDocs} documents match the specified query in user_discovered_tracks_collection`,
+        `${numDocs} documents match the specified query in user_discovered_tracks_collection`
       );
       return numDocs == 1;
     })
@@ -386,11 +386,11 @@ export async function addTrackToLibrary(
   outreach,
   library,
   elapsedTime,
-  uid,
+  uid
 ) {
   const collection = db.collection(library);
   const user_discovered_tracks_collection = db.collection(
-    'user_discovered_tracks',
+    'user_discovered_tracks'
   );
   const user_saved_tracks_collection = db.collection('user_saved_tracks');
   const user_shared_tracks_collection = db.collection('user_shared_tracks');
@@ -441,7 +441,7 @@ export async function addTrackToLibrary(
       .count(query)
       .then((numDocs) => {
         console.log(
-          `${numDocs} documents match the specified query in user_discovered_tracks_collection`,
+          `${numDocs} documents match the specified query in user_discovered_tracks_collection`
         );
         return numDocs === 0;
       })
@@ -452,14 +452,14 @@ export async function addTrackToLibrary(
         .insertOne(data)
         .then((result) =>
           console.log(
-            `Successfully inserted item with _id: ${result.insertedId}`,
-          ),
+            `Successfully inserted item with _id: ${result.insertedId}`
+          )
         )
         .catch((err) => console.error(`Failed to insert item: ${err}`));
       await all_tracks_collection
         .updateOne(
           { track_id: trackId },
-          { $inc: { 'release_metrics.total_saves': 1 } },
+          { $inc: { 'release_metrics.total_saves': 1 } }
         )
         .then((result) => {
           const { matchedCount, modifiedCount } = result;
@@ -473,14 +473,14 @@ export async function addTrackToLibrary(
         .deleteOne(query)
         .then((result) =>
           console.log(
-            `Successfully deleted item with _id: ${result.insertedId}`,
-          ),
+            `Successfully deleted item with _id: ${result.insertedId}`
+          )
         )
         .catch((err) => console.error(`Failed to insert item: ${err}`));
       await all_tracks_collection
         .updateOne(
           { track_id: trackId },
-          { $inc: { 'release_metrics.total_saves': -1 } },
+          { $inc: { 'release_metrics.total_saves': -1 } }
         )
         .then((result) => {
           const { matchedCount, modifiedCount } = result;
@@ -495,7 +495,7 @@ export async function addTrackToLibrary(
       .count(query)
       .then((numDocs) => {
         console.log(
-          `${numDocs} documents match the specified query in user_discovered_tracks_collection`,
+          `${numDocs} documents match the specified query in user_discovered_tracks_collection`
         );
         return numDocs === 0;
       })
@@ -506,7 +506,7 @@ export async function addTrackToLibrary(
       await all_tracks_collection
         .updateOne(
           { track_id: trackId },
-          { $inc: { 'release_metrics.total_reposts': 1 } },
+          { $inc: { 'release_metrics.total_reposts': 1 } }
         )
         .then((result) => {
           const { matchedCount, modifiedCount } = result;
@@ -523,7 +523,7 @@ export async function addTrackToLibrary(
       await all_tracks_collection
         .updateOne(
           { track_id: trackId },
-          { $inc: { 'release_metrics.total_reposts': -1 } },
+          { $inc: { 'release_metrics.total_reposts': -1 } }
         )
         .then((result) => {
           const { matchedCount, modifiedCount } = result;
@@ -538,7 +538,7 @@ export async function addTrackToLibrary(
       .count(query)
       .then((numDocs) => {
         console.log(
-          `${numDocs} documents match the specified query in user_discovered_tracks_collection`,
+          `${numDocs} documents match the specified query in user_discovered_tracks_collection`
         );
         return numDocs === 0;
       })
@@ -549,7 +549,7 @@ export async function addTrackToLibrary(
       await all_tracks_collection
         .updateOne(
           { track_id: trackId },
-          { $inc: { 'release_metrics.total_shares': 1 } },
+          { $inc: { 'release_metrics.total_shares': 1 } }
         )
         .then((result) => {
           const { matchedCount, modifiedCount } = result;
@@ -573,7 +573,7 @@ export async function addTrackToLibrary(
       })
       .then((numDocs) => {
         console.log(
-          `${numDocs} documents match the specified query in user_discovered_tracks_collection`,
+          `${numDocs} documents match the specified query in user_discovered_tracks_collection`
         );
         return numDocs === 1;
       })
@@ -584,7 +584,7 @@ export async function addTrackToLibrary(
       .count(query)
       .then((numDocs) => {
         console.log(
-          `${numDocs} documents match the specified query in user_discovered_tracks_collection`,
+          `${numDocs} documents match the specified query in user_discovered_tracks_collection`
         );
         return numDocs === 0;
       })
@@ -605,7 +605,7 @@ export async function addTrackToLibrary(
       })
       .then((numDocs) => {
         console.log(
-          `${numDocs} documents match the specified query in user_discovered_tracks_collection`,
+          `${numDocs} documents match the specified query in user_discovered_tracks_collection`
         );
         return numDocs === 0;
       })
@@ -614,7 +614,7 @@ export async function addTrackToLibrary(
       .count(query)
       .then((numDocs) => {
         console.log(
-          `${numDocs} documents match the specified query in user_discovered_tracks_collection`,
+          `${numDocs} documents match the specified query in user_discovered_tracks_collection`
         );
         return numDocs === 0;
       })
@@ -625,7 +625,7 @@ export async function addTrackToLibrary(
       await all_tracks_collection
         .updateOne(
           { track_id: trackId },
-          { $inc: { 'release_metrics.total_skips': 1 } },
+          { $inc: { 'release_metrics.total_skips': 1 } }
         )
         .then((result) => {
           const { matchedCount, modifiedCount } = result;
@@ -657,7 +657,7 @@ export async function addTrackToLibrary(
       await all_tracks_collection
         .updateOne(
           { track_id: trackId },
-          { $inc: { 'release_metrics.total_streams': 1 } },
+          { $inc: { 'release_metrics.total_streams': 1 } }
         )
         .then((result) => {
           const { matchedCount, modifiedCount } = result;
@@ -677,7 +677,7 @@ export async function addTrackToLibrary(
               'release_metrics.total_streams': 1,
               'release_metrics.total_replays': 1,
             },
-          },
+          }
         )
         .then((result) => {
           const { matchedCount, modifiedCount } = result;
@@ -696,7 +696,7 @@ export async function addTrackToLibrary(
             $inc: {
               'release_metrics.total_streams': 1,
             },
-          },
+          }
         )
         .then((result) => {
           const { matchedCount, modifiedCount } = result;
@@ -711,7 +711,7 @@ export async function addTrackToLibrary(
       .count(query)
       .then((numDocs) => {
         console.log(
-          `${numDocs} documents match the specified query in user_discovered_tracks_collection`,
+          `${numDocs} documents match the specified query in user_discovered_tracks_collection`
         );
         return numDocs === 0;
       })
@@ -722,7 +722,7 @@ export async function addTrackToLibrary(
       await all_tracks_collection
         .updateOne(
           { track_id: trackId },
-          { $inc: { 'release_metrics.total_skips': 1 } },
+          { $inc: { 'release_metrics.total_skips': 1 } }
         )
         .then((result) => {
           const { matchedCount, modifiedCount } = result;
@@ -740,7 +740,7 @@ export async function addTrackToLibrary(
       .count(query)
       .then((numDocs) => {
         console.log(
-          `${numDocs} documents match the specified query in user_discovered_tracks_collection`,
+          `${numDocs} documents match the specified query in user_discovered_tracks_collection`
         );
         return numDocs === 0;
       })
@@ -752,7 +752,7 @@ export async function addTrackToLibrary(
         await all_tracks_collection
           .updateOne(
             { track_id: trackId },
-            { $inc: { 'release_metrics.dsp_clicks.spotify': 1 } },
+            { $inc: { 'release_metrics.dsp_clicks.spotify': 1 } }
           )
           .then((result) => {
             const { matchedCount, modifiedCount } = result;
@@ -765,7 +765,7 @@ export async function addTrackToLibrary(
         await all_tracks_collection
           .updateOne(
             { track_id: trackId },
-            { $inc: { 'release_metrics.dsp_clicks.apple_music': 1 } },
+            { $inc: { 'release_metrics.dsp_clicks.apple_music': 1 } }
           )
           .then((result) => {
             const { matchedCount, modifiedCount } = result;
@@ -781,7 +781,7 @@ export async function addTrackToLibrary(
       .count({ track_id: trackId, uid, library: 'user_skipped_tracks' })
       .then((numDocs) => {
         console.log(
-          `${numDocs} documents match the specified query in user_discovered_tracks_collection`,
+          `${numDocs} documents match the specified query in user_discovered_tracks_collection`
         );
         return numDocs === 0;
       })
@@ -796,7 +796,7 @@ export async function addTrackToLibrary(
         await all_tracks_collection
           .updateOne(
             { track_id: trackId },
-            { $inc: { 'release_metrics.total_likes': 1 } },
+            { $inc: { 'release_metrics.total_likes': 1 } }
           )
           .then((result) => {
             const { matchedCount, modifiedCount } = result;
@@ -813,7 +813,7 @@ export async function addTrackToLibrary(
         await all_tracks_collection
           .updateOne(
             { track_id: trackId },
-            { $inc: { 'release_metrics.total_dislikes': 1 } },
+            { $inc: { 'release_metrics.total_dislikes': 1 } }
           )
           .then((result) => {
             const { matchedCount, modifiedCount } = result;
@@ -835,7 +835,7 @@ export async function addTrackToLibrary(
           await all_tracks_collection
             .updateOne(
               { track_id: trackId },
-              { $inc: { 'release_metrics.total_dislikes': -1 } },
+              { $inc: { 'release_metrics.total_dislikes': -1 } }
             )
             .then((result) => {
               const { matchedCount, modifiedCount } = result;
@@ -847,7 +847,7 @@ export async function addTrackToLibrary(
           await all_tracks_collection
             .updateOne(
               { track_id: trackId },
-              { $inc: { 'release_metrics.total_likes': 1 } },
+              { $inc: { 'release_metrics.total_likes': 1 } }
             )
             .then((result) => {
               const { matchedCount, modifiedCount } = result;
@@ -871,7 +871,7 @@ export async function addTrackToLibrary(
           await all_tracks_collection
             .updateOne(
               { track_id: trackId },
-              { $inc: { 'release_metrics.total_likes': -1 } },
+              { $inc: { 'release_metrics.total_likes': -1 } }
             )
             .then((result) => {
               const { matchedCount, modifiedCount } = result;
@@ -883,7 +883,7 @@ export async function addTrackToLibrary(
           await all_tracks_collection
             .updateOne(
               { track_id: trackId },
-              { $inc: { 'release_metrics.total_dislikes': 1 } },
+              { $inc: { 'release_metrics.total_dislikes': 1 } }
             )
             .then((result) => {
               const { matchedCount, modifiedCount } = result;
@@ -905,7 +905,7 @@ export async function addTrackToLibrary(
         await all_tracks_collection
           .updateOne(
             { track_id: trackId },
-            { $inc: { 'release_metrics.total_skips': -1 } },
+            { $inc: { 'release_metrics.total_skips': -1 } }
           )
           .then((result) => {
             const { matchedCount, modifiedCount } = result;
@@ -917,7 +917,7 @@ export async function addTrackToLibrary(
         await all_tracks_collection
           .updateOne(
             { track_id: trackId },
-            { $inc: { 'release_metrics.total_likes': 1 } },
+            { $inc: { 'release_metrics.total_likes': 1 } }
           )
           .then((result) => {
             const { matchedCount, modifiedCount } = result;
@@ -938,7 +938,7 @@ export async function addTrackToLibrary(
         await all_tracks_collection
           .updateOne(
             { track_id: trackId },
-            { $inc: { 'release_metrics.total_skips': -1 } },
+            { $inc: { 'release_metrics.total_skips': -1 } }
           )
           .then((result) => {
             const { matchedCount, modifiedCount } = result;
@@ -951,7 +951,7 @@ export async function addTrackToLibrary(
         await all_tracks_collection
           .updateOne(
             { track_id: trackId },
-            { $inc: { 'release_metrics.total_dislikes': 1 } },
+            { $inc: { 'release_metrics.total_dislikes': 1 } }
           )
           .then((result) => {
             const { matchedCount, modifiedCount } = result;
@@ -975,7 +975,7 @@ export async function addTrackToLibrary(
   await track_engagement_collection
     .insertOne(engagement_data)
     .then((result) =>
-      console.log(`Successfully inserted item with _id: ${result.insertedId}`),
+      console.log(`Successfully inserted item with _id: ${result.insertedId}`)
     )
     .catch((err) => console.error(`Failed to insert item: ${err}`));
 
@@ -1282,7 +1282,7 @@ export async function getTopTracksByRangeV2(db, dateRange, userId) {
       ],
       {
         allowDiskUse: false,
-      },
+      }
     )
     .toArray();
   return top_tracks;
@@ -1338,7 +1338,7 @@ export async function getTopTracksByRange(db, dateRange, genre = null) {
       ],
       {
         allowDiskUse: false,
-      },
+      }
     )
     .toArray();
   return top_tracks;
@@ -1376,7 +1376,7 @@ export async function getTopArtistsByRange(db, dateRange) {
       ],
       {
         allowDiskUse: false,
-      },
+      }
     )
     .toArray();
   return top_artists;
@@ -1414,7 +1414,7 @@ export async function getTopListenersByRange(db, dateRange) {
       ],
       {
         allowDiskUse: false,
-      },
+      }
     )
     .toArray();
   return top_listeners;
@@ -1559,7 +1559,7 @@ export async function createNewReleaseFinal(db, { track }) {
             'metadata.primary_genre': genre,
             'metadata.secondary_genre': genre,
           },
-        },
+        }
       )
       .then((result) => {
         const { matchedCount, modifiedCount } = result;
@@ -1573,7 +1573,7 @@ export async function createNewReleaseFinal(db, { track }) {
       db,
       uid,
       'RyFcbEUP8IUucwNSbLoft6JovZJ3',
-      'track_edited',
+      'track_edited'
     );
 
     release = await db
@@ -1590,13 +1590,13 @@ export async function createNewReleaseFinal(db, { track }) {
   await collection
     .insertOne(release)
     .then((result) =>
-      console.log(`Successfully inserted item with _id: ${result.insertedId}`),
+      console.log(`Successfully inserted item with _id: ${result.insertedId}`)
     )
     .catch((err) => console.error(`Failed to insert item: ${err}`));
   await collection2
     .insertOne(release)
     .then((result) =>
-      console.log(`Successfully inserted item with _id: ${result.insertedId}`),
+      console.log(`Successfully inserted item with _id: ${result.insertedId}`)
     )
     .catch((err) => console.error(`Failed to insert item: ${err}`));
 
@@ -2326,7 +2326,7 @@ export async function insertTrack(
     outreach,
     token_id,
     owner_id,
-  },
+  }
 ) {
   const track = {
     title,

@@ -1,5 +1,3 @@
-
-
 /**
  * getUserFromDb - Description
  * @param {type} db - Description
@@ -25,7 +23,7 @@ export async function addNotification(
   uid,
   title,
   content,
-  engagement_data,
+  engagement_data
 ) {
   // Create a notificationsCollection handle
   const notificationsCollection = db.collection('user_notifications');
@@ -57,7 +55,7 @@ export async function incrementUnreadNotifications(db, uid) {
   const usersCollection = db.collection('users2');
   const result = await usersCollection.updateOne(
     { uid },
-    { $inc: { 'profile.unread_notifications': 1 } },
+    { $inc: { 'profile.unread_notifications': 1 } }
   );
   return result.modifiedCount;
 }
@@ -213,7 +211,7 @@ function isWithinThisWeek(date, today) {
   const oneWeekAgo = new Date(
     today.getFullYear(),
     today.getMonth(),
-    today.getDate() - 7,
+    today.getDate() - 7
   );
   return date > oneWeekAgo && date <= today;
 }
@@ -233,7 +231,7 @@ export async function resetUnreadNotifications(db, uid) {
   const usersCollection = db.collection('users2');
   const result = await usersCollection.updateOne(
     { uid },
-    { $set: { 'profile.unread_notifications': 0 } },
+    { $set: { 'profile.unread_notifications': 0 } }
   );
   return result.modifiedCount;
 }
@@ -323,7 +321,7 @@ export async function addEngagementEvent(
   uid,
   profile_uid,
   type,
-  track_id = null,
+  track_id = null
 ) {
   let u = await getUserFromDb(db, uid);
   let p = await getUserFromDb(db, profile_uid);
@@ -358,7 +356,7 @@ export async function addEngagementEvent(
     type,
     `${u.location.state}, ${u.location.country}`,
     1,
-    u.profile.username,
+    u.profile.username
   );
 
   await addNotification(db, p.uid, title, content, engagement_data);
@@ -366,7 +364,7 @@ export async function addEngagementEvent(
     ? u.profile.image
     : `https://ui-avatars.com/api/?background=random&name=${u.profile.name?.replaceAll(
         ' ',
-        '+',
+        '+'
       )}`;
   const notificationObject = {
     fcmToken: p.fcmToken,
@@ -436,7 +434,7 @@ export async function addEngagementEvent2(db, uid, profile_uid, type) {
       'follow',
       `${u.location.state}, ${u.location.country}`,
       0,
-      u.profile.username,
+      u.profile.username
     );
   } else if (type == 'stream') {
     title = 'New Stream';
@@ -446,7 +444,7 @@ export async function addEngagementEvent2(db, uid, profile_uid, type) {
       'stream',
       `${u.location.state}, ${u.location.country}`,
       1,
-      u.profile.username,
+      u.profile.username
     );
   } else if (type == 'track_like') {
     title = 'New Track Like';
@@ -456,7 +454,7 @@ export async function addEngagementEvent2(db, uid, profile_uid, type) {
       'track_like',
       `${u.location.state}, ${u.location.country}`,
       1,
-      u.profile.username,
+      u.profile.username
     );
   } else if (type == 'track_dislike') {
     trackEvent(
@@ -464,7 +462,7 @@ export async function addEngagementEvent2(db, uid, profile_uid, type) {
       'track_dislike',
       `${u.location.state}, ${u.location.country}`,
       1,
-      u.profile.username,
+      u.profile.username
     );
   } else if (type == 'track_comment') {
     title = 'New Track Comment';
@@ -474,7 +472,7 @@ export async function addEngagementEvent2(db, uid, profile_uid, type) {
       'comment',
       `${u.location.state}, ${u.location.country}`,
       1,
-      u.profile.username,
+      u.profile.username
     );
   } else if (type == 'profile_visit') {
     title = 'New Profile Visit';
@@ -484,7 +482,7 @@ export async function addEngagementEvent2(db, uid, profile_uid, type) {
       'profile_visit',
       `${u.location.state}, ${u.location.country}`,
       1,
-      u.profile.username,
+      u.profile.username
     );
   } else if (type == 'profile_post') {
     title = 'New Profile Post';
@@ -494,7 +492,7 @@ export async function addEngagementEvent2(db, uid, profile_uid, type) {
       'profile_post',
       `${u.location.state}, ${u.location.country}`,
       1,
-      u.profile.username,
+      u.profile.username
     );
   } else if (type == 'track_spotify_click') {
     title = 'New Spotify Click';
@@ -504,7 +502,7 @@ export async function addEngagementEvent2(db, uid, profile_uid, type) {
       'track_spotify_click',
       `${u.location.state}, ${u.location.country}`,
       1,
-      u.profile.username,
+      u.profile.username
     );
   } else if (type == 'track_apple_music_click') {
     title = 'New Apple Music Click';
@@ -514,7 +512,7 @@ export async function addEngagementEvent2(db, uid, profile_uid, type) {
       'track_apple_music_click',
       `${u.location.state}, ${u.location.country}`,
       1,
-      u.profile.username,
+      u.profile.username
     );
   } else if (type == 'track_youtube_click') {
     title = 'New YouTube Click';
@@ -524,7 +522,7 @@ export async function addEngagementEvent2(db, uid, profile_uid, type) {
       'track_youtube_click',
       `${u.location.state}, ${u.location.country}`,
       1,
-      u.profile.username,
+      u.profile.username
     );
   } else if (type == 'track_share') {
     title = 'New Track Share';
@@ -534,7 +532,7 @@ export async function addEngagementEvent2(db, uid, profile_uid, type) {
       'track_share',
       `${u.location.state}, ${u.location.country}`,
       1,
-      u.profile.username,
+      u.profile.username
     );
   } else if (type == 'track_edited') {
     title = 'Track Edited';
@@ -544,7 +542,7 @@ export async function addEngagementEvent2(db, uid, profile_uid, type) {
       'track_edited',
       `${u.location.state}, ${u.location.country}`,
       1,
-      u.profile.username,
+      u.profile.username
     );
   } else if (type == 'track_uploaded') {
     title = 'Track Uploaded';
@@ -554,7 +552,7 @@ export async function addEngagementEvent2(db, uid, profile_uid, type) {
       'track_uploaded',
       `${u.location.state}, ${u.location.country}`,
       1,
-      u.profile.username,
+      u.profile.username
     );
   }
   await addNotification(db, uid, title, content, engagement_data);
@@ -607,7 +605,7 @@ export async function sendNotificationByUID(db, uid, title, content) {
  */
 async function sendNotification(
   db,
-  { fcmToken, title, content, imageUrl, dataPayload },
+  { fcmToken, title, content, imageUrl, dataPayload }
 ) {
   const message = {
     token: fcmToken,
