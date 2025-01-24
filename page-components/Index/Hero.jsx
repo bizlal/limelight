@@ -76,13 +76,13 @@ export default function Hero({
               </Link>
             </Container>
             <Spacer axis="horizontal" size={1} />
-            <Container>
+            {/* <Container>
               <Link legacyBehavior passHref href="/sign-up">
                 <ButtonLink type="success" className={styles.button}>
                   Sign Up
                 </ButtonLink>
               </Link>
-            </Container>
+            </Container> */}
           </Container>
 
           {/* -- Stats Section -- */}

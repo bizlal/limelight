@@ -300,7 +300,7 @@ const Nav = () => {
                   onClick={login}
                   className={styles.loginBtn}
                 >
-                  Connect
+                  Sign In / Sign Up
                 </button>
               </div>
             )}

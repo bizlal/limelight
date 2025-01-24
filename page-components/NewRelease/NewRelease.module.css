@@ -248,3 +248,115 @@
     padding-bottom: 1rem;
   }
 }
+/* Container for the track preview */
+.previewContainer {
+  background-color: rgba(255, 255, 255, 0.07);
+  margin-top: 1rem;
+  padding: 1rem;
+  border-radius: 6px;
+}
+
+.previewHeading {
+  color: #fff;
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.previewAudio {
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.previewImage {
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
+  display: block;
+  margin: 0 auto;
+}
+
+/* Overriding or adding more responsive tweaks */
+@media (max-width: 768px) {
+  .stepWrapper {
+    grid-template-columns: 1fr;
+  }
+
+  /* Let’s add some spacing for the preview container on mobile */
+  .previewContainer {
+    margin-top: 1.5rem;
+  }
+
+  /* The .leftSide defaults to 100% width on mobile, no border on right, etc. */
+  .leftSide {
+    border-right: none;
+    margin-right: 0;
+    padding-right: 0;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    padding-bottom: 1rem;
+  }
+}
+/* ... keep your existing CSS ... */
+
+/* Smaller horizontal preview row */
+.previewRow {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background-color: rgba(255, 255, 255, 0.07);
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
+  margin-top: 1rem;
+}
+
+/* The album art on the left */
+.albumArt {
+  width: 60px;     /* or 50px, depending on your design */
+  height: 60px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+/* Middle text */
+.previewText {
+  display: flex;
+  flex-direction: column;
+  flex: 1; /* so it stretches if needed */
+  overflow: hidden;
+}
+
+.previewTitle {
+  font-weight: 600;
+  font-size: 1rem;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.previewArtist {
+  color: #ccc;
+  font-size: 0.85rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Audio */
+.audioPlayer {
+  width: 120px; /* keep it minimal in the row */
+  background: transparent;
+}
+
+/* Mobile-friendly adjustments */
+@media (max-width: 768px) {
+  .previewRow {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .audioPlayer {
+    width: 100%;
+    margin-top: 0.5rem;
+  }
+}

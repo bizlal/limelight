@@ -2,7 +2,7 @@ import Head from 'next/head';
 import Footer from './Footer';
 import styles from './Layout.module.css';
 import Nav from './Nav';
-import { Analytics } from "@vercel/analytics/react"
+
 const Layout = ({ children }) => {
   return (
     <>
@@ -30,7 +30,7 @@ const Layout = ({ children }) => {
       <Nav />
       <main className={styles.main}>
         {children}
-        <Analytics />
+      
         </main>
       <Footer />
     </>

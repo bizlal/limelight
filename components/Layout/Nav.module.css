@@ -200,12 +200,45 @@
 }
 
 .loginBtn {
-  background: none;
+  background: linear-gradient(
+      116.94deg,
+      #8d52cc -39.29%,
+      #a650b2 -26%,
+      #bc4e9b -15.53%,
+      #cf4c87 1.54%,
+      #db4b7b 11.57%,
+      #a9638f 37.88%,
+      #8c719b 49.86%,
+      #727ea6 64.46%,
+      #4893b7 89.21%
+    ),
+    linear-gradient(0deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2));
   border: none;
   color: #fff;
   cursor: pointer;
-  padding: 0.5rem 0.75rem;
+  padding: 0.5rem 1rem;
   font-size: 0.9rem;
+  border-radius: 4px;
+  transition: background 0.3s, transform 0.2s;
+}
+.loginBtn:hover {
+  background: linear-gradient(
+      116.94deg,
+      #8d52cc -39.29%,
+      #a650b2 -26%,
+      #bc4e9b -15.53%,
+      #cf4c87 1.54%,
+      #db4b7b 11.57%,
+      #a9638f 37.88%,
+      #8c719b 49.86%,
+      #727ea6 64.46%,
+      #4893b7 89.21%
+    ),
+    linear-gradient(0deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2));
+  transform: scale(1.05);
+}
+.loginBtn:active {
+  transform: scale(0.95);
 }
 
 /* Existing nav styles omitted for brevity... */
