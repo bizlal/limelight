@@ -1,5 +1,8 @@
+/********************************************************
+ *  HERO & GENERAL WRAPPER STYLES
+ ********************************************************/
 .heroWrapper {
-  /* A nice gradient background for the entire hero + info section */
+  /* Gradient background for hero + info section */
   background: linear-gradient(
     161deg,
     #8d52cc 0%,
@@ -16,16 +19,305 @@
 }
 
 .heroWrapper::before {
+  /* Dark overlay on top of gradient */
   content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.2); /* Adjust the opacity as needed */
+  inset: 0;
+  background: rgba(0, 0, 0, 0.2); /* Adjust opacity if needed */
   z-index: 1;
 }
 
+/* Ensure children are above the overlay */
+.heroWrapper > * {
+  position: relative;
+  z-index: 2;
+}
+
+.heroInner {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.title {
+  font-size: 3rem;
+  font-weight: 800;
+  margin: 0 0 1rem;
+  color: #fff; /* Stand out on dark background */
+}
+
+.subtitle {
+  font-size: 1.25rem;
+  font-weight: 400;
+  max-width: 600px;
+  margin: 0 auto 2rem;
+  color: #f5f5f5; /* Lighter text color */
+}
+
+.buttons {
+  margin-bottom: 3rem;
+}
+
+.button {
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  background: #fff;
+  color: #000;
+  border-radius: 4px;
+  text-decoration: none;
+  transition: background 0.2s ease;
+}
+
+.button:hover {
+  background: rgba(255, 255, 255, 0.85);
+}
+
+/********************************************************
+ *  STATS SECTION
+ ********************************************************/
+.statsWrapper {
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(8px);
+  border-radius: 12px;
+  max-width: 900px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.statsContainer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2rem;
+}
+
+.statItem {
+  text-align: center;
+}
+
+.statItem h3 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0;
+  color: #fff;
+}
+
+.statItem p {
+  margin: 0.25rem 0 0;
+  font-size: 1rem;
+  color: #ccc;
+}
+
+/********************************************************
+ *  FROSTED-GLASS CARD (REUSABLE)
+ ********************************************************/
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.card {
+  background-color: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(8px);
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 2rem;
+  margin-bottom: 2rem;
+  color: #eee;
+  animation: fadeInUp 0.4s ease forwards; /* Smooth entry */
+}
+
+/* If using CSS Modules composition, you might have: 
+.infoSection, .tokenSection, .artistTokensSection, .roadmapSection {
+  composes: card;
+}
+Otherwise, you can add <section className="card infoSection"> in the JSX
+*/
+
+/********************************************************
+ *  INFO SECTIONS
+ ********************************************************/
+.infoSections {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 3rem;
+  margin-top: 2rem;
+}
+
+.infoSection {
+  /* If not using composition, manually apply card styling:
+     composes: card; 
+  */
+  background-color: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(8px);
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 2rem;
+  margin-bottom: 2rem;
+  color: #eee;
+  animation: fadeInUp 0.4s ease forwards;
+}
+
+.infoTitle {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #fff;
+}
+
+.infoText {
+  font-size: 1.1rem;
+  line-height: 1.5;
+  margin: 0;
+  color: #eee;
+}
+
+/********************************************************
+ *  TOKEN SECTION
+ ********************************************************/
+.tokenSection {
+  /* If not using composition, manually apply the same .card styling */
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(8px);
+  padding: 2rem;
+  border-radius: 8px;
+  margin-top: 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  animation: fadeInUp 0.4s ease forwards;
+}
+
+.tokenTitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #fff;
+}
+
+.tokenText {
+  color: #eee;
+  line-height: 1.5;
+  margin-bottom: 1rem;
+}
+
+.tokenBenefits {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(150px, 1fr));
+  gap: 1rem;
+}
+
+.tokenBenefits li {
+  background-color: rgba(255, 255, 255, 0.06);
+  padding: 0.75rem;
+  border-radius: 5px;
+  color: #eee;
+}
+
+/********************************************************
+ *  ARTIST TOKENS SECTION
+ ********************************************************/
+.artistTokensSection {
+  /* If not using composition, also apply .card styling here */
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(8px);
+  padding: 2rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  animation: fadeInUp 0.4s ease forwards;
+  color: #eee;
+}
+
+.artistTokensTitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #fff;
+}
+
+.artistTokensText {
+  color: #eee;
+  line-height: 1.5;
+  margin-bottom: 1rem;
+}
+
+.bondingCurveBenefits {
+  list-style: disc;
+  margin-left: 1.5rem;
+  margin-top: 1rem;
+  color: #eee;
+}
+
+/********************************************************
+ *  ROADMAP SECTION
+ ********************************************************/
+.roadmapSection {
+  /* If not using composition, also apply .card styling here */
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(8px);
+  padding: 2rem;
+  border-radius: 8px;
+  margin-top: 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  animation: fadeInUp 0.4s ease forwards;
+  color: #eee;
+}
+
+.roadmapTitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #fff;
+}
+
+.roadmapList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  counter-reset: step;
+}
+
+.roadmapList li {
+  margin-bottom: 1.5rem;
+  position: relative;
+  color: #eee;
+}
+
+.roadmapList li::before {
+  counter-increment: step;
+  content: counter(step) '. ';
+  color: #fff;
+  font-weight: 700;
+  margin-right: 0.5rem;
+}
+
+.roadmapList strong {
+  color: #fff;
+}
+
+.roadmapCurrent {
+  margin-top: 1rem;
+  color: #aaa;
+  font-style: italic;
+}
+
+/********************************************************
+ *  STREAMING PROGRESS BAR (OPTIONAL)
+ ********************************************************/
 @keyframes grow {
   from {
     width: 0;
@@ -66,202 +358,3 @@
   color: white;
   font-weight: bold;
 }
-
-
-.heroWrapper > * {
-  position: relative;
-  z-index: 2;
-}
-
-/* Hero content */
-.heroInner {
-  text-align: center;
-  margin-bottom: 3rem;
-}
-
-.title {
-  font-size: 3rem;
-  font-weight: 800;
-  margin: 0 0 1rem;
-}
-
-.subtitle {
-  font-size: 1.25rem;
-  font-weight: 400;
-  max-width: 600px;
-  margin: 0 auto 2rem;
-}
-
-.buttons {
-  margin-bottom: 3rem;
-}
-
-/* 
- * Use .button if you want a white background 
- * for your CTA. 
- */
-.button {
-  font-size: 1rem;
-  font-weight: 600;
-  padding: 0.75rem 1.5rem;
-  background: #fff;
-  color: #000;
-  border-radius: 4px;
-  text-decoration: none;
-  transition: background 0.2s ease;
-}
-.button:hover {
-  background: rgba(255, 255, 255, 0.85);
-}
-
-/* Stats */
-.statsContainer {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 2rem;
-}
-
-.statItem {
-  text-align: center;
-}
-.statItem h3 {
-  font-size: 1.75rem;
-  font-weight: 700;
-  margin: 0;
-}
-.statItem p {
-  margin: 0.25rem 0 0;
-  font-size: 1rem;
-}
-
-/* Additional info sections below the hero */
-.infoSections {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 3rem;
-  margin-top: 2rem;
-}
-
-.infoSection {
-  background-color: rgba(255, 255, 255, 0.08);
-  padding: 2rem;
-  border-radius: 8px;
-}
-
-.infoTitle {
-  font-size: 1.75rem;
-  font-weight: 700;
-  margin-bottom: 1rem;
-}
-
-.infoText {
-  font-size: 1.1rem;
-  line-height: 1.5;
-  margin: 0;
-}
-/* Token section */
-.tokenSection {
-  background: rgba(255, 255, 255, 0.08);
-  padding: 2rem;
-  border-radius: 8px;
-  margin-top: 2rem;
-}
-.tokenTitle {
-  font-size: 1.5rem;
-  font-weight: 700;
-  margin-bottom: 1rem;
-  color: #fff;
-}
-.tokenText {
-  color: #eee;
-  line-height: 1.5;
-  margin-bottom: 1rem;
-}
-.tokenBenefits {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  grid-template-columns: repeat(2, minmax(150px, 1fr));
-  gap: 1rem;
-}
-.tokenBenefits li {
-  background-color: rgba(255, 255, 255, 0.06);
-  padding: 0.75rem;
-  border-radius: 5px;
-  color: #eee;
-}
-
-/* Roadmap section */
-.roadmapSection {
-  background: rgba(255, 255, 255, 0.08);
-  padding: 2rem;
-  border-radius: 8px;
-  margin-top: 2rem;
-}
-.roadmapTitle {
-  font-size: 1.5rem;
-  font-weight: 700;
-  margin-bottom: 1rem;
-  color: #fff;
-}
-.roadmapList {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  counter-reset: step;
-}
-.roadmapList li {
-  margin-bottom: 1.5rem;
-  color: #eee;
-  position: relative;
-}
-.roadmapList li::before {
-  counter-increment: step;
-  content: counter(step) '. ';
-  color: #fff;
-  font-weight: 700;
-  margin-right: 0.5rem;
-}
-.roadmapList strong {
-  color: #fff;
-}
-.roadmapCurrent {
-  margin-top: 1rem;
-  color: #aaa;
-  font-style: italic;
-}
-/* 
- * ========== ARTIST TOKENS SECTION ==========
- */
-.artistTokensSection {
-  background: rgba(255, 255, 255, 0.08);
-  padding: 2rem;
-  border-radius: 8px;
-}
-
-.artistTokensTitle {
-  font-size: 1.5rem;
-  font-weight: 700;
-  margin-bottom: 1rem;
-  color: #fff; /* adjust if needed */
-}
-
-.artistTokensText {
-  color: #eee;
-  line-height: 1.5;
-  margin-bottom: 1rem;
-}
-
-.bondingCurveBenefits {
-  list-style: disc;
-  margin-left: 1.5rem;
-  margin-top: 1rem;
-  color: #eee;
-}
-
-/* 
- * Example: you might add a unique color or icon for emphasis
- * .bondingCurveBenefits li::before { content: "➤ "; color: #f90; }
- */

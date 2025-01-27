@@ -1,5 +1,4 @@
-
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { ButtonLink } from '@/components/Button';
 import { Container, Spacer, Wrapper } from '@/components/Layout';
 import Link from 'next/link';
@@ -7,7 +6,7 @@ import styles from './Hero.module.css';
 import { useSpring, animated } from 'react-spring';
 
 /**
- * Simple equirectangular projection for a 1000 x 500 map:
+ * Simple equirectangular projection for a 1000 x 500 map (not used in this example):
  *   - Lat in [-90, +90]
  *   - Lon in [-180, +180]
  */
@@ -17,10 +16,20 @@ function latLonToXY(lat, lon, width, height) {
   return [x, y];
 }
 
+/**
+ * AnimatedNumber: Animates a numeric value using react-spring
+ */
 function AnimatedNumber({ value }) {
-  const props = useSpring({ number: value, from: { number: 0 }, config: { duration: 2000 } });
-  return <animated.span>{props.number.to(n => n.toLocaleString())}</animated.span>;
+  const props = useSpring({
+    number: value,
+    from: { number: 0 },
+    config: { duration: 2000 },
+  });
+  return (
+    <animated.span>{props.number.to((n) => n.toLocaleString())}</animated.span>
+  );
 }
+
 export default function Hero({
   totalUsers = 24010,
   totalArtists = 3450,
@@ -28,14 +37,12 @@ export default function Hero({
   totalCities = 820,
   totalFanbaseGrowth = 12000,
 }) {
-
   return (
-
     <div className={styles.heroWrapper}>
       <Wrapper>
-    
-<br></br>
-<br></br>
+        <br />
+        <br />
+
         {/* -- Hero Heading & Subtitle -- */}
         <div className={styles.heroInner}>
           <h1 className={styles.title}>Welcome to Limelight</h1>
@@ -60,27 +67,39 @@ export default function Hero({
             </Container> */}
           </Container>
 
-          {/* -- Stats Section -- */}
-          <div className={styles.statsContainer}>
-            <div className={styles.statItem}>
-              <h3><AnimatedNumber value={totalUsers} /></h3>
-              <p>Users</p>
-            </div>
-            <div className={styles.statItem}>
-              <h3><AnimatedNumber value={totalArtists} /></h3>
-              <p>Artists</p>
-            </div>
-            <div className={styles.statItem}>
-              <h3><AnimatedNumber value={totalFans} /></h3>
-              <p>Total Streams</p>
-            </div>
-            <div className={styles.statItem}>
-              <h3><AnimatedNumber value={totalCities} /></h3>
-              <p>Cities Reached</p>
-            </div>
-            <div className={styles.statItem}>
-              <h3><AnimatedNumber value={totalFanbaseGrowth} /></h3>
-              <p>Fanbase Growth</p>
+          {/* -- Stats Section in a dark blur box -- */}
+          <div className={styles.statsWrapper}>
+            <div className={styles.statsContainer}>
+              <div className={styles.statItem}>
+                <h3>
+                  <AnimatedNumber value={totalUsers} />
+                </h3>
+                <p>Users</p>
+              </div>
+              <div className={styles.statItem}>
+                <h3>
+                  <AnimatedNumber value={totalArtists} />
+                </h3>
+                <p>Artists</p>
+              </div>
+              <div className={styles.statItem}>
+                <h3>
+                  <AnimatedNumber value={totalFans} />
+                </h3>
+                <p>Total Streams</p>
+              </div>
+              <div className={styles.statItem}>
+                <h3>
+                  <AnimatedNumber value={totalCities} />
+                </h3>
+                <p>Cities Reached</p>
+              </div>
+              <div className={styles.statItem}>
+                <h3>
+                  <AnimatedNumber value={totalFanbaseGrowth} />
+                </h3>
+                <p>Fanbase Growth</p>
+              </div>
             </div>
           </div>
         </div>
@@ -88,7 +107,8 @@ export default function Hero({
 
       <Wrapper>
         <div className={styles.infoSections}>
-          <section className={styles.infoSection}>
+          {/* How It Works (card) */}
+          <section className={`${styles.infoSection} ${styles.card}`}>
             <h2 className={styles.infoTitle}>How It Works</h2>
             <p className={styles.infoText}>
               Limelight provides artists with powerful tools to upload and share
@@ -98,7 +118,8 @@ export default function Hero({
             </p>
           </section>
 
-          <section className={styles.infoSection}>
+          {/* Who It's For (card) */}
+          <section className={`${styles.infoSection} ${styles.card}`}>
             <h2 className={styles.infoTitle}>Who It’s For</h2>
             <p className={styles.infoText}>
               This platform is designed for both aspiring and established
@@ -108,7 +129,8 @@ export default function Hero({
             </p>
           </section>
 
-          <section className={styles.infoSection}>
+          {/* How It Helps (card) */}
+          <section className={`${styles.infoSection} ${styles.card}`}>
             <h2 className={styles.infoTitle}>How It Helps</h2>
             <p className={styles.infoText}>
               Limelight bridges the gap between creators and their audience,
@@ -123,8 +145,8 @@ export default function Hero({
 
       {/* -- Token & Roadmap Sections -- */}
       <Wrapper>
-        {/* Token Details */}
-        <div className={styles.tokenSection}>
+        {/* Token Details (card) */}
+        <div className={`${styles.tokenSection} ${styles.card}`}>
           <h2 className={styles.tokenTitle}>Introducing LMLT</h2>
           <p className={styles.tokenText}>
             LMLT (Limelight Token) is our native ERC-20 token that powers
@@ -152,8 +174,8 @@ export default function Hero({
 
         <Spacer size={3} axis="vertical" />
 
-        {/* Artist Tokens & Bonding Curve */}
-        <div className={styles.artistTokensSection}>
+        {/* Artist Tokens & Bonding Curve (card) */}
+        <div className={`${styles.artistTokensSection} ${styles.card}`}>
           <h2 className={styles.artistTokensTitle}>
             Artist Tokens & Bonding Curves
           </h2>
@@ -179,8 +201,8 @@ export default function Hero({
 
         <Spacer size={3} axis="vertical" />
 
-        {/* Roadmap */}
-        <div className={styles.roadmapSection}>
+        {/* Roadmap (card) */}
+        <div className={`${styles.roadmapSection} ${styles.card}`}>
           <h2 className={styles.roadmapTitle}>Our Roadmap</h2>
           <ol className={styles.roadmapList}>
             <li>
@@ -218,8 +240,6 @@ export default function Hero({
           </p>
         </div>
       </Wrapper>
-
-    
     </div>
   );
 }

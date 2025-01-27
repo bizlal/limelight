@@ -14,7 +14,7 @@ export default function MyApp({ Component, pageProps }) {
         appearance: {
           theme: 'light',
           accentColor: '#676FFF',
-          logo: 'https://your-logo-url',
+          logo: 'https:///lmlt.ai/assets/icons/lmlt.jpg',
         },
         embeddedWallets: {
           createOnLogin: 'users-without-wallets',

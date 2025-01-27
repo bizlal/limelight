@@ -21,14 +21,16 @@ const PostList = () => {
           <Link
             legacyBehavior
             key={post._id}
-            href={`/user/${post.creator.username}/post/${post._id}`}
+            href={`/user/${post.username}/post/${post._id}`}
             passHref
           >
-            <div className={styles.wrap}>
+            {/* Instead of styles.wrap, use styles.postCard for the frosted effect */}
+            <div className={styles.postCard}>
               <Post className={styles.post} post={post} />
             </div>
           </Link>
         ))}
+
         <Container justifyContent="center">
           {isReachingEnd ? (
             <Text color="secondary">No more posts are found</Text>

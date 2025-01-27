@@ -1,0 +1,200 @@
+/***************
+ * Hero section
+ ***************/
+.artistsPage {
+  font-family: system-ui, sans-serif;
+  color: #333;
+}
+
+.hero {
+  position: relative;
+  background: linear-gradient(135deg, #8d52cc, #cf4c87 50%, #db4b7b 80%);
+  padding: 3rem 1rem;
+  color: #fff;
+  overflow: hidden;
+}
+
+.heroContent {
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: left;
+}
+
+.heroTitle {
+  font-size: 3rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+}
+
+.heroSubtitle {
+  font-size: 1.2rem;
+  font-weight: 400;
+  max-width: 600px;
+  margin-bottom: 1.5rem;
+}
+
+.learnMoreLink {
+  color: #fff;
+  font-weight: 600;
+  text-decoration: underline;
+  transition: opacity 0.2s ease-in;
+}
+
+.learnMoreLink:hover {
+  opacity: 0.8;
+}
+
+/***************
+   * Example floating images 
+   ***************/
+.floatingImages {
+  position: absolute;
+  right: 50px;
+  top: 50px;
+}
+
+.floatingImg {
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  margin-left: 1rem;
+  margin-top: 1rem;
+  animation: float 6s ease-in-out infinite alternate;
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  100% {
+    transform: translateY(20px);
+  }
+}
+
+/***************
+   * Form container
+   ***************/
+.formContainer {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+.artistForm {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  background: #fff;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.formGroup label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.formGroup input[type='text'],
+.formGroup input[type='url'],
+.formGroup input[type='file'] {
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.handlePrefix {
+  display: inline-block;
+  background: #f3f3f3;
+  padding: 0.5rem 0.75rem;
+  border-radius: 4px 0 0 4px;
+  color: #999;
+  margin-right: -4px;
+  border: 1px solid #ccc;
+  border-right: none;
+}
+
+.optionalHeading {
+  grid-column: 1 / -1;
+  font-size: 1.1rem;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+  color: #555;
+}
+
+/***************
+   * Avatar field
+   ***************/
+.avatarUpload {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  border: 2px dashed #ccc;
+  border-radius: 8px;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-height: 100px;
+  color: #999;
+}
+
+.avatarUpload p {
+  margin: 0;
+  font-size: 0.85rem;
+}
+
+/***************
+   * Social row
+   ***************/
+.socialRow {
+  display: flex;
+  align-items: center;
+}
+
+.socialConnect {
+  background: #eee;
+  color: #333;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 0.5rem 0.75rem;
+  margin-right: 0.5rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.2s ease;
+}
+
+.socialConnect:hover {
+  background: #ddd;
+}
+
+.socialRow input {
+  flex: 1;
+}
+
+/***************
+   * Submit button
+   ***************/
+.submitButton {
+  grid-column: 1 / -1;
+  padding: 0.75rem 1.5rem;
+  background-color: #8d52cc; /* your brand color */
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 1rem;
+  transition: background 0.2s ease-in;
+}
+
+.submitButton:hover {
+  background-color: #7a44b3;
+}

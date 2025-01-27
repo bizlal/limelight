@@ -2,14 +2,50 @@
   padding-bottom: 4rem;
 }
 
-.wrap {
+/* Frosted glass "card" for each post */
+.postCard {
   display: block;
   margin-bottom: 21px;
   text-decoration: none;
   cursor: pointer;
+
+  /* Frosted-glass styles */
+  background-color: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(8px);
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #eee;
+  padding: 1rem;
+
+  /* Fade-in animation */
+  animation: fadeInUp 0.4s ease forwards;
+
+  /* Hover transition */
+  transition: background-color 0.15s ease;
 }
 
+/* Subtle hover effect, slightly lightens the background */
+.postCard:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+/* Optional: If you still want the old accent hover, you can remove it 
+   or override .post:hover. For instance:
 .post:hover {
   background: var(--accents-1);
   transition: ease 0.15s background;
+}
+*/
+
+/* The fade-in animation keyframes */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
