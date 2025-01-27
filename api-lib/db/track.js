@@ -216,7 +216,7 @@ export async function findTrackById(db, id) {
       { $limit: 1 },
       {
         $lookup: {
-          from: 'users2',
+          from: 'accounts',
           localField: 'uid',
           foreignField: 'uid',
           as: 'artist',
@@ -228,6 +228,36 @@ export async function findTrackById(db, id) {
     .toArray();
   if (!posts[0]) return null;
   return posts[0];
+}
+
+export async function findTracks(db, before, by, limit = 10) {
+  const tracks = await db
+    .collection('tracks')
+    .aggregate([
+      {
+        $match: {
+          ...(by && { uid: by }),
+          ...(before && { 'metadata.release_date': { $lt: before } }),
+        },
+      },
+      { $sort: { _id: -1 } },
+      { $limit: limit },
+      {
+        $lookup: {
+          from: 'accounts',
+          localField: 'uid',
+          foreignField: 'uid',
+          as: 'artist',
+        },
+      },
+      { $unwind: '$artist' },
+    ])
+    .toArray();
+
+  return tracks.map((track) => ({
+    ...track,
+    artist: track.artist[0], // Ensure artist is not an array
+  }));
 }
 
 export async function getTrackActivity(db, trackId) {
