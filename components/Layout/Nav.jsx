@@ -161,6 +161,7 @@ const UserMenu = ({ user, onDisconnect }) => {
   const menuRef = useRef(null);
   const avatarRef = useRef(null);
   const [visible, setVisible] = useState(false);
+  const [balancesUpdated, setBalancesUpdated] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -189,6 +190,14 @@ const UserMenu = ({ user, onDisconnect }) => {
       document.removeEventListener('mousedown', onMouseDown);
     };
   }, []);
+
+  // Fetch balances in the background
+  useEffect(() => {
+    if (!balancesUpdated && privyUser?.wallet?.address) {
+      setBalancesUpdated(true);
+    }
+  }, [privyUser?.wallet?.address, balancesUpdated]);
+
   return (
     <div className={styles.userMenu}>
       <button
