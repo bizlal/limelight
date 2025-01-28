@@ -1,12 +1,12 @@
 import Head from 'next/head';
-import { useState } from 'react';
-import Link from 'next/link';
 import { useSpring, animated } from 'react-spring';
+import Link from 'next/link';
 
 import { ButtonLink } from '@/components/Button';
 import { Container, Spacer, Wrapper } from '@/components/Layout';
 
-// Import your CSS module
+import Image from 'next/image';
+import map from '@/assets/images/map.png'; // Adjust the path and filename as needed
 import styles from './Hero.module.css';
 
 /**
@@ -30,7 +30,9 @@ function AnimatedNumber({ value }) {
     config: { duration: 2000 },
   });
   return (
-    <animated.span>{props.number.to((n) => n.toLocaleString())}</animated.span>
+    <animated.span>
+      {props.number.to((n) => Math.floor(n).toLocaleString())}
+    </animated.span>
   );
 }
 
@@ -39,7 +41,6 @@ export default function Hero({
   totalArtists = 3450,
   totalFans = 7400,
   totalCities = 820,
-  totalFanbaseGrowth = 12000,
 }) {
   return (
     <>
@@ -107,6 +108,17 @@ export default function Hero({
                 </Container> 
               */}
             </Container>
+            {/* Full-page background map */}
+            <div className={styles.mapBackground}>
+              <Image
+                src={map}
+                alt="Map background"
+                layout="fill"
+                objectFit="cover"
+                objectPosition="center"
+                priority
+              />
+            </div>
 
             {/* -- Stats Section in a dark blur box -- */}
             <div className={styles.statsWrapper}>
@@ -134,12 +146,6 @@ export default function Hero({
                     <AnimatedNumber value={totalCities} />
                   </h3>
                   <p>Cities Reached</p>
-                </div>
-                <div className={styles.statItem}>
-                  <h3>
-                    <AnimatedNumber value={totalFanbaseGrowth} />
-                  </h3>
-                  <p>Fanbase Growth</p>
                 </div>
               </div>
             </div>

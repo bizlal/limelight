@@ -7,7 +7,7 @@ export default function UserPage({ user }) {
   // You can create a short description or fallback if user's bio is empty:
   const userDescription = user.bio
     ? user.bio.slice(0, 160) // typical meta desc limit ~160
-    : `View ${user.name} (@${user.username}) on Limelight. Check out their latest music!`;
+    : `View ${user.name} (@${user.username}) on Limelight.`;
 
   // You can build an Open Graph image if you have a profileImage or a default
   const ogImage = user.profileImage || '/images/default-profile.jpg';
