@@ -1,163 +1,324 @@
-.profileWrapper {
-  /* This container can control overall margin/padding around the profile card */
-  margin: 2rem 0;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap');
 
-/* Optional sub-title or role text at the top (e.g. "Listener Profile") */
-.roleLabel {
-  font-size: 0.85rem;
-  color: var(--text-muted, #ccc);
-  margin-left: 0.5rem;
-}
-
-/* The card itself */
-.profileCard {
+.profileContainer {
   position: relative;
-  border-radius: 12px;
-  overflow: hidden;
-  background-color: #1b1b1b; /* fallback color under the cover image */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  font-family: 'Poppins', sans-serif;
+  color: #fff;
 }
 
-/* Cover image area */
+/* Cover Section */
+.coverSection {
+  position: relative;
+  height: 300px;
+  overflow: hidden;
+  background-color: #000; /* fallback if no image */
+}
+
 .coverImage {
-  width: 100%;
-  height: 200px; /* Adjust as desired */
+  position: absolute;
+  inset: 0;
   background-size: cover;
   background-position: center;
-  position: relative;
+  height: 300px;
+  z-index: 1;
 }
 
-/* Back arrow button in the top-left corner */
+.coverOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0) 40%,
+    rgba(0, 0, 0, 0.8) 100%
+  );
+}
+
+/* Back arrow in top-left */
 .backButton {
   position: absolute;
   top: 1rem;
   left: 1rem;
+  width: 38px;
+  height: 38px;
   background: rgba(0, 0, 0, 0.6);
   border: none;
   border-radius: 50%;
   color: #fff;
-  width: 36px;
-  height: 36px;
+  font-size: 1.1rem;
+  z-index: 4;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  font-size: 1.1rem;
 }
 .backButton:hover {
   background: rgba(0, 0, 0, 0.8);
 }
 
-/* Edit & More actions in the top-right corner */
-.actions {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  display: flex;
-  gap: 0.5rem;
+/* Overlapping the cover */
+.userInfoCard {
+  position: relative;
+  margin: -60px 1rem 0 1rem;
+  padding: 2rem 1rem 1rem;
+  z-index: 5;
+
+  /* Optional background if you want a 'card' feel:
+     background-color: #0e0e0e;
+     border-radius: 8px;
+     box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  */
 }
-.actionBtn {
-  background: rgba(0, 0, 0, 0.6);
-  border: none;
+
+/* Avatar above the name, left-aligned */
+.avatarWrapper {
+  margin-bottom: 1rem;
+}
+.avatarWrapper > div {
+  width: 120px;
+  height: 120px;
   border-radius: 50%;
-  color: #fff;
-  width: 36px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
-.actionBtn:hover {
-  background: rgba(0, 0, 0, 0.8);
+  overflow: hidden;
 }
 
-/* Main content below the cover image */
-.profileContent {
-  padding: 1.5rem;
-  position: relative;
-  /* push the entire content up so the avatar overlaps the cover a bit */
-  margin-top: -40px;
-}
-
-/* Avatar overlaps the cover */
-.avatarSection {
-  position: relative;
-  margin-bottom: 0.5rem;
-}
-
-/* User name and bio */
+/* Name, handle, bio */
 .userName {
-  margin: 0.25rem 0;
-  font-size: 1.5rem;
+  margin: 0;
+  margin-bottom: 0.25rem;
+  font-size: 2rem;
   font-weight: 700;
-  color: #fff;
+  line-height: 1.2;
+}
+.userHandle {
+  margin: 0 0 1rem 0;
+  font-size: 1rem;
+  color: #bbb;
 }
 .userBio {
   margin: 0 0 1rem 0;
+  max-width: 600px;
   font-size: 1rem;
   color: #ccc;
   font-style: italic;
 }
 
-/* Row of metadata / social links */
+/* Meta row (location, joined date) */
 .metaRow {
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+  color: #aaa;
 }
 .metaItem {
   display: inline-flex;
   align-items: center;
-  gap: 0.3rem;
-  color: #aaa;
-  font-size: 0.9rem;
-  text-decoration: none;
-}
-.metaItem svg {
-  font-size: 1rem;
+  gap: 0.4rem;
 }
 .metaItem:hover {
   color: #fff;
 }
 
-/* Stats row: tracks, LMLT, following, followers */
+/* Row that contains userType badge + genres */
+.typeGenreRow {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+/* The user type badge is now inline (not absolutely positioned) */
+.userTypeBadge {
+  padding: 0.3rem 0.8rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, #6a00ff, #ab00ff);
+  color: #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  letter-spacing: 0.05em;
+}
+
+/* Genre capsules */
+.genresRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.genreBadge {
+  padding: 0.3rem 0.8rem;
+  border-radius: 9999px;
+  background-color: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+/* Links row - left-aligned */
+.linksRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+/* For each social link: show icon + label in a row */
+.socialLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.7rem;
+  border-radius: 9999px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-decoration: none;
+  background-color: rgba(255, 255, 255, 0.08);
+  color: #58a6ff;
+  transition: background-color 0.2s, color 0.2s;
+}
+.socialLink:hover {
+  background-color: #58a6ff;
+  color: #000;
+}
+
+/* Actions row (follow/edit/more) */
+.actionsRow {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Follow button */
+.followBtn {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 9999px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: #fff;
+  background: #58a6ff;
+  transition: background 0.2s;
+}
+.followBtn:hover {
+  background: #79b8ff;
+}
+
+/* Edit button */
+.editBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 0.8rem;
+  border: none;
+  border-radius: 9999px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.15);
+  transition: background 0.2s;
+}
+.editBtn:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* More dropdown */
+.dropdownWrapper {
+  position: relative;
+  display: inline-block;
+}
+.moreBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 1rem;
+  cursor: pointer;
+}
+.moreBtn:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.dropdownMenu {
+  position: absolute;
+  top: 110%;
+  right: 0;
+  min-width: 140px;
+  background: #222;
+  border-radius: 4px;
+  padding: 0.25rem 0;
+  display: none; /* hidden by default */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+}
+
+.dropdownWrapper:hover .dropdownMenu {
+  display: block; /* show on hover */
+}
+
+.dropdownMenu button {
+  width: 100%;
+  background: none;
+  border: none;
+  text-align: left;
+  font-size: 0.9rem;
+  color: #ddd;
+  padding: 0.4rem 0.8rem;
+  cursor: pointer;
+}
+.dropdownMenu button:hover {
+  background: #333;
+  color: #fff;
+}
+
+/* Stats row */
 .statsRow {
   display: flex;
   gap: 2rem;
   flex-wrap: wrap;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
   padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
 }
 .statItem h3 {
   margin: 0;
-  color: #fff;
-  font-size: 1.25rem;
+  font-size: 1.3rem;
   font-weight: 700;
 }
 .statItem p {
   margin: 0;
-  color: #888;
-  font-size: 0.8rem;
+  font-size: 0.9rem;
+  color: #aaa;
 }
 
-/* Responsive adjustments */
+/* Responsive adjustments for small screens */
 @media (max-width: 600px) {
-  .coverImage {
-    height: 150px;
+  .coverSection {
+    height: 180px;
   }
-  .backButton,
-  .actionBtn {
-    width: 32px;
-    height: 32px;
+  .coverImage {
+    height: 180px;
+  }
+  .userInfoCard {
+    margin: -40px 0.5rem 0 0.5rem;
+    padding: 1rem;
+  }
+  .avatarWrapper > div {
+    width: 80px;
+    height: 80px;
   }
   .userName {
-    font-size: 1.25rem;
+    font-size: 1.4rem;
+  }
+  .userBio {
+    font-size: 0.95rem;
   }
   .statsRow {
     gap: 1.5rem;

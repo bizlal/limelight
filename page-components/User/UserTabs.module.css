@@ -1,0 +1,47 @@
+.tabBar {
+  display: flex;
+  overflow-x: auto;
+  margin: 1rem;
+  border-radius: 12px; /* Adjusted for smoother edges */
+
+  padding: 0.75rem; /* Increased padding for a richer look */
+  gap: 0.5rem; /* Spaced buttons evenly */
+}
+
+.tabButton {
+  background: transparent;
+  border: none;
+  color: rgba(161, 161, 161, 1);
+  padding: 0.6rem 1.2rem;
+  margin: 0; /* Removed outer margin for uniform spacing */
+  font-weight: 400;
+  cursor: pointer;
+  font-size: 1rem; /* Slightly larger font size for better readability */
+  transition: background 0.2s ease, color 0.2s ease;
+  border-radius: 50px; /* Enhanced border radius for buttons */
+}
+
+.tabButton:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #f0f0f0; /* Slightly lighter color on hover */
+}
+
+.active {
+  background: linear-gradient(
+      116.94deg,
+      #8d52cc -39.29%,
+      #a650b2 -26%,
+      #bc4e9b -15.53%,
+      #cf4c87 1.54%,
+      #db4b7b 11.57%,
+      #a9638f 37.88%,
+      #8c719b 49.86%,
+      #727ea6 64.46%,
+      #4893b7 89.21%
+    ),
+    linear-gradient(0deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2));
+
+  color: #fff;
+  font-size: 1rem; /* Emphasize the active state */
+  font-weight: 600;
+}

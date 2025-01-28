@@ -1,47 +1,31 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 import {
   FaArrowLeft,
   FaEdit,
   FaEllipsisH,
-  FaExternalLinkAlt,
   FaLocationArrow,
-  FaPaperclip,
-  FaSpotify,
+  FaGlobe,
+  FaInstagram,
+  FaTwitter,
+  FaTiktok,
+  FaYoutube,
 } from 'react-icons/fa';
-import { FaInstagram, FaTwitter, FaYoutube } from 'react-icons/fa';
 import { MdCalendarToday } from 'react-icons/md';
-
 import { Avatar } from '@/components/Avatar';
 import styles from './UserHeader.module.css';
 
-/**
- * Example user shape:
- * {
- *   name: "Bilal Khalid",
- *   username: "bizlal",
- *   profileImage: "/path/to/avatar.jpg",
- *   headerImage: "/path/to/cover.jpg",
- *   bio: "Always on the grind",
- *   links: {
- *     instagram?: "https://instagram.com/...",
- *     twitter?: "https://twitter.com/...",
- *     youtube?: "https://youtube.com/...",
- *   },
- *   location: "Brentford, Canada",
- *   createdAt: "2021-01-15T00:00:00.000Z",
- *   tracksCount: 7,
- *   lmltStacked: 32000,
- *   total_following: 20,
- *   total_followers: 71
- *   ...
- * }
- */
-
-const UserHeader = ({ user }) => {
+const UserHeader = ({ user, currentUser }) => {
   const router = useRouter();
-  console.log(user);
-  // Fallbacks in case fields are missing
+
+  // Example logic to determine if this is the signed-in user's own profile
+  // Adjust as needed to match your auth flow.
+  const isOwner = currentUser?.uid === user?.uid;
+
+  // Local state for follow/unfollow demo
+  const [isFollowing, setIsFollowing] = useState(false);
+
+  // Derived values
   const displayName = user?.name || user?.username || 'Anonymous';
   const joinedDateString = user?.createdAt
     ? new Date(user.createdAt).toLocaleString('default', {
@@ -50,12 +34,27 @@ const UserHeader = ({ user }) => {
       })
     : 'Unknown';
 
-  return (
-    <div className={styles.profileWrapper}>
-      {/* Optional label above the card */}
+  // Handlers
+  const handleFollowToggle = () => {
+    // Real app: call API to follow/unfollow, then set state
+    setIsFollowing(!isFollowing);
+  };
 
-      <div className={styles.profileCard}>
-        {/* Cover image */}
+  const handleEditProfile = () => {
+    // e.g. push to /edit-profile or open a modal
+    alert('Edit profile clicked!');
+  };
+
+  const handleCopyProfileUrl = () => {
+    const profileUrl = window.location.href;
+    navigator.clipboard.writeText(profileUrl);
+    alert('Profile URL copied!');
+  };
+
+  return (
+    <div className={styles.profileContainer}>
+      {/* Cover */}
+      <div className={styles.coverSection}>
         <div
           className={styles.coverImage}
           style={{
@@ -63,134 +62,184 @@ const UserHeader = ({ user }) => {
               user?.headerImage || '/default-cover.jpg'
             })`,
           }}
-        >
-          {/* Top controls: back arrow on the left, edit/more on the right */}
-          <button
-            className={styles.backButton}
-            onClick={() => router.back()}
-            aria-label="Go back"
-          >
-            <FaArrowLeft />
-          </button>
+        />
+        <div className={styles.coverOverlay} />
 
-          <div className={styles.actions}>
-            <button className={styles.actionBtn} aria-label="Edit profile">
-              <FaEdit />
-            </button>
-            <button className={styles.actionBtn} aria-label="More options">
-              <FaEllipsisH />
-            </button>
-          </div>
+        {/* Back button */}
+        <button className={styles.backButton} onClick={() => router.back()}>
+          <FaArrowLeft />
+        </button>
+      </div>
+
+      {/* User info card (overlaps cover) */}
+      <div className={styles.userInfoCard}>
+        {/* Avatar */}
+        <div className={styles.avatarWrapper}>
+          <Avatar
+            size={120}
+            username={displayName}
+            url={user?.profileImage || '/default-avatar.png'}
+          />
         </div>
 
-        <div className={styles.profileContent}>
-          {/* User avatar */}
-          <div className={styles.avatarSection}>
-            <Avatar
-              size={80}
-              username={displayName}
-              url={user?.profileImage || '/default-avatar.png'}
-            />
-          </div>
+        {/* Name & handle */}
+        <h1 className={styles.userName}>{displayName}</h1>
+        {user?.username && user.username !== displayName && (
+          <p className={styles.userHandle}>@{user.username}</p>
+        )}
 
-          {/* Name & Bio */}
-          <h1 className={styles.userName}>{displayName}</h1>
-          {user?.bio && <p className={styles.userBio}>"{user.bio}"</p>}
+        {/* Bio */}
+        {user?.bio && <p className={styles.userBio}>{user.bio}</p>}
 
-          {/* Social / location / joined row */}
-          <div className={styles.metaRow}>
-            {/* Example of an Website handle link */}
-            {user?.links?.website && (
+        {/* Meta row: location + joined date */}
+        <div className={styles.metaRow}>
+          {user?.hometown && (
+            <span className={styles.metaItem}>
+              <FaLocationArrow /> {user.hometown}
+            </span>
+          )}
+          <span className={styles.metaItem}>
+            <MdCalendarToday /> Joined {joinedDateString}
+          </span>
+        </div>
+
+        {/* Row for user type + genres (left to right) */}
+        <div className={styles.typeGenreRow}>
+          {user?.userType && (
+            <span className={styles.userTypeBadge}>{user.userType}</span>
+          )}
+          {user?.genres?.length > 0 && (
+            <div className={styles.genresRow}>
+              {user.genres.map((genre) => (
+                <span key={genre} className={styles.genreBadge}>
+                  {genre}
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Links row (show website + colored icons) */}
+        {user?.links && (
+          <div className={styles.linksRow}>
+            {user.links.website && (
               <a
                 href={user.links.website}
                 target="_blank"
-                rel="noreferrer"
-                className={styles.metaItem}
+                rel="noopener noreferrer"
+                className={styles.socialLink}
               >
-                <FaPaperclip /> {user.links.website.replace(/https?:\/\//, '')}
+                <FaGlobe style={{ color: '#58a6ff' }} />
+                {user.links.website}
               </a>
             )}
 
-            {/* Example of an Website handle link */}
-            {user?.links?.spotify && (
-              <a
-                href={user.links.spotify}
-                target="_blank"
-                rel="noreferrer"
-                className={styles.metaItem}
-              >
-                <FaSpotify /> {user.links.spotify.replace(/https?:\/\//, '')}
-              </a>
-            )}
-            {/* Example of an Instagram handle link */}
-            {user?.links?.instagram && (
+            {user.links.instagram && (
               <a
                 href={user.links.instagram}
                 target="_blank"
-                rel="noreferrer"
-                className={styles.metaItem}
+                rel="noopener noreferrer"
+                className={styles.socialLink}
               >
-                <FaInstagram />{' '}
-                {user.links.instagram.replace(/https?:\/\//, '')}
+                <FaInstagram style={{ color: '#C13584' }} />
+                Instagram
               </a>
             )}
-            {/* Example Twitter link */}
-            {user?.links?.twitter && (
+
+            {user.links.twitter && (
               <a
                 href={user.links.twitter}
                 target="_blank"
-                rel="noreferrer"
-                className={styles.metaItem}
+                rel="noopener noreferrer"
+                className={styles.socialLink}
               >
-                <FaTwitter /> {user.links.twitter.replace(/https?:\/\//, '')}
+                <FaTwitter style={{ color: '#1DA1F2' }} />
+                Twitter
               </a>
             )}
-            {/* Example YouTube link */}
-            {user?.links?.youtube && (
+
+            {user.links.tiktok && (
+              <a
+                href={user.links.tiktok}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.socialLink}
+              >
+                <FaTiktok style={{ color: '#000000' }} />
+                TikTok
+              </a>
+            )}
+
+            {user.links.youtube && (
               <a
                 href={user.links.youtube}
                 target="_blank"
-                rel="noreferrer"
-                className={styles.metaItem}
+                rel="noopener noreferrer"
+                className={styles.socialLink}
               >
-                <FaYoutube /> YouTube
+                <FaYoutube style={{ color: '#FF0000' }} />
+                YouTube
               </a>
             )}
-
-            {/* Location */}
-            {user?.hometown && (
-              <span>
-                <FaLocationArrow /> {user?.hometown}
-              </span>
-            )}
-
-            {/* Joined date */}
-            <span className={styles.metaItem}>
-              <MdCalendarToday />
-              Joined {joinedDateString}
-            </span>
           </div>
+        )}
 
-          {/* Stats row (tracks, LMLT, following, followers) */}
-          <div className={styles.statsRow}>
-            <div className={styles.statItem}>
-              <h3>{user?.tracksCount ?? 0}</h3>
-              <p className={styles.statText}>Tracks</p>
-            </div>
-            <div className={styles.statItem}>
-              <h3>
-                {user?.lmltStacked ? user.lmltStacked.toLocaleString() : 0}
-              </h3>
-              <p className={styles.statText}>LMLT</p>
-            </div>
-            <div className={styles.statItem}>
-              <h3>{user?.total_following ?? 0}</h3>
-              <p className={styles.statText}>Following</p>
-            </div>
-            <div className={styles.statItem}>
-              <h3>{user?.total_followers ?? 0}</h3>
-              <p className={styles.statText}>Followers</p>
-            </div>
+        {/* Actions row */}
+        <div className={styles.actionsRow}>
+          {/* If it's the owner, show Edit Profile. Otherwise, show Follow/Following */}
+          {isOwner ? (
+            <>
+              <button className={styles.editBtn} onClick={handleEditProfile}>
+                <FaEdit />
+                <span>Edit Profile</span>
+              </button>
+              <div className={styles.dropdownWrapper}>
+                <button className={styles.moreBtn}>
+                  <FaEllipsisH />
+                </button>
+                <div className={styles.dropdownMenu}>
+                  <button onClick={handleCopyProfileUrl}>
+                    Copy Profile URL
+                  </button>
+                </div>
+              </div>
+            </>
+          ) : (
+            <>
+              <button className={styles.followBtn} onClick={handleFollowToggle}>
+                {isFollowing ? 'Following' : 'Follow'}
+              </button>
+              <div className={styles.dropdownWrapper}>
+                <button className={styles.moreBtn}>
+                  <FaEllipsisH />
+                </button>
+                <div className={styles.dropdownMenu}>
+                  <button onClick={handleCopyProfileUrl}>
+                    Copy Profile URL
+                  </button>
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+
+        {/* Stats row */}
+        <div className={styles.statsRow}>
+          <div className={styles.statItem}>
+            <h3>{user?.lmltStacked?.toLocaleString() || 0}</h3>
+            <p>LMLT</p>
+          </div>
+          <div className={styles.statItem}>
+            <h3>{user?.tracksCount ?? 0}</h3>
+            <p>Track</p>
+          </div>
+          <div className={styles.statItem}>
+            <h3>{user?.total_following ?? 0}</h3>
+            <p>Following</p>
+          </div>
+          <div className={styles.statItem}>
+            <h3>{user?.total_followers ?? 0}</h3>
+            <p>Followers</p>
           </div>
         </div>
       </div>

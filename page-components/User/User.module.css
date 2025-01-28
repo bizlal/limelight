@@ -1,3 +1,36 @@
+/* /page-components/User/User.module.css */
+
 .root {
-  padding: 18px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.tabContent {
+  margin-top: 1rem;
+  /* background: #000; if you want? */
+}
+
+.overviewTab {
+  /* The container for the Poster + Posts */
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Poster container above the posts feed */
+.posterContainer {
+  background: #1b1b1b;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.placeholderBox {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(6px);
+  padding: 2rem;
+  border-radius: 8px;
+  text-align: center;
+  color: #fff;
 }
