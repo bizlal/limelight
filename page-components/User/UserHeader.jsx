@@ -175,21 +175,21 @@ const UserHeader = ({ user }) => {
           <div className={styles.statsRow}>
             <div className={styles.statItem}>
               <h3>{user?.tracksCount ?? 0}</h3>
-              <p>Tracks</p>
+              <p className={styles.statText}>Tracks</p>
             </div>
             <div className={styles.statItem}>
               <h3>
                 {user?.lmltStacked ? user.lmltStacked.toLocaleString() : 0}
               </h3>
-              <p>LMLT</p>
+              <p className={styles.statText}>LMLT</p>
             </div>
             <div className={styles.statItem}>
               <h3>{user?.total_following ?? 0}</h3>
-              <p>Following</p>
+              <p className={styles.statText}>Following</p>
             </div>
             <div className={styles.statItem}>
               <h3>{user?.total_followers ?? 0}</h3>
-              <p>Followers</p>
+              <p className={styles.statText}>Followers</p>
             </div>
           </div>
         </div>
