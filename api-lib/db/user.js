@@ -26,10 +26,10 @@ export async function findUserById(db, userId) {
 }
 
 export async function findUserByUsername(db, username) {
-  return db
+  const user = await db
     .collection('users')
-    .findOne({ username: username }, { projection: dbProjectionUsers() })
-    .then((user) => user || null);
+    .findOne({ username }, { projection: dbProjectionUsers() });
+  return user || null;
 }
 
 export async function findUserByEmail(db, email) {
