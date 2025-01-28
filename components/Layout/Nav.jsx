@@ -28,37 +28,38 @@ const ERC20_ABI = [
   'function balanceOf(address) view returns (uint256)',
   'function symbol() view returns (string)',
   'function decimals() view returns (uint8)',
+  // If your contract actually has a "vestedBalanceOf" method:
+  'function vestedBalanceOf(address) view returns (uint256)',
 ];
 
-// LMLT token on Base:
+// Or if you have a separate vesting contract, define that address + ABI here.
 const LMLT_CONTRACT = '0x041040e0A67150BCaf126456b52751017f1c368E';
 
-// Example providers (replace with real RPC endpoints):
+// Example providers
 const baseProvider = new ethers.providers.JsonRpcProvider(
-  'https://mainnet.base.org' // or an Alchemy/Infura endpoint for Base
+  'https://mainnet.base.org'
 );
 const ethProvider = new ethers.providers.JsonRpcProvider(
-  'https://8453.rpc.thirdweb.com/a34344b907a4dd3c2811807c82a1b4bd' // or any Ethereum RPC
+  'https://8453.rpc.thirdweb.com/a34344b907a4dd3c2811807c82a1b4bd'
 );
 
-// Helper function to format large numbers
-const formatBalance = (balance) => {
+// Helper for large-number formatting (“K”, “M”, “B”)
+function formatBalance(balance) {
   if (balance >= 1e9) return (balance / 1e9).toFixed(2) + 'B';
   if (balance >= 1e6) return (balance / 1e6).toFixed(2) + 'M';
   if (balance >= 1e3) return (balance / 1e3).toFixed(2) + 'K';
   return balance.toFixed(2);
-};
+}
 
-// A small sub-component to display chain balances
-function Balances({ address }) {
+export function Balances({ address }) {
   const [ethBalance, setEthBalance] = useState(null);
   const [lmltBalance, setLmltBalance] = useState(null);
+  // const [vestedBalance, setVestedBalance] = useState(null); // NEW
   const [loading, setLoading] = useState(false);
-  console.log('Address:', address);
-  console.log('Balances:', ethBalance, lmltBalance);
 
   useEffect(() => {
     if (!address) return;
+
     let isMounted = true;
     (async () => {
       try {
@@ -66,21 +67,36 @@ function Balances({ address }) {
 
         // 1) Fetch ETH balance on Ethereum
         const weiBalance = await ethProvider.getBalance(address);
-        const ethBal = ethers.utils.formatEther(weiBalance);
+        const ethBal = parseFloat(ethers.utils.formatEther(weiBalance));
 
-        // 2) Fetch LMLT balance on Base
+        // 2) Fetch LMLT + Vested from Base
         const lmltContract = new ethers.Contract(
           LMLT_CONTRACT,
           ERC20_ABI,
           baseProvider
         );
+
+        // Normal LMLT
         const rawBalance = await lmltContract.balanceOf(address);
         const decimals = await lmltContract.decimals();
-        const formattedLmlt = ethers.utils.formatUnits(rawBalance, decimals);
+        const lmltFloat = parseFloat(
+          ethers.utils.formatUnits(rawBalance, decimals)
+        );
+
+        // Vested LMLT (assuming the same contract has a "vestedBalanceOf")
+        // If it's a separate contract, just define another contract instance/call:
+        // let vestedFloat = 0;
+        // if (lmltContract.vestedBalanceOf) {
+        //   const rawVested = await lmltContract.vestedBalanceOf(address);
+        //   vestedFloat = parseFloat(ethers.utils.formatUnits(rawVested, decimals));
+        // } else {
+        //   // fallback or skip if not applicable
+        // }
 
         if (isMounted) {
-          setEthBalance(parseFloat(ethBal));
-          setLmltBalance(parseFloat(formattedLmlt));
+          setEthBalance(ethBal);
+          setLmltBalance(lmltFloat);
+          // setVestedBalance(vestedFloat);
         }
       } catch (err) {
         console.error('Error fetching balances:', err);
@@ -88,14 +104,13 @@ function Balances({ address }) {
         if (isMounted) setLoading(false);
       }
     })();
+
     return () => {
       isMounted = false;
     };
   }, [address]);
 
-  if (!address) {
-    return null; // or "No Address"
-  }
+  if (!address) return null;
 
   return (
     <div className={styles.balanceContainer}>
@@ -103,15 +118,14 @@ function Balances({ address }) {
         <span>Loading Balances...</span>
       ) : (
         <>
-          {/* Show the address and truncated display */}
+          {/* 1) Truncated address */}
           <div className={styles.addressRow}>
             <span className={styles.addressLabel}>
-              {address.slice(0, 6)}...
-              {address.slice(-4)}
+              {address.slice(0, 6)}...{address.slice(-4)}
             </span>
           </div>
 
-          {/* ETH Balance */}
+          {/* 2) ETH Balance */}
           <div className={styles.chainRow}>
             <span className={styles.chainLabel}>Ethereum</span>
             <span className={styles.chainBalance}>
@@ -121,7 +135,7 @@ function Balances({ address }) {
             </span>
           </div>
 
-          {/* LMLT Balance */}
+          {/* 3) LMLT Balance */}
           <div className={styles.chainRow}>
             <span className={styles.chainLabel}>LMLT (Base)</span>
             <span className={styles.chainBalance}>
@@ -130,6 +144,14 @@ function Balances({ address }) {
                 : '0 LMLT'}
             </span>
           </div>
+
+          {/* 4) Vested LMLT - NEW */}
+          {/* <div className={styles.chainRow}>
+            <span className={styles.chainLabel}>Vested</span>
+            <span className={styles.chainBalance}>
+              {vestedBalance !== null ? `${formatBalance(vestedBalance)} LMLT` : '0 LMLT'}
+            </span>
+          </div> */}
         </>
       )}
     </div>
@@ -150,14 +172,7 @@ const UserMenu = ({ user, onDisconnect }) => {
       router.events.off('routeChangeComplete', onRouteChangeComplete);
     };
   }, [router.events]);
-  const {
-    ready,
-    authenticated,
-    user: privyUser,
-    login,
-    logout,
-    getAccessToken,
-  } = usePrivy();
+  const { user: privyUser } = usePrivy();
 
   // Close if outside click
   useEffect(() => {
