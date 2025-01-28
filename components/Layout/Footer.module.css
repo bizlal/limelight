@@ -1,7 +1,118 @@
 .footer {
-  font-size: 0.875rem;
-  background: var(--accents-1);
+  /* Slightly bigger base font for a more spacious feel */
+  font-size: 0.9rem;
+  /* Soft gradient background to give it depth */
+  background-color: var(--accents-1);
+  /* Subtle top border */
   border-top: 1px solid var(--accents-2);
-  padding: 2rem;
+  padding: 3rem 0; /* more vertical space for a grand look */
+}
+
+/* ============= TOP SECTION ============= */
+.topSection {
+  display: flex;
+  flex-wrap: wrap; /* so columns wrap on mobile */
+  justify-content: space-between;
+  gap: 2rem;
+  /* optional subtle border or shadow:
+     border-bottom: 1px solid var(--accents-2);
+     padding-bottom: 1rem;
+  */
+}
+
+/* Brand Column (left) */
+.brandColumn {
+  flex: 1 1 280px; /* can shrink or grow, min width 280px */
+  max-width: 320px;
+}
+
+.brandLogo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.brandTagline {
+  line-height: 1.5;
+  margin-top: 0.25rem;
+  opacity: 0.85;
+  /* a subdued color, if you wish:
+     color: var(--accents-6);
+  */
+}
+
+/* Each column (Product, Resources, Socials) */
+.column {
+  flex: 1 1 150px;
+  min-width: 150px;
+}
+
+/* Column titles: a bit bigger, uppercase, subtle letter spacing */
+.columnTitle {
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--accents-5);
+  font-size: 0.95rem;
+}
+
+/* List of links */
+.linkList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.linkList li {
+  margin: 0.4rem 0;
+}
+
+/* Enhance hover effect on links */
+.linkList li a {
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+.linkList li a:hover {
+  color: var(--link-hover, #888);
+  transform: translateX(2px);
+}
+
+/* ============= BOTTOM SECTION ============= */
+.bottomSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.bottomLinks {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
   text-align: center;
+}
+
+.policies {
+  display: flex;
+  gap: 1rem;
+}
+
+.policies a {
+  transition: color 0.2s ease;
+}
+.policies a:hover {
+  color: var(--link-hover, #888);
+}
+
+/* MEDIA QUERIES for bigger screens (optional) */
+@media (min-width: 768px) {
+  .bottomSection {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .bottomLinks {
+    flex-direction: row;
+    align-items: center;
+    text-align: left;
+  }
 }

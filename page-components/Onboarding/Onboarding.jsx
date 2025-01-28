@@ -29,7 +29,7 @@ export const Onboarding = () => {
   // States for each onboarding field
   const [bio, setBio] = useState('');
   const [homeTown, setHomeTown] = useState('');
-  const [profilePicture, setProfilePicture] = useState(null); // file object
+  const [profileImage, setprofileImage] = useState(null); // file object
 
   // Music fan fields
   const [favoriteGenres, setFavoriteGenres] = useState('');
@@ -48,7 +48,7 @@ export const Onboarding = () => {
   // If user wants to upload a profile pic, handle changes
   const onFileChange = (e) => {
     const file = e.target.files[0];
-    setProfilePicture(file);
+    setprofileImage(file);
     if (file) {
       setPreviewURL(URL.createObjectURL(file));
     }
@@ -97,8 +97,8 @@ export const Onboarding = () => {
       }
 
       // If user uploaded a profile pic
-      if (profilePicture) {
-        formData.append('profilePicture', profilePicture);
+      if (profileImage) {
+        formData.append('profileImage', profileImage);
       }
 
       // Example: POST to /api/user/onboarding or /api/users with multipart form

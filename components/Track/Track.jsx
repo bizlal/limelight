@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import clsx from 'clsx';
 import { format } from '@lukeed/ms';
+import Image from 'next/image';
 import styles from './Track.module.css';
 
 /**
@@ -57,7 +58,13 @@ export default function Track({ track, className, onPlay }) {
     <div className={clsx(styles.root, className)}>
       {/* Cover Image */}
       <div className={styles.coverWrapper}>
-        <img src={coverUrl} alt={title} className={styles.coverImage} />
+        <Image
+          src={coverUrl}
+          alt={title}
+          className={styles.coverImage}
+          layout="fill"
+          objectFit="cover"
+        />
       </div>
 
       {/* Main Text Content */}

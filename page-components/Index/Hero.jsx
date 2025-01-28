@@ -1,9 +1,13 @@
+import Head from 'next/head';
 import { useState } from 'react';
+import Link from 'next/link';
+import { useSpring, animated } from 'react-spring';
+
 import { ButtonLink } from '@/components/Button';
 import { Container, Spacer, Wrapper } from '@/components/Layout';
-import Link from 'next/link';
+
+// Import your CSS module
 import styles from './Hero.module.css';
-import { useSpring, animated } from 'react-spring';
 
 /**
  * Simple equirectangular projection for a 1000 x 500 map (not used in this example):
@@ -38,208 +42,247 @@ export default function Hero({
   totalFanbaseGrowth = 12000,
 }) {
   return (
-    <div className={styles.heroWrapper}>
-      <Wrapper>
-        <br />
-        <br />
+    <>
+      {/* SEO Head Section */}
+      <Head>
+        <title>Limelight: Shine a Spotlight on Your Music</title>
+        <meta
+          name="description"
+          content="Limelight is a platform for artists to connect with fans worldwide, showcase music, earn through tokens, and build loyal communities."
+        />
+        <meta
+          name="keywords"
+          content="limelight, music platform, artists, fans, tokens, streaming, discover"
+        />
 
-        {/* -- Hero Heading & Subtitle -- */}
-        <div className={styles.heroInner}>
-          <h1 className={styles.title}>Welcome to Limelight</h1>
-          <p className={styles.subtitle}>
-            Shine a spotlight on your music and connect with fans worldwide.
-          </p>
+        {/* Open Graph Meta Tags for social sharing */}
+        <meta property="og:title" content="Limelight Music Platform" />
+        <meta
+          property="og:description"
+          content="Shine a spotlight on your music and connect with fans worldwide on Limelight. Upload tracks, engage your audience, and earn LMLT tokens."
+        />
+        <meta property="og:image" content="/images/limelight-hero.jpg" />
+        <meta property="og:url" content="https://lmlt.ai" />
+        <meta property="og:type" content="website" />
 
-          {/* -- Buttons -- */}
-          <Container justifyContent="center" className={styles.buttons}>
-            <Container>
-              <Link legacyBehavior passHref href="/feed">
-                <ButtonLink className={styles.button}>Explore Feed</ButtonLink>
-              </Link>
+        {/* Twitter Card Meta */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Limelight Music Platform" />
+        <meta
+          name="twitter:description"
+          content="Upload, discover, and earn with our music ecosystem. Artists and fans unite on Limelight."
+        />
+        <meta name="twitter:image" content="/images/limelight-hero.jpg" />
+      </Head>
+
+      <div className={styles.heroWrapper}>
+        <Wrapper>
+          <br />
+          <br />
+
+          {/* -- Hero Heading & Subtitle -- */}
+          <div className={styles.heroInner}>
+            <h1 className={styles.title}>Welcome to Limelight</h1>
+            <p className={styles.subtitle}>
+              Shine a spotlight on your music and connect with fans worldwide.
+            </p>
+
+            {/* -- Buttons -- */}
+            <Container justifyContent="center" className={styles.buttons}>
+              <Container>
+                <Link legacyBehavior passHref href="/feed">
+                  <ButtonLink className={styles.button}>
+                    Explore Feed
+                  </ButtonLink>
+                </Link>
+              </Container>
+              <Spacer axis="horizontal" size={1} />
+              {/* 
+                <Container>
+                  <Link legacyBehavior passHref href="/sign-up">
+                    <ButtonLink type="success" className={styles.button}>
+                      Sign Up
+                    </ButtonLink>
+                  </Link>
+                </Container> 
+              */}
             </Container>
-            <Spacer axis="horizontal" size={1} />
-            {/* <Container>
-              <Link legacyBehavior passHref href="/sign-up">
-                <ButtonLink type="success" className={styles.button}>
-                  Sign Up
-                </ButtonLink>
-              </Link>
-            </Container> */}
-          </Container>
 
-          {/* -- Stats Section in a dark blur box -- */}
-          <div className={styles.statsWrapper}>
-            <div className={styles.statsContainer}>
-              <div className={styles.statItem}>
-                <h3>
-                  <AnimatedNumber value={totalUsers} />
-                </h3>
-                <p>Users</p>
-              </div>
-              <div className={styles.statItem}>
-                <h3>
-                  <AnimatedNumber value={totalArtists} />
-                </h3>
-                <p>Artists</p>
-              </div>
-              <div className={styles.statItem}>
-                <h3>
-                  <AnimatedNumber value={totalFans} />
-                </h3>
-                <p>Total Streams</p>
-              </div>
-              <div className={styles.statItem}>
-                <h3>
-                  <AnimatedNumber value={totalCities} />
-                </h3>
-                <p>Cities Reached</p>
-              </div>
-              <div className={styles.statItem}>
-                <h3>
-                  <AnimatedNumber value={totalFanbaseGrowth} />
-                </h3>
-                <p>Fanbase Growth</p>
+            {/* -- Stats Section in a dark blur box -- */}
+            <div className={styles.statsWrapper}>
+              <div className={styles.statsContainer}>
+                <div className={styles.statItem}>
+                  <h3>
+                    <AnimatedNumber value={totalUsers} />
+                  </h3>
+                  <p>Users</p>
+                </div>
+                <div className={styles.statItem}>
+                  <h3>
+                    <AnimatedNumber value={totalArtists} />
+                  </h3>
+                  <p>Artists</p>
+                </div>
+                <div className={styles.statItem}>
+                  <h3>
+                    <AnimatedNumber value={totalFans} />
+                  </h3>
+                  <p>Total Streams</p>
+                </div>
+                <div className={styles.statItem}>
+                  <h3>
+                    <AnimatedNumber value={totalCities} />
+                  </h3>
+                  <p>Cities Reached</p>
+                </div>
+                <div className={styles.statItem}>
+                  <h3>
+                    <AnimatedNumber value={totalFanbaseGrowth} />
+                  </h3>
+                  <p>Fanbase Growth</p>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </Wrapper>
+        </Wrapper>
 
-      <Wrapper>
-        <div className={styles.infoSections}>
-          {/* How It Works (card) */}
-          <section className={`${styles.infoSection} ${styles.card}`}>
-            <h2 className={styles.infoTitle}>How It Works</h2>
-            <p className={styles.infoText}>
-              Limelight provides artists with powerful tools to upload and share
-              their music, while fans discover new favorites and directly engage
-              with creators. Create an account, explore curated feeds, follow
-              artists, and get real-time updates on new releases.
+        <Wrapper>
+          <div className={styles.infoSections}>
+            {/* How It Works (card) */}
+            <section className={`${styles.infoSection} ${styles.card}`}>
+              <h2 className={styles.infoTitle}>How It Works</h2>
+              <p className={styles.infoText}>
+                Limelight provides artists with powerful tools to upload and
+                share their music, while fans discover new favorites and
+                directly engage with creators. Create an account, explore
+                curated feeds, follow artists, and get real-time updates on new
+                releases.
+              </p>
+            </section>
+
+            {/* Who It's For (card) */}
+            <section className={`${styles.infoSection} ${styles.card}`}>
+              <h2 className={styles.infoTitle}>Who It’s For</h2>
+              <p className={styles.infoText}>
+                This platform is designed for both aspiring and established
+                artists looking to expand their fanbase. It’s also for dedicated
+                music lovers who want an easy way to discover fresh sounds and
+                support their favorite artists.
+              </p>
+            </section>
+
+            {/* How It Helps (card) */}
+            <section className={`${styles.infoSection} ${styles.card}`}>
+              <h2 className={styles.infoTitle}>How It Helps</h2>
+              <p className={styles.infoText}>
+                Limelight bridges the gap between creators and their audience,
+                offering instant feedback, organic growth, and a personalized
+                listening experience. Artists can build loyal communities, while
+                fans access exclusive content and early releases from rising
+                stars.
+              </p>
+            </section>
+          </div>
+        </Wrapper>
+
+        {/* -- Token & Roadmap Sections -- */}
+        <Wrapper>
+          {/* Token Details (card) */}
+          <div className={`${styles.tokenSection} ${styles.card}`}>
+            <h2 className={styles.tokenTitle}>Introducing LMLT</h2>
+            <p className={styles.tokenText}>
+              LMLT (Limelight Token) is our native ERC-20 token that powers
+              transactions and rewards within the Limelight ecosystem. Artists
+              and fans can earn LMLT by engaging with content, and spend it on
+              exclusive features, merchandise, and premium access. Holding LMLT
+              also grants voting rights in platform governance, enabling our
+              community to shape the future of Limelight.
             </p>
-          </section>
+            <ul className={styles.tokenBenefits}>
+              <li>
+                <strong>Symbol:</strong> LMLT
+              </li>
+              <li>
+                <strong>Standard:</strong> ERC-20
+              </li>
+              <li>
+                <strong>Total Supply:</strong> 100M tokens
+              </li>
+              <li>
+                <strong>Utility:</strong> Rewards, Governance, Premium Access
+              </li>
+            </ul>
+          </div>
 
-          {/* Who It's For (card) */}
-          <section className={`${styles.infoSection} ${styles.card}`}>
-            <h2 className={styles.infoTitle}>Who It’s For</h2>
-            <p className={styles.infoText}>
-              This platform is designed for both aspiring and established
-              artists looking to expand their fanbase. It’s also for dedicated
-              music lovers who want an easy way to discover fresh sounds and
-              support their favorite artists.
+          <Spacer size={3} axis="vertical" />
+
+          {/* Artist Tokens & Bonding Curve (card) */}
+          <div className={`${styles.artistTokensSection} ${styles.card}`}>
+            <h2 className={styles.artistTokensTitle}>
+              Artist Tokens & Bonding Curves
+            </h2>
+            <p className={styles.artistTokensText}>
+              Each artist on Limelight can launch their own token, providing
+              fans with a unique way to invest and participate in an artist’s
+              success. These <strong>Artist Tokens</strong> follow a dynamic{' '}
+              <strong>bonding curve</strong> mechanism, which automatically
+              adjusts the token price based on supply and demand. As more fans
+              buy an artist’s token, its price increases following the curve’s
+              formula—and if tokens are sold, the price decreases accordingly.
+              This ensures transparent, real-time valuation of an artist’s
+              market momentum.
             </p>
-          </section>
+            <ul className={styles.bondingCurveBenefits}>
+              <li>Fair, algorithmic pricing based on real demand</li>
+              <li>
+                Early supporters benefit from appreciation as the artist grows
+              </li>
+              <li>Artists gain immediate liquidity without intermediaries</li>
+            </ul>
+          </div>
 
-          {/* How It Helps (card) */}
-          <section className={`${styles.infoSection} ${styles.card}`}>
-            <h2 className={styles.infoTitle}>How It Helps</h2>
-            <p className={styles.infoText}>
-              Limelight bridges the gap between creators and their audience,
-              offering instant feedback, organic growth, and a personalized
-              listening experience. Artists can build loyal communities, while
-              fans access exclusive content and early releases from rising
-              stars.
+          <Spacer size={3} axis="vertical" />
+
+          {/* Roadmap (card) */}
+          <div className={`${styles.roadmapSection} ${styles.card}`}>
+            <h2 className={styles.roadmapTitle}>Our Roadmap</h2>
+            <ol className={styles.roadmapList}>
+              <li>
+                <strong>Phase 1: Beta Launch</strong>
+                <p>
+                  Core platform features, basic user onboarding, initial token
+                  distribution.
+                </p>
+              </li>
+              <li>
+                <strong>Phase 2: Community Growth</strong>
+                <p>
+                  Introduce new social features, expand geographic reach, build
+                  up LMLT liquidity pools.
+                </p>
+              </li>
+              <li>
+                <strong>Phase 3: Marketplace & Governance</strong>
+                <p>
+                  Enable NFT marketplace, staking rewards, and DAO-like
+                  governance with LMLT voting.
+                </p>
+              </li>
+              <li>
+                <strong>Phase 4: Global Expansion</strong>
+                <p>
+                  Further partnerships, multi-language support, and large-scale
+                  marketing campaigns.
+                </p>
+              </li>
+            </ol>
+            <p className={styles.roadmapCurrent}>
+              <em>Current Stage:</em> We’re wrapping up Phase 2 and preparing to
+              launch Phase 3.
             </p>
-          </section>
-        </div>
-      </Wrapper>
-
-      {/* -- Token & Roadmap Sections -- */}
-      <Wrapper>
-        {/* Token Details (card) */}
-        <div className={`${styles.tokenSection} ${styles.card}`}>
-          <h2 className={styles.tokenTitle}>Introducing LMLT</h2>
-          <p className={styles.tokenText}>
-            LMLT (Limelight Token) is our native ERC-20 token that powers
-            transactions and rewards within the Limelight ecosystem. Artists and
-            fans can earn LMLT by engaging with content, and spend it on
-            exclusive features, merchandise, and premium access. Holding LMLT
-            also grants voting rights in platform governance, enabling our
-            community to shape the future of Limelight.
-          </p>
-          <ul className={styles.tokenBenefits}>
-            <li>
-              <strong>Symbol:</strong> LMLT
-            </li>
-            <li>
-              <strong>Standard:</strong> ERC-20
-            </li>
-            <li>
-              <strong>Total Supply:</strong> 100M tokens
-            </li>
-            <li>
-              <strong>Utility:</strong> Rewards, Governance, Premium Access
-            </li>
-          </ul>
-        </div>
-
-        <Spacer size={3} axis="vertical" />
-
-        {/* Artist Tokens & Bonding Curve (card) */}
-        <div className={`${styles.artistTokensSection} ${styles.card}`}>
-          <h2 className={styles.artistTokensTitle}>
-            Artist Tokens & Bonding Curves
-          </h2>
-          <p className={styles.artistTokensText}>
-            Each artist on Limelight can launch their own token, providing fans
-            with a unique way to invest and participate in an artist’s success.
-            These <strong>Artist Tokens</strong> follow a dynamic{' '}
-            <strong>bonding curve</strong> mechanism, which automatically
-            adjusts the token price based on supply and demand. As more fans buy
-            an artist’s token, its price increases following the curve’s
-            formula—and if tokens are sold, the price decreases accordingly.
-            This ensures transparent, real-time valuation of an artist’s market
-            momentum.
-          </p>
-          <ul className={styles.bondingCurveBenefits}>
-            <li>Fair, algorithmic pricing based on real demand</li>
-            <li>
-              Early supporters benefit from appreciation as the artist grows
-            </li>
-            <li>Artists gain immediate liquidity without intermediaries</li>
-          </ul>
-        </div>
-
-        <Spacer size={3} axis="vertical" />
-
-        {/* Roadmap (card) */}
-        <div className={`${styles.roadmapSection} ${styles.card}`}>
-          <h2 className={styles.roadmapTitle}>Our Roadmap</h2>
-          <ol className={styles.roadmapList}>
-            <li>
-              <strong>Phase 1: Beta Launch</strong>
-              <p>
-                Core platform features, basic user onboarding, initial token
-                distribution.
-              </p>
-            </li>
-            <li>
-              <strong>Phase 2: Community Growth</strong>
-              <p>
-                Introduce new social features, expand geographic reach, build up
-                LMLT liquidity pools.
-              </p>
-            </li>
-            <li>
-              <strong>Phase 3: Marketplace & Governance</strong>
-              <p>
-                Enable NFT marketplace, staking rewards, and DAO-like governance
-                with LMLT voting.
-              </p>
-            </li>
-            <li>
-              <strong>Phase 4: Global Expansion</strong>
-              <p>
-                Further partnerships, multi-language support, and large-scale
-                marketing campaigns.
-              </p>
-            </li>
-          </ol>
-          <p className={styles.roadmapCurrent}>
-            <em>Current Stage:</em> We’re wrapping up Phase 2 and preparing to
-            launch Phase 3.
-          </p>
-        </div>
-      </Wrapper>
-    </div>
+          </div>
+        </Wrapper>
+      </div>
+    </>
   );
 }

@@ -19,7 +19,7 @@ const Post = ({ post, className }) => {
           <Container className={styles.creator}>
             <Avatar
               size={36}
-              url={post.creator.profilePicture}
+              url={post.creator.profileImage}
               username={post.creator.username}
             />
             <Container column className={styles.meta}>

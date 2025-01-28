@@ -83,8 +83,6 @@ export function Balances({ address }) {
           ethers.utils.formatUnits(rawBalance, decimals)
         );
 
-        // Vested LMLT (assuming the same contract has a "vestedBalanceOf")
-        // If it's a separate contract, just define another contract instance/call:
         // let vestedFloat = 0;
         // if (lmltContract.vestedBalanceOf) {
         //   const rawVested = await lmltContract.vestedBalanceOf(address);
@@ -357,19 +355,6 @@ const Nav = () => {
                 limelight <span className={styles.beta}>beta</span>
               </span>
             </Link>
-
-            {authenticated && localUser?.username && (
-              <div className={styles.leftUserDisplay}>
-                <Avatar
-                  size={32}
-                  url={localUser.profilePicture || '/default-avatar.png'}
-                  username={localUser.username}
-                />
-                <span className={styles.userNameLeft}>
-                  {localUser.username}
-                </span>
-              </div>
-            )}
 
             <button
               className={styles.hamburger}

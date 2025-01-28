@@ -19,7 +19,7 @@ const Comment = ({ comment, className }) => {
           <Container className={styles.creator}>
             <Avatar
               size={36}
-              url={comment.creator.profilePicture}
+              url={comment.creator.profileImage}
               username={comment.creator.username}
             />
             <Container column className={styles.meta}>

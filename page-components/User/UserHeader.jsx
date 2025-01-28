@@ -53,7 +53,6 @@ const UserHeader = ({ user }) => {
   return (
     <div className={styles.profileWrapper}>
       {/* Optional label above the card */}
-      <div className={styles.roleLabel}>Listener Profile</div>
 
       <div className={styles.profileCard}>
         {/* Cover image */}
@@ -90,7 +89,7 @@ const UserHeader = ({ user }) => {
             <Avatar
               size={80}
               username={displayName}
-              src={user?.profileImage || '/default-avatar.png'}
+              url={user?.profileImage || '/default-avatar.png'}
             />
           </div>
 

@@ -44,7 +44,7 @@ const CommenterInner = ({ user, post }) => {
   return (
     <form onSubmit={onSubmit}>
       <Container className={styles.poster}>
-        <Avatar size={40} username={user.username} url={user.profilePicture} />
+        <Avatar size={40} username={user.username} url={user.profileImage} />
         <Input
           ref={contentRef}
           className={styles.input}
