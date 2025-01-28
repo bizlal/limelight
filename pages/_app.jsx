@@ -6,7 +6,7 @@ import { ThemeProvider } from 'next-themes';
 import { Toaster } from 'react-hot-toast';
 import { PrivyProvider } from '@privy-io/react-auth';
 import { Analytics } from '@vercel/analytics/react';
-import { SpeedInsights } from "@vercel/speed-insights/next"
+import { SpeedInsights } from '@vercel/speed-insights/next';
 export default function MyApp({ Component, pageProps }) {
   return (
     <PrivyProvider

@@ -3,7 +3,8 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import toast from 'react-hot-toast';
 import { usePrivy } from '@privy-io/react-auth';
-
+// Ethers for reading balances
+import { ethers } from 'ethers';
 // 1) Import react-icons
 import {
   FaUser,
@@ -22,13 +23,124 @@ import Container from './Container';
 import Wrapper from './Wrapper';
 
 import styles from './Nav.module.css';
+// Simple ERC-20 ABI for balanceOf, symbol, decimals, etc.
+const ERC20_ABI = [
+  'function balanceOf(address) view returns (uint256)',
+  'function symbol() view returns (string)',
+  'function decimals() view returns (uint8)',
+];
 
-// A small sub-component for the user dropdown
+// LMLT token on Base:
+const LMLT_CONTRACT = '0x041040e0A67150BCaf126456b52751017f1c368E';
+
+// Example providers (replace with real RPC endpoints):
+const baseProvider = new ethers.providers.JsonRpcProvider(
+  'https://mainnet.base.org' // or an Alchemy/Infura endpoint for Base
+);
+const ethProvider = new ethers.providers.JsonRpcProvider(
+  'https://8453.rpc.thirdweb.com/a34344b907a4dd3c2811807c82a1b4bd' // or any Ethereum RPC
+);
+
+// Helper function to format large numbers
+const formatBalance = (balance) => {
+  if (balance >= 1e9) return (balance / 1e9).toFixed(2) + 'B';
+  if (balance >= 1e6) return (balance / 1e6).toFixed(2) + 'M';
+  if (balance >= 1e3) return (balance / 1e3).toFixed(2) + 'K';
+  return balance.toFixed(2);
+};
+
+// A small sub-component to display chain balances
+function Balances({ address }) {
+  const [ethBalance, setEthBalance] = useState(null);
+  const [lmltBalance, setLmltBalance] = useState(null);
+  const [loading, setLoading] = useState(false);
+  console.log('Address:', address);
+  console.log('Balances:', ethBalance, lmltBalance);
+
+  useEffect(() => {
+    if (!address) return;
+    let isMounted = true;
+    (async () => {
+      try {
+        setLoading(true);
+
+        // 1) Fetch ETH balance on Ethereum
+        const weiBalance = await ethProvider.getBalance(address);
+        const ethBal = ethers.utils.formatEther(weiBalance);
+
+        // 2) Fetch LMLT balance on Base
+        const lmltContract = new ethers.Contract(
+          LMLT_CONTRACT,
+          ERC20_ABI,
+          baseProvider
+        );
+        const rawBalance = await lmltContract.balanceOf(address);
+        const decimals = await lmltContract.decimals();
+        const formattedLmlt = ethers.utils.formatUnits(rawBalance, decimals);
+
+        if (isMounted) {
+          setEthBalance(parseFloat(ethBal));
+          setLmltBalance(parseFloat(formattedLmlt));
+        }
+      } catch (err) {
+        console.error('Error fetching balances:', err);
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    })();
+    return () => {
+      isMounted = false;
+    };
+  }, [address]);
+
+  if (!address) {
+    return null; // or "No Address"
+  }
+
+  return (
+    <div className={styles.balanceContainer}>
+      {loading ? (
+        <span>Loading Balances...</span>
+      ) : (
+        <>
+          {/* Show the address and truncated display */}
+          <div className={styles.addressRow}>
+            <span className={styles.addressLabel}>
+              {address.slice(0, 6)}...
+              {address.slice(-4)}
+            </span>
+          </div>
+
+          {/* ETH Balance */}
+          <div className={styles.chainRow}>
+            <span className={styles.chainLabel}>Ethereum</span>
+            <span className={styles.chainBalance}>
+              {ethBalance !== null
+                ? `${formatBalance(ethBalance)} ETH`
+                : '0 ETH'}
+            </span>
+          </div>
+
+          {/* LMLT Balance */}
+          <div className={styles.chainRow}>
+            <span className={styles.chainLabel}>LMLT (Base)</span>
+            <span className={styles.chainBalance}>
+              {lmltBalance !== null
+                ? `${formatBalance(lmltBalance)} LMLT`
+                : '0 LMLT'}
+            </span>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+// The user menu
 const UserMenu = ({ user, onDisconnect }) => {
   const menuRef = useRef(null);
   const avatarRef = useRef(null);
   const [visible, setVisible] = useState(false);
-
   const router = useRouter();
 
   useEffect(() => {
@@ -38,8 +150,16 @@ const UserMenu = ({ user, onDisconnect }) => {
       router.events.off('routeChangeComplete', onRouteChangeComplete);
     };
   }, [router.events]);
+  const {
+    ready,
+    authenticated,
+    user: privyUser,
+    login,
+    logout,
+    getAccessToken,
+  } = usePrivy();
 
-  // Detect outside click to close menu
+  // Close if outside click
   useEffect(() => {
     const onMouseDown = (event) => {
       if (
@@ -56,7 +176,6 @@ const UserMenu = ({ user, onDisconnect }) => {
       document.removeEventListener('mousedown', onMouseDown);
     };
   }, []);
-
   return (
     <div className={styles.userMenu}>
       <button
@@ -81,33 +200,29 @@ const UserMenu = ({ user, onDisconnect }) => {
           aria-hidden={!visible}
           className={styles.popover}
         >
-          {/* MENU CONTENT */}
           <div className={styles.menu}>
-            {/* Top row: Profile + Settings side by side */}
+            {/* Show balances at the top, for example */}
+            <Balances address={privyUser.wallet.address} />
+
             <div className={styles.menuTopRow}>
-              <Link legacyBehavior passHref href={`/user/${user.username}`}>
-                <a className={styles.menuItem}>
-                  <FaUser className={styles.menuIcon} />
-                  Profile
-                </a>
+              <Link href={`/user/${user.username}`} className={styles.menuItem}>
+                <FaUser className={styles.menuIcon} />
+                Profile
               </Link>
-              <Link legacyBehavior passHref href="/settings">
-                <a className={styles.menuItem}>
-                  <FaCog className={styles.menuIcon} />
-                  Settings
-                </a>
+              <Link href="/settings" className={styles.menuItem}>
+                <FaCog className={styles.menuIcon} />
+                Settings
               </Link>
             </div>
 
-            {/* Big Upload button */}
-            <Link legacyBehavior passHref href={`/new-release`}>
-              <a className={`${styles.menuItem} ${styles.uploadBtn}`}>
-                <FaUpload className={styles.menuIcon} />
-                Upload Music
-              </a>
+            <Link
+              href="/new-release"
+              className={`${styles.menuItem} ${styles.uploadBtn}`}
+            >
+              <FaUpload className={styles.menuIcon} />
+              Upload Music
             </Link>
 
-            {/* Theme switch row */}
             <div className={`${styles.menuItem} ${styles.themeRow}`}>
               <FaAdjust className={styles.menuIcon} />
               <span>Theme</span>
@@ -115,7 +230,6 @@ const UserMenu = ({ user, onDisconnect }) => {
               <ThemeSwitcher />
             </div>
 
-            {/* Disconnect button */}
             <button onClick={onDisconnect} className={styles.menuItem}>
               <FaSignOutAlt className={styles.menuIcon} />
               Disconnect
@@ -150,6 +264,7 @@ const Nav = () => {
       setServerLoggedIn(false);
       return;
     }
+
     if (router.pathname === '/sign-up') {
       return;
     }
