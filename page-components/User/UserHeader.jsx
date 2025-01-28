@@ -181,7 +181,7 @@ const UserHeader = ({ user }) => {
               <h3>
                 {user?.lmltStacked ? user.lmltStacked.toLocaleString() : 0}
               </h3>
-              <p>LMLT Stacked</p>
+              <p>LMLT</p>
             </div>
             <div className={styles.statItem}>
               <h3>{user?.total_following ?? 0}</h3>

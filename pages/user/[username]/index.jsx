@@ -63,20 +63,34 @@ export async function getStaticProps({ params }) {
     return { notFound: true };
   }
 
-  // Clean up & ensure no null
-  user.createdAt = user.createdAt
-    ? new Date(user.createdAt).toISOString()
-    : null;
-  user.updatedAt = user.updatedAt
-    ? new Date(user.updatedAt).toISOString()
-    : null;
-  user.username = user.username || '';
-  user.name = user.name || '';
-  user.profileImage = user.profileImage || '';
-  user.bio = user.bio || '';
-  // ...and so on for other fields
+   // Clean up fields & ensure no null/undefined
+   user.createdAt = user.createdAt
+   ? new Date(user.createdAt).toISOString()
+   : null;
+ user.updatedAt = user.updatedAt
+   ? new Date(user.updatedAt).toISOString()
+   : null;
+ user.username = user.username || '';
+ user.name = user.name || '';
+ user.userType = user.userType || '';
+ user.hometown = user.hometown || '';
+ user.profileImage = user.profileImage || '';
+ user.headerImage = user.headerImage || '';
+ user.genres = user.genres || [];
+ user.bio = user.bio || '';
+ user.total_following = user.total_following || 0;
+ user.total_followers = user.total_followers || 0;
+ user.links = user.links || {};
+ user.links.website = user.links.website || '';
+ user.links.spotify = user.links.spotify || '';
+ user.links.itunes = user.links.itunes || '';
+ user.links.instagram = user.links.instagram || '';
+ user.links.twitter = user.links.twitter || '';
+ user.links.tiktok = user.links.tiktok || '';
+ user.links.youtube = user.links.youtube || '';
 
-  user._id = String(user._id);
+ user._id = String(user._id);
+
 
   return {
     props: { user },
