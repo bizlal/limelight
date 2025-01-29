@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
+import "hardhat/console.sol";
 
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
@@ -23,6 +24,7 @@ contract Bonding is
     using SafeERC20 for IERC20;
 
     address private _feeTo;
+
     FFactory public factory;
     FRouter public router;
     uint256 public initialSupply;
@@ -32,7 +34,6 @@ contract Bonding is
     uint256 public gradThreshold;
     uint256 public maxTx;
     address public artistFactory;
-
     struct Profile {
         address user;
         address[] tokens;
@@ -42,7 +43,7 @@ contract Bonding is
         address creator;
         address token;
         address pair;
-        address artistToken; // Not used after graduation since not returned from IArtistFactory
+        address artistToken;
         Data data;
         string description;
         uint8[] cores;
@@ -78,13 +79,14 @@ contract Bonding is
     }
 
     DeployParams private _deployParams;
+
     mapping(address => Profile) public profile;
     address[] public profiles;
+
     mapping(address => Token) public tokenInfo;
     address[] public tokenInfos;
 
     event Launched(address indexed token, address indexed pair, uint);
-
     event Deployed(address indexed token, uint256 amount0, uint256 amount1);
     event Graduated(address indexed token, address artistToken);
 
@@ -125,8 +127,11 @@ contract Bonding is
         address[] memory _tokens;
 
         Profile memory _profile = Profile({user: _user, tokens: _tokens});
+
         profile[_user] = _profile;
+
         profiles.push(_user);
+
         return true;
     }
 
@@ -140,6 +145,7 @@ contract Bonding is
         uint256 amount
     ) internal returns (bool) {
         IERC20(_token).forceApprove(_spender, amount);
+
         return true;
     }
 
@@ -161,7 +167,8 @@ contract Bonding is
     }
 
     function setAssetRate(uint256 newRate) public onlyOwner {
-        require(newRate > 0, "Rate error");
+        require(newRate > 0, "Rate err");
+
         assetRate = newRate;
     }
 
@@ -172,8 +179,10 @@ contract Bonding is
     function getUserTokens(
         address account
     ) public view returns (address[] memory) {
-        require(_checkIfProfileExists(account), "User profile does not exist.");
+        require(_checkIfProfileExists(account), "User Profile dose not exist.");
+
         Profile memory _profile = profile[account];
+
         return _profile.tokens;
     }
 
@@ -186,14 +195,16 @@ contract Bonding is
         string[4] memory urls,
         uint256 purchaseAmount
     ) public nonReentrant returns (address, address, uint) {
-        require(purchaseAmount > fee, "Purchase amount must exceed fee");
+        require(
+            purchaseAmount > fee,
+            "Purchase amount must be greater than fee"
+        );
         address assetToken = router.assetToken();
         require(
             IERC20(assetToken).balanceOf(msg.sender) >= purchaseAmount,
-            "Insufficient balance"
+            "Insufficient amount"
         );
-
-        uint256 initialPurchase = purchaseAmount - fee;
+        uint256 initialPurchase = (purchaseAmount - fee);
         IERC20(assetToken).safeTransferFrom(msg.sender, _feeTo, fee);
         IERC20(assetToken).safeTransferFrom(
             msg.sender,
@@ -201,29 +212,22 @@ contract Bonding is
             initialPurchase
         );
 
-        FERC20 token = new FERC20(
-            string.concat("Limelight ", _name),
-            _ticker,
-            initialSupply,
-            maxTx
-        );
+        FERC20 token = new FERC20(string.concat("fun ", _name), _ticker, initialSupply, maxTx);
         uint256 supply = token.totalSupply();
+
         address _pair = factory.createPair(address(token), assetToken);
 
         bool approved = _approval(address(router), address(token), supply);
-        require(approved, "Token approval failed");
+        require(approved);
 
         uint256 k = ((K * 10000) / assetRate);
         uint256 liquidity = (((k * 10000 ether) / supply) * 1 ether) / 10000;
-        if (liquidity == 0) {
-            liquidity = 1e9; // or some minimal value
-        }
 
         router.addInitialLiquidity(address(token), supply, liquidity);
 
         Data memory _data = Data({
             token: address(token),
-            name: string.concat("Limelight ", _name),
+            name: string.concat("fun ", _name),
             _name: _name,
             ticker: _ticker,
             supply: supply,
@@ -235,7 +239,6 @@ contract Bonding is
             prevPrice: supply / liquidity,
             lastUpdated: block.timestamp
         });
-
         Token memory tmpToken = Token({
             creator: msg.sender,
             token: address(token),
@@ -249,28 +252,33 @@ contract Bonding is
             telegram: urls[1],
             youtube: urls[2],
             website: urls[3],
-            trading: true,
+            trading: true, // Can only be traded once creator made initial purchase
             tradingOnUniswap: false
         });
-
         tokenInfo[address(token)] = tmpToken;
         tokenInfos.push(address(token));
 
         bool exists = _checkIfProfileExists(msg.sender);
+
         if (exists) {
             Profile storage _profile = profile[msg.sender];
+
             _profile.tokens.push(address(token));
         } else {
             bool created = _createUserProfile(msg.sender);
+
             if (created) {
                 Profile storage _profile = profile[msg.sender];
+
                 _profile.tokens.push(address(token));
             }
         }
 
-        uint256 n = tokenInfos.length;
+        uint n = tokenInfos.length;
+
         emit Launched(address(token), _pair, n);
 
+        // Make initial purchase
         IERC20(assetToken).forceApprove(address(router), initialPurchase);
         router.buy(initialPurchase, address(token), address(this));
         token.transfer(msg.sender, token.balanceOf(address(this)));
@@ -283,13 +291,16 @@ contract Bonding is
         address tokenAddress
     ) public returns (bool) {
         require(tokenInfo[tokenAddress].trading, "Token not trading");
+
         address pairAddress = factory.getPair(
             tokenAddress,
             router.assetToken()
         );
+
         IFPair pair = IFPair(pairAddress);
 
         (uint256 reserveA, uint256 reserveB) = pair.getReserves();
+
         (uint256 amount0In, uint256 amount1Out) = router.sell(
             amountIn,
             tokenAddress,
@@ -315,7 +326,9 @@ contract Bonding is
         tokenInfo[tokenAddress].data.price = price;
         tokenInfo[tokenAddress].data.marketCap = mCap;
         tokenInfo[tokenAddress].data.liquidity = liquidity;
-        tokenInfo[tokenAddress].data.volume += amount1Out;
+        tokenInfo[tokenAddress].data.volume =
+            tokenInfo[tokenAddress].data.volume +
+            amount1Out;
         tokenInfo[tokenAddress].data.volume24H = volume;
         tokenInfo[tokenAddress].data.prevPrice = prevPrice;
 
@@ -326,18 +339,21 @@ contract Bonding is
         return true;
     }
 
-    function buy(
+  function buy(
         uint256 amountIn,
         address tokenAddress
     ) public payable returns (bool) {
         require(tokenInfo[tokenAddress].trading, "Token not trading");
+
         address pairAddress = factory.getPair(
             tokenAddress,
             router.assetToken()
         );
+
         IFPair pair = IFPair(pairAddress);
 
         (uint256 reserveA, uint256 reserveB) = pair.getReserves();
+
         (uint256 amount1In, uint256 amount0Out) = router.buy(
             amountIn,
             tokenAddress,
@@ -346,7 +362,6 @@ contract Bonding is
 
         uint256 newReserveA = reserveA - amount0Out;
         uint256 newReserveB = reserveB + amount1In;
-
         uint256 duration = block.timestamp -
             tokenInfo[tokenAddress].data.lastUpdated;
 
@@ -354,7 +369,6 @@ contract Bonding is
         uint256 mCap = (tokenInfo[tokenAddress].data.supply * newReserveB) /
             newReserveA;
         uint256 price = newReserveA / newReserveB;
-
         uint256 volume = duration > 86400
             ? amount1In
             : tokenInfo[tokenAddress].data.volume24H + amount1In;
@@ -365,7 +379,9 @@ contract Bonding is
         tokenInfo[tokenAddress].data.price = price;
         tokenInfo[tokenAddress].data.marketCap = mCap;
         tokenInfo[tokenAddress].data.liquidity = liquidity;
-        tokenInfo[tokenAddress].data.volume += amount1In;
+        tokenInfo[tokenAddress].data.volume =
+            tokenInfo[tokenAddress].data.volume +
+            amount1In;
         tokenInfo[tokenAddress].data.volume24H = volume;
         tokenInfo[tokenAddress].data.prevPrice = _price;
 
@@ -382,20 +398,23 @@ contract Bonding is
 
     function _openTradingOnUniswap(address tokenAddress) private {
         FERC20 token_ = FERC20(tokenAddress);
+
         Token storage _token = tokenInfo[tokenAddress];
 
         require(
             _token.trading && !_token.tradingOnUniswap,
-            "Trading is already open or on Uniswap"
+            "trading is already open"
         );
 
         _token.trading = false;
         _token.tradingOnUniswap = true;
 
+        // Transfer asset tokens to bonding contract
         address pairAddress = factory.getPair(
             tokenAddress,
             router.assetToken()
         );
+
         IFPair pair = IFPair(pairAddress);
 
         uint256 assetBalance = pair.assetBalance();
@@ -404,34 +423,37 @@ contract Bonding is
         router.graduate(tokenAddress);
 
         IERC20(router.assetToken()).forceApprove(artistFactory, assetBalance);
-
-        // Use IArtistFactory:
-        uint256 id = IArtistFactory(artistFactory).initFromToken(
-            tokenAddress,
+        uint256 id = IArtistFactory(artistFactory).initFromBondingCurve(
+            string.concat(_token.data._name, " by Limelight"),
+            _token.data.ticker,
             _token.cores,
             _deployParams.tbaSalt,
             _deployParams.tbaImplementation,
             _deployParams.daoVotingPeriod,
             _deployParams.daoThreshold,
-            assetBalance
+            assetBalance,
+            _token.creator
         );
 
-        IArtistFactory(artistFactory).executeTokenApplication(id, true);
-
-        // No artistToken returned, set to address(0)
-        _token.artistToken = address(0);
+        address artistToken = IArtistFactory(artistFactory)
+            .executeBondingCurveApplication(
+                id,
+                _token.data.supply / (10 ** token_.decimals()),
+                tokenBalance / (10 ** token_.decimals()),
+                pairAddress
+            );
+        _token.artistToken = artistToken;
 
         router.approval(
             pairAddress,
-            address(0), // no artist token known
+            artistToken,
             address(this),
-            0
+            IERC20(artistToken).balanceOf(pairAddress)
         );
 
-        // Burn the original tokens from pair
         token_.burnFrom(pairAddress, tokenBalance);
 
-        emit Graduated(tokenAddress, address(0));
+        emit Graduated(tokenAddress, artistToken);
     }
 
     function unwrapToken(
@@ -439,20 +461,22 @@ contract Bonding is
         address[] memory accounts
     ) public {
         Token memory info = tokenInfo[srcTokenAddress];
-        require(info.tradingOnUniswap, "Token not graduated");
-
-        // If we had a known artistToken, we could transfer. But now we don't have it.
-        // This function may need to be rethought. For now, we assume no unwrap logic needed since no artistToken known.
-        // If needed, just omit artistToken logic.
+        require(info.tradingOnUniswap, "Token is not graduated yet");
 
         FERC20 token = FERC20(srcTokenAddress);
-        for (uint256 i = 0; i < accounts.length; i++) {
+        IERC20 artistToken = IERC20(info.artistToken);
+        address pairAddress = factory.getPair(
+            srcTokenAddress,
+            router.assetToken()
+        );
+        for (uint i = 0; i < accounts.length; i++) {
             address acc = accounts[i];
             uint256 balance = token.balanceOf(acc);
             if (balance > 0) {
                 token.burnFrom(acc, balance);
-                // artistToken unknown => skip transferFrom
+                artistToken.transferFrom(pairAddress, acc, balance);
             }
         }
     }
+
 }

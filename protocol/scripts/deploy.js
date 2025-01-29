@@ -33,9 +33,11 @@ async function main() {
     if (supportedChainIds.includes(chainId.toString())) {
       console.log("No existing Asset Token address provided. Deploying AssetToken...");
       const FERC20 = await ethers.getContractFactory("FERC20");
-      const initialSupply = process.env.INITIAL_SUPPLY; // 1,000 AST = 1e3 * 1e18 = 1e21
-      const maxTx = process.env.MAX_TX ; // Default maxTx to 1000 if not set
+      const initialSupply = ethers.utils.parseEther(process.env.INITIAL_SUPPLY || "1000");
+      const maxTx = ethers.utils.parseEther(process.env.MAX_TX || "1000");
       const assetToken = await FERC20.deploy("Limelight", "LMLT", initialSupply, maxTx);
+      
+
       assetTokenAddress = await assetToken.address;
       console.log("AssetToken deployed to:", assetTokenAddress, "\n");
     } else {
@@ -124,6 +126,97 @@ async function main() {
 
   console.log("Roles granted and router set.\n");
 
+  // 3) Deploy the new NFT, DAO, VeToken, ArtistToken
+  console.log("Deploying ArtistNft...");
+  const ArtistNft = await ethers.getContractFactory("ArtistNft");
+  const artistNft = await upgrades.deployProxy(
+    ArtistNft,
+    [deployer.address],
+    {
+      unsafeAllow: ["internal-function-storage"],
+    }
+  );
+  
+  await artistNft.deployed();
+  console.log("ArtistNft at:", artistNft.address);
+
+  const contribution = await upgrades.deployProxy(
+    await ethers.getContractFactory("ContributionNft"),
+    [artistNft.address],
+    {}
+  );
+
+  console.log("ContributionNft at:", contribution.address);
+  const service = await upgrades.deployProxy(
+    await ethers.getContractFactory("ServiceNft"),
+    [artistNft.address, contribution.address, process.env.DATASET_SHARES],
+    {}
+  );
+console.log("ServiceNft at:", service.address);
+  await artistNft.setContributionService(contribution.address, service.address);
+console.log("Contribution and Service NFTs set on ArtistNft.\n");
+  console.log("Deploying ArtistDAO...");
+  const ArtistDAO = await ethers.getContractFactory("ArtistDAO");
+  const artistDAO = await ArtistDAO.deploy(); // non-upgradeable
+  await artistDAO.deployed();
+  console.log("ArtistDAO at:", artistDAO.address);
+
+  console.log("Deploying ArtistVeToken...");
+  const ArtistVeToken = await ethers.getContractFactory("ArtistVeToken");
+  const artistVeToken = await ArtistVeToken.deploy();
+  await artistVeToken.deployed();
+  console.log("ArtistVeToken at:", artistVeToken.address);
+
+  console.log("Deploying ArtistToken (implementation)...");
+  const ArtistToken = await ethers.getContractFactory("ArtistToken");
+  const artistToken = await ArtistToken.deploy();
+  await artistToken.deployed();
+  console.log("ArtistToken at:", artistToken.address);
+
+  // 4) Deploy the ArtistFactory
+  console.log("Deploying ArtistFactory...");
+  const ArtistFactory = await ethers.getContractFactory("ArtistFactory");
+  const artistFactory = await upgrades.deployProxy(
+    ArtistFactory,
+    [
+      artistToken.address,
+      artistVeToken.address,
+      artistDAO.address,
+      process.env.TBA_REGISTRY,
+      assetTokenAddress, // from earlier
+      artistNft.address,
+      process.env.APPLICATION_THRESHOLD,
+      process.env.ARTIST_VAULT,
+      0
+    ],
+    { initializer: "initialize" }
+  );
+  await artistFactory.deployed();
+  console.log("ArtistFactory deployed at:", artistFactory.address);
+
+  // 5) Grant MINTER_ROLE in ArtistNft to ArtistFactory
+  const MINTER_ROLE = await artistNft.MINTER_ROLE();
+  await artistNft.grantRole(MINTER_ROLE, artistFactory.address);
+  await artistFactory.setMaturityDuration(86400 * 365 * 10); // 10years
+  await artistFactory.setUniswapRouter(process.env.UNISWAP_ROUTER);
+  await artistFactory.setTokenAdmin(deployer.address); 
+  await artistFactory.setTokenSupplyParams(
+    process.env.ARTIST_TOKEN_SUPPLY,
+    process.env.ARTIST_TOKEN_LP_SUPPLY,
+    process.env.ARTIST_TOKEN_VAULT_SUPPLY,
+    process.env.ARTIST_TOKEN_SUPPLY,
+    process.env.ARTIST_TOKEN_SUPPLY,
+    process.env.BOT_PROTECTION,
+    deployer.address
+  );
+
+  await artistFactory.setTokenTaxParams(
+    process.env.TAX,
+    process.env.TAX,
+    process.env.SWAP_THRESHOLD,
+    treasury.address
+  );
+
   // 9. Deploy Bonding Contract (Upgradeable)
   console.log("Deploying Bonding Contract...");
   const Bonding = await ethers.getContractFactory("Bonding");
@@ -132,11 +225,16 @@ async function main() {
     [],
     { initializer: false } // Initialize manually after role assignment
   );
+
+  await bonding.deployed();
  
-  const bondingAddress = await bonding.address;
+  const bondingAddress = bonding.address;
   console.log("Bonding deployed at:", bondingAddress, "\n");
 
+  // 6) Grant BONDING_ROLE in ArtistFactory to Bonding
+  const BONDING_ROLE = await artistFactory.BONDING_ROLE();
   // 10. Grant CREATOR_ROLE to Bonding on FFactory
+  await artistFactory.grantRole(BONDING_ROLE, bonding.address);
   console.log("Granting CREATOR_ROLE to Bonding on FFactory...");
   const grantCreatorRoleToBondingTx = await fFactory.grantRole(
     CREATOR_ROLE,
@@ -174,7 +272,7 @@ async function main() {
   console.log("INITIAL_SUPPLY:", process.env.INITIAL_SUPPLY || "1000");
   console.log("ASSET_RATE:", process.env.ASSET_RATE || "1");
   console.log("MAX_TX:", process.env.MAX_TX || "100");
-  console.log("ARTIST_FACTORY:", process.env.ARTIST_FACTORY);
+  console.log("ARTIST_FACTORY:", artistFactory.address);
   console.log("GRAD_THRESHOLD:", process.env.GRAD_THRESHOLD || "3000000\n");
 
   // Initialize the Bonding Contract
@@ -186,8 +284,8 @@ async function main() {
     process.env.INITIAL_SUPPLY, // 1,000 AST
     process.env.ASSET_RATE,
     process.env.MAX_TX,
-    process.env.ARTIST_FACTORY,
-    process.env.GRAD_THRESHOLD
+    artistFactory.address,
+    ethers.utils.parseEther("85000000"),
   );
   console.log("Bonding initialized successfully.\n");
 
@@ -276,7 +374,7 @@ console.log("Deployer Token Balance:",
         "https://youtube.com/hassanshah",
         "https://hassanshah.com"
       ],
-      purchaseAmount                // purchaseAmount
+      ethers.utils.parseEther("2")
     );
     const receiptLaunch = await txLaunch.wait();
 
@@ -319,37 +417,37 @@ console.log("Deployer Token Balance:",
   const tokenDataBeforeBuy = await getTokenData(bonding, artistTokenAddress);
   console.log("Artist Token Data Before Buy:", tokenDataBeforeBuy, "\n");
 
-  // 17. Perform Buy Operation
-  console.log("Performing Buy Operation...");
-  const buyAmountIn = ethers.utils.parseEther("100"); // Buy 100 AST worth of artist tokens
+//   // 17. Perform Buy Operation
+//   console.log("Performing Buy Operation...");
+//   const buyAmountIn = ethers.utils.parseEther("1"); // Buy 100 AST worth of artist tokens
 
-  // Check if deployer has enough AST
-  const updatedDeployerASTBalance = await assetTokenContract.balanceOf(deployer.address);
-  if (buyAmountIn > updatedDeployerASTBalance) {
-    throw new Error("Insufficient AST balance for buy operation.");
-  }
+//   // Check if deployer has enough AST
+//   const updatedDeployerASTBalance = await assetTokenContract.balanceOf(deployer.address);
+//   if (buyAmountIn > updatedDeployerASTBalance) {
+//     throw new Error("Insufficient AST balance for buy operation.");
+//   }
 
-  // Approve Bonding contract to spend AST if not already approved
-const currentAllowance = await assetTokenContract.allowance(deployer.address, fRouterAddress);
+//   // Approve Bonding contract to spend AST if not already approved
+// const currentAllowance = await assetTokenContract.allowance(deployer.address, fRouterAddress);
 
-if (currentAllowance < buyAmountIn) {
-  console.log("Approving FRouter contract to spend additional AST for buy...");
-  const approveBuyTx = await assetTokenContract.approve(fRouterAddress, buyAmountIn);
-  await approveBuyTx.wait();
-  console.log("Approved additional AST for buy.\n");
-}
+// if (currentAllowance < buyAmountIn) {
+//   console.log("Approving FRouter contract to spend additional AST for buy...");
+//   const approveBuyTx = await assetTokenContract.approve(fRouterAddress, buyAmountIn);
+//   await approveBuyTx.wait();
+//   console.log("Approved additional AST for buy.\n");
+// }
 
-  try {
-    const txBuy = await bonding.buy(
-      buyAmountIn,
-      artistTokenAddress,
-    );
-    const receiptBuy = await txBuy.wait();
-    console.log("Buy executed successfully:", receiptBuy.transactionHash, "\n");
-  } catch (buyError) {
-    console.error("Buy Execution Error:", buyError);
-    throw buyError;
-  }
+//   try {
+//     const txBuy = await bonding.buy(
+//       buyAmountIn,
+//       artistTokenAddress,
+//     );
+//     const receiptBuy = await txBuy.wait();
+//     console.log("Buy executed successfully:", receiptBuy.transactionHash, "\n");
+//   } catch (buyError) {
+//     console.error("Buy Execution Error:", buyError);
+//     throw buyError;
+//   }
 
   // Step 1: Check initial token data (just for clarity)
 console.log("Retrieving Artist Token Data Before Forced Graduation...");
@@ -359,26 +457,42 @@ console.log("Initial Token Data:", tokenData);
 // Step 2: Decide how much to buy to trigger graduation
 // You may need to guess or incrementally buy until `newReserveA <= gradThreshold`
 // For example, buy 100 AST worth of tokens at a time in a loop until graduation triggers
+const chunkSize = ethers.utils.parseEther("35000"); // buy 0.2 AST worth each iteration
+let done = false;
+let iteration = 0;
+const maxIterations = 5000; // safety limit
 
-const largeBuyAmount = ethers.parseEther("100"); // Adjust this to a large enough value
-await assetTokenContract.approve(bondingAddress, largeBuyAmount);
+while (!done && iteration < maxIterations) {
+  iteration++;
 
-// Perform the buy
-console.log("Performing large buy to trigger graduation...");
-const txBuyToGraduate = await bonding.buy(largeBuyAmount, artistTokenAddress);
-await txBuyToGraduate.wait();
+  // Approve bonding contract for chunkSize
+  await assetTokenContract.approve(fRouterAddress, chunkSize);
 
-// Step 3: Check if graduation happened
-tokenData = await bonding.tokenInfo(artistTokenAddress);
-console.log("Post-Buy Token Data:", tokenData);
+  console.log(`Iteration #${iteration}, buying ${chunkSize} AST...`);
+  const txBuy = await bonding.buy(chunkSize, artistTokenAddress);
+  await txBuy.wait();
 
-if (tokenData.tradingOnUniswap) {
-  console.log("Token successfully graduated to Uniswap!");
-} else {
-  console.log("Token not yet graduated. You may need to buy more.");
+  // Check tokenData
+  const tokenData = await bonding.tokenInfo(artistTokenAddress);
+  const newReserveA = tokenData.data[8]; // or wherever newReserveA is stored
+  console.log("tokenData after buy:", tokenData);
+
+  if (tokenData.tradingOnUniswap) {
+    console.log("Token successfully graduated to Uniswap!");
+    done = true;
+    break;
+  }
+
+  // If you store newReserveA in your struct, check it directly:
+  // if (newReserveA <= gradThreshold) {
+  //   console.log("Reserve threshold met, token graduated!");
+  //   done = true;
+  // }
 }
 
-
+if (!done) {
+  console.log("Token not yet graduated. Try increasing chunk size or number of loops.");
+}
   // 18. Retrieve Artist Token Data After Buy
   console.log("Retrieving Artist Token Data After Buy...");
   const tokenDataAfterBuy = await getTokenData(bonding, artistTokenAddress);
@@ -386,7 +500,7 @@ if (tokenData.tradingOnUniswap) {
 
 //   // 19. Perform Sell Operation
   console.log("Performing Sell Operation...");
-  const sellAmountIn = ethers.parseEther("10"); // Sell 10 artist tokens
+  const sellAmountIn = ethers.utils.parseEther("10"); // Sell 10 artist tokens
 
   // Check if deployer has enough AST
   const deployerASTBalanceForSell = await artistTokenContract.balanceOf(deployer.address);

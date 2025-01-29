@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/governance/IGovernor.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol"; // Use upgradeable version
+import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
 
 import "./IArtistFactory.sol";
@@ -15,15 +15,16 @@ import "./IArtistVeToken.sol";
 import "./IArtistDAO.sol";
 import "./IArtistNft.sol";
 import "../libs/IERC6551Registry.sol";
-import "../pool/IUniswapV2Factory.sol";
-import "../pool/IUniswapV2Router02.sol";
 
 contract ArtistFactory is
     IArtistFactory,
     Initializable,
-    AccessControlUpgradeable, // Use AccessControlUpgradeable
+    AccessControl,
     PausableUpgradeable
 {
+    function _contextSuffixLength() internal view virtual override(Context, ContextUpgradeable) returns (uint256) {
+        return ContextUpgradeable._contextSuffixLength();
+    }
     using SafeERC20 for IERC20;
 
     uint256 private _nextId;
@@ -37,11 +38,11 @@ contract ArtistFactory is
     address[] public allDAOs;
 
     address public assetToken; // Base currency
-    uint256 public maturityDuration; // Staking duration in seconds for initial LP. e.g.: 10 years
+    uint256 public maturityDuration; // Staking duration in seconds for initial LP. eg: 10years
 
-    bytes32 public constant WITHDRAW_ROLE = keccak256("WITHDRAW_ROLE");
+    bytes32 public constant WITHDRAW_ROLE = keccak256("WITHDRAW_ROLE"); // Able to withdraw and execute applications
 
-    event NewArtistPersona(
+    event NewPersona(
         uint256 limelightId,
         address token,
         address dao,
@@ -50,6 +51,43 @@ contract ArtistFactory is
         address lp
     );
     event NewApplication(uint256 id);
+
+    enum ApplicationStatus {
+        Active,
+        Executed,
+        Withdrawn
+    }
+
+    struct Application {
+        string name;
+        string symbol;
+        string tokenURI;
+        ApplicationStatus status;
+        uint256 withdrawableAmount;
+        address proposer;
+        uint8[] cores;
+        uint256 proposalEndBlock;
+        uint256 limelightId;
+        bytes32 tbaSalt;
+        address tbaImplementation;
+        uint32 daoVotingPeriod;
+        uint256 daoThreshold;
+    }
+
+    mapping(uint256 => Application) private _applications;
+
+    address public gov; // Deprecated in v2, execution of application does not require DAO decision anymore
+
+    modifier onlyGov() {
+        require(msg.sender == gov, "Only DAO can execute proposal");
+        _;
+    }
+
+    event ApplicationThresholdUpdated(uint256 newThreshold);
+    event GovUpdated(address newGov);
+    event ImplContractsUpdated(address token, address dao);
+
+    address private _vault; // Vault to hold all Limelight NFTs
 
     bool internal locked;
 
@@ -60,24 +98,26 @@ contract ArtistFactory is
         locked = false;
     }
 
+    ///////////////////////////////////////////////////////////////
+    // V2 Storage
+    ///////////////////////////////////////////////////////////////
     address[] public allTradingTokens;
     address private _uniswapRouter;
     address public veTokenImplementation;
+    address private _minter; // Unused
     address private _tokenAdmin;
     address public defaultDelegatee;
+
+    // Default artist token params
     bytes private _tokenSupplyParams;
     bytes private _tokenTaxParams;
+    uint16 private _tokenMultiplier; // Unused
 
-    mapping(address => uint256) private _tokenApplication;
-    mapping(uint256 => address) private _applicationToken;
+    bytes32 public constant BONDING_ROLE = keccak256("BONDING_ROLE");
 
-    mapping(uint256 => Application) private _applications;
+    ///////////////////////////////////////////////////////////////
 
-    event ApplicationThresholdUpdated(uint256 newThreshold);
-    event ImplContractsUpdated(address token, address dao);
-
-    address private _vault; // Vault to hold all Artist NFTs
-
+    /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
         _disableInitializers();
     }
@@ -94,7 +134,6 @@ contract ArtistFactory is
         uint256 nextId_
     ) public initializer {
         __Pausable_init();
-        __AccessControl_init(); // Initialize AccessControlUpgradeable
 
         tokenImplementation = tokenImplementation_;
         veTokenImplementation = veTokenImplementation_;
@@ -143,7 +182,7 @@ contract ArtistFactory is
         );
 
         uint256 id = _nextId++;
-        uint256 proposalEndBlock = block.number;
+        uint256 proposalEndBlock = block.number; // No longer required in v2
         Application memory application = Application(
             name,
             symbol,
@@ -176,12 +215,12 @@ contract ArtistFactory is
 
         require(
             application.status == ApplicationStatus.Active,
-            "Application not active"
+            "Application is not active"
         );
 
         require(
             block.number > application.proposalEndBlock,
-            "Application not matured"
+            "Application is not matured yet"
         );
 
         uint256 withdrawableAmount = application.withdrawableAmount;
@@ -193,17 +232,6 @@ contract ArtistFactory is
             application.proposer,
             withdrawableAmount
         );
-
-        address customToken = _applicationToken[id];
-        if (customToken != address(0)) {
-            IERC20(customToken).safeTransfer(
-                application.proposer,
-                IERC20(customToken).balanceOf(address(this))
-            );
-
-            _tokenApplication[customToken] = 0;
-            _applicationToken[id] = address(0);
-        }
     }
 
     function _executeApplication(
@@ -213,7 +241,7 @@ contract ArtistFactory is
     ) internal {
         require(
             _applications[id].status == ApplicationStatus.Active,
-            "Not active"
+            "Application is not active"
         );
 
         require(_tokenAdmin != address(0), "Token admin not set");
@@ -224,34 +252,19 @@ contract ArtistFactory is
         application.withdrawableAmount = 0;
         application.status = ApplicationStatus.Executed;
 
-        address token = _applicationToken[id];
-        address lp = address(0);
-        if (token == address(0)) {
-            token = _createNewArtistToken(
-                application.name,
-                application.symbol,
-                tokenSupplyParams_
-            );
-            lp = IArtistToken(token).liquidityPools()[0];
-            IERC20(assetToken).safeTransfer(token, initialAmount);
-            IArtistToken(token).addInitialLiquidity(address(this));
-        } else {
-            // Custom token
-            lp = _createPair(token);
-            IERC20(token).forceApprove(_uniswapRouter, type(uint256).max);
-            IERC20(assetToken).forceApprove(_uniswapRouter, initialAmount);
-            IUniswapV2Router02(_uniswapRouter).addLiquidity(
-                token,
-                assetToken,
-                IERC20(token).balanceOf(address(this)),
-                initialAmount,
-                0,
-                0,
-                address(this),
-                block.timestamp
-            );
-        }
+        // C1
+        address token = _createNewArtistToken(
+            application.name,
+            application.symbol,
+            tokenSupplyParams_
+        );
 
+        // C2
+        address lp = IArtistToken(token).liquidityPools()[0];
+        IERC20(assetToken).safeTransfer(token, initialAmount);
+        IArtistToken(token).addInitialLiquidity(address(this));
+
+        // C3
         address veToken = _createNewArtistVeToken(
             string.concat("Staked ", application.name),
             string.concat("s", application.symbol),
@@ -260,9 +273,10 @@ contract ArtistFactory is
             canStake
         );
 
+        // C4
         string memory daoName = string.concat(application.name, " DAO");
         address payable dao = payable(
-            _createNewArtistDAO(
+            _createNewDAO(
                 daoName,
                 IVotes(veToken),
                 application.daoVotingPeriod,
@@ -270,6 +284,7 @@ contract ArtistFactory is
             )
         );
 
+        // C5
         uint256 limelightId = IArtistNft(nft).nextLimelightId();
         IArtistNft(nft).mint(
             limelightId,
@@ -283,6 +298,7 @@ contract ArtistFactory is
         );
         application.limelightId = limelightId;
 
+        // C6
         uint256 chainId;
         assembly {
             chainId := chainid()
@@ -296,6 +312,7 @@ contract ArtistFactory is
         );
         IArtistNft(nft).setTBA(limelightId, tbaAddress);
 
+        // C7
         IERC20(lp).approve(veToken, type(uint256).max);
         IArtistVeToken(veToken).stake(
             IERC20(lp).balanceOf(address(this)),
@@ -303,10 +320,19 @@ contract ArtistFactory is
             defaultDelegatee
         );
 
-        emit NewArtistPersona(limelightId, token, dao, tbaAddress, veToken, lp);
+        emit NewPersona(limelightId, token, dao, tbaAddress, veToken, lp);
     }
 
     function executeApplication(uint256 id, bool canStake) public noReentrant {
+        // This will bootstrap an Artist with following components:
+        // C1: Artist Token
+        // C2: LP Pool + Initial liquidity
+        // C3: Artist veToken
+        // C4: Artist DAO
+        // C5: Artist NFT
+        // C6: TBA
+        // C7: Stake liquidity token to get veToken
+
         Application storage application = _applications[id];
 
         require(
@@ -318,7 +344,7 @@ contract ArtistFactory is
         _executeApplication(id, canStake, _tokenSupplyParams);
     }
 
-    function _createNewArtistDAO(
+    function _createNewDAO(
         string memory name,
         IVotes token,
         uint32 daoVotingPeriod,
@@ -470,7 +496,7 @@ contract ArtistFactory is
     function _msgSender()
         internal
         view
-        override(ContextUpgradeable)
+        override(Context, ContextUpgradeable)
         returns (address sender)
     {
         sender = ContextUpgradeable._msgSender();
@@ -479,65 +505,52 @@ contract ArtistFactory is
     function _msgData()
         internal
         view
-        override(ContextUpgradeable)
+        override(Context, ContextUpgradeable)
         returns (bytes calldata)
     {
         return ContextUpgradeable._msgData();
     }
 
-    function setDefaultDelegatee(
-        address newDelegatee
-    ) public onlyRole(DEFAULT_ADMIN_ROLE) {
-        defaultDelegatee = newDelegatee;
-    }
-
-    function initFromToken(
-        address tokenAddr,
+    function initFromBondingCurve(
+        string memory name,
+        string memory symbol,
         uint8[] memory cores,
         bytes32 tbaSalt,
         address tbaImplementation,
         uint32 daoVotingPeriod,
         uint256 daoThreshold,
-        uint256 initialLP
-    ) public whenNotPaused returns (uint256) {
+        uint256 applicationThreshold_,
+        address creator
+    ) public whenNotPaused onlyRole(BONDING_ROLE) returns (uint256) {
         address sender = _msgSender();
-        require(_tokenApplication[tokenAddr] == 0, "Token exists");
-        require(isCompatibleToken(tokenAddr), "Unsupported token");
-
         require(
-            IERC20(assetToken).balanceOf(sender) >= applicationThreshold,
+            IERC20(assetToken).balanceOf(sender) >= applicationThreshold_,
             "Insufficient asset token"
         );
-
         require(
             IERC20(assetToken).allowance(sender, address(this)) >=
-                applicationThreshold,
+                applicationThreshold_,
             "Insufficient asset token allowance"
         );
-
         require(cores.length > 0, "Cores must be provided");
-        require(initialLP > 0, "InitialLP must be > 0");
 
-        IERC20(tokenAddr).safeTransferFrom(sender, address(this), initialLP);
         IERC20(assetToken).safeTransferFrom(
             sender,
             address(this),
-            applicationThreshold
+            applicationThreshold_
         );
 
         uint256 id = _nextId++;
-        _tokenApplication[tokenAddr] = id;
-        _applicationToken[id] = tokenAddr;
-
+        uint256 proposalEndBlock = block.number; // No longer required in v2
         Application memory application = Application(
-            IArtistToken(tokenAddr).name(),
-            IArtistToken(tokenAddr).symbol(),
+            name,
+            symbol,
             "",
             ApplicationStatus.Active,
-            applicationThreshold,
-            sender,
+            applicationThreshold_,
+            creator,
             cores,
-            block.number,
+            proposalEndBlock,
             0,
             tbaSalt,
             tbaImplementation,
@@ -550,62 +563,32 @@ contract ArtistFactory is
         return id;
     }
 
-    function executeTokenApplication(
+    function executeBondingCurveApplication(
         uint256 id,
-        bool canStake
-    ) public noReentrant {
-        Application storage application = _applications[id];
-
-        require(
-            msg.sender == application.proposer ||
-                hasRole(WITHDRAW_ROLE, msg.sender),
-            "Not proposer"
+        uint256 totalSupply,
+        uint256 lpSupply,
+        address vault
+    ) public onlyRole(BONDING_ROLE) noReentrant returns (address) {
+        bytes memory tokenSupplyParams = abi.encode(
+            totalSupply,
+            lpSupply,
+            totalSupply - lpSupply,
+            totalSupply,
+            totalSupply,
+            0,
+            vault
         );
 
-        require(
-            _applicationToken[id] != address(0),
-            "Not custom token application"
-        );
+        _executeApplication(id, true, tokenSupplyParams);
 
-        _executeApplication(id, canStake, _tokenSupplyParams);
+        Application memory application = _applications[id];
+
+        return IArtistNft(nft).limelightInfo(application.limelightId).token;
     }
 
-    function isCompatibleToken(address tokenAddr) public view returns (bool) {
-        try IArtistToken(tokenAddr).name() returns (string memory) {
-            try IArtistToken(tokenAddr).symbol() returns (string memory) {
-                try IArtistToken(tokenAddr).totalSupply() returns (uint256) {
-                    try
-                        IArtistToken(tokenAddr).balanceOf(address(this))
-                    returns (uint256) {
-                        return true;
-                    } catch {
-                        return false;
-                    }
-                } catch {
-                    return false;
-                }
-            } catch {
-                return false;
-            }
-        } catch {
-            return false;
-        }
-    }
-
-    function _createPair(
-        address tokenAddr
-    ) internal returns (address uniswapV2Pair_) {
-        IUniswapV2Factory factory = IUniswapV2Factory(
-            IUniswapV2Router02(_uniswapRouter).factory()
-        );
-
-        require(
-            factory.getPair(tokenAddr, assetToken) == address(0),
-            "pool exists"
-        );
-
-        uniswapV2Pair_ = factory.createPair(tokenAddr, assetToken);
-
-        return (uniswapV2Pair_);
+    function setDefaultDelegatee(
+        address newDelegatee
+    ) public onlyRole(DEFAULT_ADMIN_ROLE) {
+        defaultDelegatee = newDelegatee;
     }
 }
