@@ -25,7 +25,13 @@ async function main() {
   const chainId = hre.network.config.chainId || ((await hre.ethers.provider.getNetwork()).chainId);
   console.log(`Network: ${network}`);
   console.log(`Chain ID: ${chainId}\n`);
+  const getAccounts = async () => {
+    const [deployer, ipVault, founder, poorMan, trader, treasury] =
+      await ethers.getSigners();
+    return { deployer, ipVault, founder, poorMan, trader, treasury };
+  };
 
+  //THE ABOVE IS KEY https://github.com/Virtual-Protocol/protocol-contracts/blob/main/test/bonding.js
   // 5. Deploy or Use Existing Asset Token
   let assetTokenAddress = process.env.ASSET_TOKEN_ADDRESS;
   if (!assetTokenAddress || assetTokenAddress === "0x0000000000000000000000000000000000000000") {
@@ -478,7 +484,7 @@ console.log("Initial Token Data:", tokenData);
 // Step 2: Decide how much to buy to trigger graduation
 // You may need to guess or incrementally buy until `newReserveA <= gradThreshold`
 // For example, buy 100 AST worth of tokens at a time in a loop until graduation triggers
-const chunkSize = ethers.utils.parseEther("35000"); // buy 0.2 AST worth each iteration
+const chunkSize = ethers.utils.parseEther("1000"); // buy 0.2 AST worth each iteration
 let done = false;
 let iteration = 0;
 const maxIterations = 5000; // safety limit
