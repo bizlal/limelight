@@ -278,7 +278,19 @@ console.log("Contribution and Service NFTs set on ArtistNft.\n");
   console.log("MAX_TX:", process.env.MAX_TX || "100");
   console.log("ARTIST_FACTORY:", artistFactory.address);
   console.log("GRAD_THRESHOLD:", process.env.GRAD_THRESHOLD || "3000000\n");
-
+  const genesisInput = {
+    name: "Jessica",
+    symbol: "JSC",
+    tokenURI: "http://jessica",
+    daoName: "Jessica DAO",
+    cores: [0, 1, 2],
+    tbaSalt:
+      "0xa7647ac9429fdce477ebd9a95510385b756c757c26149e740abbab0ad1be2f16",
+    tbaImplementation:tbaRegistry.address,
+    daoVotingPeriod: 600,
+    daoThreshold: 1000000000000000000000n,
+  };
+  console.log("genesisInput", genesisInput);
   // Initialize the Bonding Contract
   await bonding.initialize(
     fFactoryAddress,
@@ -292,7 +304,12 @@ console.log("Contribution and Service NFTs set on ArtistNft.\n");
     ethers.utils.parseEther("85000000"),
   );
   console.log("Bonding initialized successfully.\n");
-
+  await bonding.setDeployParams([
+    genesisInput.tbaSalt,
+    genesisInput.tbaImplementation,
+    genesisInput.daoVotingPeriod,
+    genesisInput.daoThreshold,
+  ]);
   // 14. Verify Fee and Asset Rate
   const bondingFee = await bonding.fee();
   console.log("Bonding Fee (from contract):", ethers.utils.formatEther(bondingFee), "AST");
@@ -361,7 +378,7 @@ console.log("Deployer Token Balance:",
   bonding.on("Launched", (token, pair, tokenIndex) => {
     console.log(`Launched Event: Token Address=${token}, Pair Address=${pair}, Token Index=${tokenIndex}`);
   });
-
+ 
   // Launch the artist and capture the Artist Token Address from the event
   let artistTokenAddress;
   try {
