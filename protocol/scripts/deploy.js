@@ -176,7 +176,7 @@ console.log("Contribution and Service NFTs set on ArtistNft.\n");
   const tbaRegistry = await TBARegistryFactory.deploy();
   await tbaRegistry.deployed();
   console.log("TBA Registry deployed at:", tbaRegistry.address);
-  console.log("TBA deployed at:", tba.address);
+  console.log("TBA deployed at:", tbaRegistry.address);
   // 4) Deploy the ArtistFactory
   console.log("Deploying ArtistFactory...");
   const ArtistFactory = await ethers.getContractFactory("ArtistFactory");
@@ -186,7 +186,7 @@ console.log("Contribution and Service NFTs set on ArtistNft.\n");
       artistToken.address,
       artistVeToken.address,
       artistDAO.address,
-      tba.address,
+      tbaRegistry.address,
       assetTokenAddress, // from earlier
       artistNft.address,
       process.env.APPLICATION_THRESHOLD,
