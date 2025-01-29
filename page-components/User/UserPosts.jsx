@@ -11,7 +11,7 @@ import styles from './UserPosts.module.css';
 const UserPosts = ({ user }) => {
   // We assume you have a custom pagination hook for fetching posts
   const { data, size, setSize, isLoadingMore, isReachingEnd } = usePostPages({
-    uid: user._id,
+    uid: user.uid,
   });
   const posts = data
     ? data.reduce((acc, val) => [...acc, ...val.posts], [])

@@ -46,7 +46,6 @@
 }
 
 .title {
-  /* Larger font & text shadow */
   font-size: 3.4rem;
   font-weight: 800;
   margin: 0 0 1rem;
@@ -55,7 +54,6 @@
 }
 
 .subtitle {
-  /* Slightly larger font & stronger color */
   font-size: 1.4rem;
   font-weight: 400;
   max-width: 650px;
@@ -89,7 +87,6 @@
 .statsWrapper {
   margin: 2rem auto;
   padding: 2rem;
-  /* Make the box slightly less transparent so text is more legible */
   background-color: rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(8px);
   border-radius: 12px;
@@ -114,7 +111,6 @@
   font-weight: 700;
   margin: 0;
   color: #fff;
-  /* Subtle text shadow */
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
 }
 
@@ -139,15 +135,14 @@
 }
 
 .card {
-  /* Increase opacity for stronger contrast */
   background-color: rgba(255, 255, 255, 0.12);
   backdrop-filter: blur(8px);
   border-radius: 12px;
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
   border: 1px solid rgba(255, 255, 255, 0.25);
-  padding: 2.5rem; /* slightly bigger padding for airy feel */
+  padding: 2.5rem;
   margin-bottom: 2rem;
-  color: #fff; /* Make text fully white */
+  color: #fff;
   animation: fadeInUp 0.4s ease forwards;
 }
 
@@ -238,7 +233,86 @@
 }
 
 /********************************************************
- *  ARTIST TOKENS SECTION
+ *  DISTRIBUTION, VESTING, BONDING CURVE SECTIONS
+ ********************************************************/
+.distributionSection {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.distributionTitle {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+.distributionContent {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* The chart wrapper can be constrained in size if desired */
+.chartWrapper {
+  max-width: 600px;
+  margin: 0 auto; /* center the chart */
+}
+
+.distributionTable {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background-color: rgba(0, 0, 0, 0.2);
+  margin: 0 auto;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.distributionTable th,
+.distributionTable td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fefefe;
+}
+
+.distributionTable thead tr {
+  background-color: rgba(255, 255, 255, 0.1);
+  font-weight: 700;
+}
+
+.distributionTable tbody tr:hover {
+  background-color: rgba(255, 255, 255, 0.07);
+}
+
+/********************************************************
+ *  VESTING SECTION
+ ********************************************************/
+.vestingSection {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.vestingTitle {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 1rem;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+.vestingInfo {
+  margin-top: 1rem;
+  font-size: 1rem;
+  color: #ddd;
+  line-height: 1.5;
+}
+
+/********************************************************
+ *  ARTIST TOKENS & BONDING CURVE SECTION
  ********************************************************/
 .artistTokensSection {
   background: rgba(255, 255, 255, 0.12);
@@ -265,11 +339,81 @@
   margin-bottom: 1.25rem;
 }
 
-.bondingCurveBenefits {
-  list-style: disc;
-  margin-left: 1.5rem;
-  margin-top: 1rem;
-  color: #eee;
+/* Additional sub-sections for purchase examples and market cap unlocks */
+.examplesSection {
+  margin-top: 2rem;
+}
+
+.examplesTitle {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+.purchaseTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0 auto;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background-color: rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.purchaseTable th,
+.purchaseTable td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fefefe;
+}
+
+.purchaseTable thead tr {
+  background-color: rgba(255, 255, 255, 0.1);
+  font-weight: 700;
+}
+
+.purchaseTable tbody tr:hover {
+  background-color: rgba(255, 255, 255, 0.07);
+}
+
+.unlocksSection {
+  margin-top: 2rem;
+}
+
+.unlocksTitle {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+.unlocksTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0 auto;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background-color: rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.unlocksTable th,
+.unlocksTable td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fefefe;
+}
+
+.unlocksTable thead tr {
+  background-color: rgba(255, 255, 255, 0.1);
+  font-weight: 700;
+}
+
+.unlocksTable tbody tr:hover {
+  background-color: rgba(255, 255, 255, 0.07);
 }
 
 /********************************************************
@@ -327,4 +471,155 @@
   color: #ccc;
   font-style: italic;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+/********************************************************
+ *  FAQ SECTION
+ ********************************************************/
+.faqSection {
+  background-color: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(8px);
+  border-radius: 12px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  animation: fadeInUp 0.4s ease forwards;
+  color: #fff;
+  padding: 2.5rem;
+  margin-bottom: 2rem;
+}
+
+.faqTitle {
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+}
+
+/* Each FAQ item container */
+.faqItem {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+/* Expand style if you want a visual difference when open */
+.faqItem.expanded {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* FAQ question row (clickable) */
+.faqQuestion {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  color: #fff;
+  font-weight: 600;
+  transition: background 0.2s ease;
+}
+
+.faqQuestion:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* The icon on the right (+ / -) */
+.faqIcon {
+  font-size: 1.4rem;
+  margin-left: 1rem;
+}
+
+/* FAQ answer content (collapsible) */
+.faqAnswer {
+  overflow: hidden;
+  transition: max-height 0.3s ease, padding 0.3s ease;
+  max-height: 0; /* start collapsed */
+}
+
+.faqAnswer p {
+  margin: 0;
+  color: #eee;
+  font-size: 0.95rem;
+  padding: 0 1rem; /* left/right padding for text */
+  line-height: 1.5;
+}
+/* Roadmap container, reusing some existing card styles */
+.roadmapSection {
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(8px);
+  padding: 2.5rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+  animation: fadeInUp 0.4s ease forwards;
+  color: #fff;
+  margin-bottom: 2rem;
+}
+
+.roadmapTitle {
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: #fff;
+  text-shadow: 0 2px 3px rgba(0, 0, 0, 0.5);
+}
+
+/* Each roadmap item container */
+.roadmapItem {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  overflow: hidden;
+  transition: background 0.3s;
+}
+
+.roadmapItem.expanded {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* The clickable "question" row with phase title */
+.roadmapQuestion {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+  transition: background 0.2s ease;
+  color: #fff;
+}
+
+.roadmapQuestion:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* The + / - icon on the right */
+.roadmapIcon {
+  font-size: 1.2rem;
+  margin-left: 1rem;
+}
+
+/* The content block that collapses/expands */
+.roadmapAnswer {
+  overflow: hidden;
+  transition: max-height 0.3s ease, padding 0.3s ease;
+  max-height: 0; /* collapsed by default */
+}
+
+.roadmapAnswer p {
+  margin: 0;
+  color: #eee;
+  font-size: 0.95rem;
+  padding: 0 1rem;
+  line-height: 1.5;
+  /* We add top/bottom padding dynamically in the inline style
+     if it's open or closed. */
+}
+
+.roadmapCurrent {
+  margin-top: 1rem;
+  font-style: italic;
+  color: #ccc;
 }
