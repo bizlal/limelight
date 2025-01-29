@@ -1,0 +1,137 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "ERC6551Registry",
+  "sourceName": "src/contracts/libs/ERC6551Registry.sol",
+  "abi": [
+    {
+      "inputs": [],
+      "name": "InitializationFailed",
+      "type": "error"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "implementation",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "chainId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "tokenContract",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "tokenId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "salt",
+          "type": "uint256"
+        }
+      ],
+      "name": "AccountCreated",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "implementation",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "chainId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "tokenContract",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "tokenId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "salt",
+          "type": "uint256"
+        }
+      ],
+      "name": "account",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "implementation",
+          "type": "address"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "salt",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "uint256",
+          "name": "chainId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "tokenContract",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "tokenId",
+          "type": "uint256"
+        }
+      ],
+      "name": "createAccount",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x6080806040523461001657610115908161001c8239f35b600080fdfe6080806040526004361015601257600080fd5b600090813560e01c9081635e9bc53614607c5750638a54c52f14603457600080fd5b3460795760a0366003190112607957604960c5565b506064356001600160a01b038116036079576020604051739965507d1a55bcc2695c58ba16fb37d819b0a4dc8152f35b80fd5b90503460c15760a036600319011260c157609360c5565b506044356001600160a01b0381160360c15780739965507d1a55bcc2695c58ba16fb37d819b0a4dc60209252f35b5080fd5b600435906001600160a01b038216820360da57565b600080fdfea26469706673582212206a307912a4a10c980dc8abb8d560244fbe11c3db6cc65b6e06c2cd112120007264736f6c63430008140033",
+  "deployedBytecode": "0x6080806040526004361015601257600080fd5b600090813560e01c9081635e9bc53614607c5750638a54c52f14603457600080fd5b3460795760a0366003190112607957604960c5565b506064356001600160a01b038116036079576020604051739965507d1a55bcc2695c58ba16fb37d819b0a4dc8152f35b80fd5b90503460c15760a036600319011260c157609360c5565b506044356001600160a01b0381160360c15780739965507d1a55bcc2695c58ba16fb37d819b0a4dc60209252f35b5080fd5b600435906001600160a01b038216820360da57565b600080fdfea26469706673582212206a307912a4a10c980dc8abb8d560244fbe11c3db6cc65b6e06c2cd112120007264736f6c63430008140033",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}

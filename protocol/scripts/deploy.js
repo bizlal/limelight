@@ -172,7 +172,11 @@ console.log("Contribution and Service NFTs set on ArtistNft.\n");
   const artistToken = await ArtistToken.deploy();
   await artistToken.deployed();
   console.log("ArtistToken at:", artistToken.address);
-
+  const TBARegistryFactory = await ethers.getContractFactory("ERC6551Registry");
+  const tbaRegistry = await TBARegistryFactory.deploy();
+  await tbaRegistry.deployed();
+  console.log("TBA Registry deployed at:", tbaRegistry.address);
+  console.log("TBA deployed at:", tba.address);
   // 4) Deploy the ArtistFactory
   console.log("Deploying ArtistFactory...");
   const ArtistFactory = await ethers.getContractFactory("ArtistFactory");
@@ -182,7 +186,7 @@ console.log("Contribution and Service NFTs set on ArtistNft.\n");
       artistToken.address,
       artistVeToken.address,
       artistDAO.address,
-      process.env.TBA_REGISTRY,
+      tba.address,
       assetTokenAddress, // from earlier
       artistNft.address,
       process.env.APPLICATION_THRESHOLD,
@@ -214,7 +218,7 @@ console.log("Contribution and Service NFTs set on ArtistNft.\n");
     process.env.TAX,
     process.env.TAX,
     process.env.SWAP_THRESHOLD,
-    treasury.address
+    deployer.address
   );
 
   // 9. Deploy Bonding Contract (Upgradeable)
