@@ -61,6 +61,7 @@ module.exports = {
   networks: {
     mainnet: mainnetNetworkConfig(),
     goerli: goerliNetworkConfig(),
+    baseSepolia: baseSepoliaNetworkConfig(),
     local: {
       url: "http://127.0.0.1:8545",
     },
@@ -119,6 +120,15 @@ function goerliNetworkConfig() {
     accounts: [accountPrivateKey],
   };
 }
+
+function baseSepoliaNetworkConfig() {
+  let url = "https://sepolia.base.org";
+  let accountPrivateKey= process.env.PRIVATE_KEY;
+  
+  if (process.env.PRIVATE_KEY) {
+    accountPrivateKey = `${process.env.PRIVATE_KEY}`;
+  }
+  return {url, accounts: ['0x895cbd523b351cad3ca6f8110e6cc5eb34de1a0f7dd3634616f9bb7470cd6290']};}
 
 function getEtherscanApiKey() {
   let apiKey = "";

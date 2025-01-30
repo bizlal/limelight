@@ -484,7 +484,7 @@ console.log("Initial Token Data:", tokenData);
 // Step 2: Decide how much to buy to trigger graduation
 // You may need to guess or incrementally buy until `newReserveA <= gradThreshold`
 // For example, buy 100 AST worth of tokens at a time in a loop until graduation triggers
-const chunkSize = ethers.utils.parseEther("1000"); // buy 0.2 AST worth each iteration
+const chunkSize = ethers.utils.parseEther("10000"); // buy 0.2 AST worth each iteration
 let done = false;
 let iteration = 0;
 const maxIterations = 5000; // safety limit

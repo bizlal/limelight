@@ -7,7 +7,8 @@
     "test": "npx hardhat test --logs",
     "prettier": "npx prettier --write .",
     "compile": "npx hardhat compile",
-    "deploy-test": "npx hardhat run scripts/deploy.js --network local"
+    "deploy-test": "npx hardhat run scripts/deploy.js --network local",
+    "deploy-sepolia": "npx hardhat run scripts/deploy.js --network baseSepolia"
   },
   "author": "",
   "license": "ISC",

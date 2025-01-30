@@ -182,7 +182,6 @@
   margin: 0;
   color: #f0f0f0;
 }
-
 /********************************************************
  *  TOKEN SECTION
  ********************************************************/
@@ -232,6 +231,12 @@
   background-color: rgba(255, 255, 255, 0.1);
 }
 
+@media (max-width: 768px) {
+  .tokenBenefits {
+    grid-template-columns: 1fr;
+  }
+}
+
 /********************************************************
  *  DISTRIBUTION, VESTING, BONDING CURVE SECTIONS
  ********************************************************/
@@ -255,10 +260,9 @@
   gap: 2rem;
 }
 
-/* The chart wrapper can be constrained in size if desired */
 .chartWrapper {
   max-width: 600px;
-  margin: 0 auto; /* center the chart */
+  margin: 0 auto;
 }
 
 .distributionTable {
@@ -285,6 +289,13 @@
 
 .distributionTable tbody tr:hover {
   background-color: rgba(255, 255, 255, 0.07);
+}
+
+@media (max-width: 768px) {
+  .distributionTable th,
+  .distributionTable td {
+    padding: 0.5rem;
+  }
 }
 
 /********************************************************
@@ -339,7 +350,6 @@
   margin-bottom: 1.25rem;
 }
 
-/* Additional sub-sections for purchase examples and market cap unlocks */
 .examplesSection {
   margin-top: 2rem;
 }
@@ -414,6 +424,15 @@
 
 .unlocksTable tbody tr:hover {
   background-color: rgba(255, 255, 255, 0.07);
+}
+
+@media (max-width: 768px) {
+  .purchaseTable th,
+  .purchaseTable td,
+  .unlocksTable th,
+  .unlocksTable td {
+    padding: 0.5rem;
+  }
 }
 
 /********************************************************

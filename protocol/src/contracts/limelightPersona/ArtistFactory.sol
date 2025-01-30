@@ -316,7 +316,7 @@ contract ArtistFactory is
         IERC20(lp).approve(veToken, type(uint256).max);
         IArtistVeToken(veToken).stake(
             IERC20(lp).balanceOf(address(this)),
-            application.proposer,
+            application.proposer,   
             defaultDelegatee
         );
 

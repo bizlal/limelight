@@ -435,25 +435,25 @@ contract Bonding is
             _token.creator
         );
 
-        address artistToken = IArtistFactory(artistFactory)
-            .executeBondingCurveApplication(
-                id,
-                _token.data.supply / (10 ** token_.decimals()),
-                tokenBalance / (10 ** token_.decimals()),
-                pairAddress
-            );
-        _token.artistToken = artistToken;
+        // address artistToken = IArtistFactory(artistFactory)
+        //     .executeBondingCurveApplication(
+        //         id,
+        //         _token.data.supply / (10 ** token_.decimals()),
+        //         tokenBalance / (10 ** token_.decimals()),
+        //         pairAddress
+        //     );
+        // _token.artistToken = artistToken;
 
-        router.approval(
-            pairAddress,
-            artistToken,
-            address(this),
-            IERC20(artistToken).balanceOf(pairAddress)
-        );
+        // router.approval(
+        //     pairAddress,
+        //     artistToken,
+        //     address(this),
+        //     IERC20(artistToken).balanceOf(pairAddress)
+        // );
 
         token_.burnFrom(pairAddress, tokenBalance);
 
-        emit Graduated(tokenAddress, artistToken);
+        // emit Graduated(tokenAddress, artistToken);
     }
 
     function unwrapToken(
