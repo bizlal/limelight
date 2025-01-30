@@ -1,6 +1,6 @@
 // deploy/01_deploy_AssetToken.js
 
-const { ethers } = require("hardhat");
+const { ethers } = require('hardhat');
 
 module.exports = async ({ getNamedAccounts, deployments, getChainId }) => {
   const { deploy, log } = deployments;
@@ -8,7 +8,7 @@ module.exports = async ({ getNamedAccounts, deployments, getChainId }) => {
   const chainId = await getChainId();
 
   // Define Testnets
-  const testnetChainIds = ["5", "80001", "84532"]; // Goerli, Mumbai, base_sepolia
+  const testnetChainIds = ['5', '80001', '84532']; // Goerli, Mumbai, base_sepolia
 
   // Deploy AssetToken only on testnets
   if (!testnetChainIds.includes(chainId)) {
@@ -18,29 +18,33 @@ module.exports = async ({ getNamedAccounts, deployments, getChainId }) => {
 
   // Check if AssetToken is already deployed
   try {
-    await deployments.get("AssetToken");
-    log("AssetToken is already deployed.");
+    await deployments.get('AssetToken');
+    log('AssetToken is already deployed.');
     return;
   } catch (error) {
     // AssetToken not deployed, proceed to deploy
-    log("Deploying FERC20 (Asset Token)...");
+    log('Deploying FERC20 (Asset Token)...');
   }
 
-  const assetTokenDeployment = await deploy("FERC20", {
+  const assetTokenDeployment = await deploy('FERC20', {
     from: deployer,
     args: [
-      "Asset Token",          // name_
-      "ASTK",                 // symbol_
-      ethers.utils.parseEther("1000000"), // supply (1,000,000 tokens)
-      1,                      // maxTx (1%)
+      'Asset Token', // name_
+      'ASTK', // symbol_
+      ethers.utils.parseEther('1000000'), // supply (1,000,000 tokens)
+      1, // maxTx (1%)
     ],
     log: true,
-    waitConfirmations: chainId === "1" ? 6 : 2,
+    waitConfirmations: chainId === '1' ? 6 : 2,
   });
 
-  const assetToken = await ethers.getContractAt("FERC20", assetTokenDeployment.address, deployer);
+  const assetToken = await ethers.getContractAt(
+    'FERC20',
+    assetTokenDeployment.address,
+    deployer
+  );
 
   log(`FERC20 deployed at: ${assetToken.address}`);
 };
 
-module.exports.tags = ["AssetToken"];
+module.exports.tags = ['AssetToken'];

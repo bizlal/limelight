@@ -6474,11 +6474,7 @@
           },
           "t_enum(ApplicationStatus)36257": {
             "label": "enum ArtistFactory.ApplicationStatus",
-            "members": [
-              "Active",
-              "Executed",
-              "Withdrawn"
-            ],
+            "members": ["Active", "Executed", "Withdrawn"],
             "numberOfBytes": "1"
           },
           "t_mapping(t_address,t_bool)": {

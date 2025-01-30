@@ -35,6 +35,6 @@
     "hardhat-gas-reporter": "^1.0.4",
     "hardhat-preprocessor": "^0.1.5",
     "hardhat-tracer": "^1.0.0-alpha.6",
-     "@openzeppelin/hardhat-upgrades": "^1.20.0"
+    "@openzeppelin/hardhat-upgrades": "^1.20.0"
   }
 }

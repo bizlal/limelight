@@ -67,11 +67,11 @@ function TokenDistributionChart() {
       legend: {
         position: 'bottom',
         labels: {
-          color: '#fff',      // <-- White legend text
+          color: '#fff', // <-- White legend text
         },
       },
       tooltip: {
-        titleColor: '#fff',  // <-- White tooltip text
+        titleColor: '#fff', // <-- White tooltip text
         bodyColor: '#fff',
       },
     },
@@ -159,7 +159,7 @@ function VestingChart() {
   }
 
   // Other allocations fully unlocked at T=0 for simplicity
-  const marketing = 10; 
+  const marketing = 10;
   const ecosystem = 40;
   const liquidity = 15;
   const partnerships = 15;
@@ -170,7 +170,7 @@ function VestingChart() {
     const totalVestingMonths = 12; // from month 3..15
     const monthsSinceCliff = month - 3;
     const fraction = monthsSinceCliff / totalVestingMonths;
-    const vested = 20 * fraction; 
+    const vested = 20 * fraction;
     return vested > 20 ? 20 : vested;
   }
 
@@ -217,11 +217,11 @@ function VestingChart() {
       legend: {
         position: 'bottom',
         labels: {
-          color: '#fff',      // <-- White legend text
+          color: '#fff', // <-- White legend text
         },
       },
       tooltip: {
-        titleColor: '#fff',  // <-- White tooltip text
+        titleColor: '#fff', // <-- White tooltip text
         bodyColor: '#fff',
       },
     },
@@ -235,10 +235,10 @@ function VestingChart() {
         title: {
           display: true,
           text: 'Time (Months)',
-          color: '#fff',      // <-- White axis label
+          color: '#fff', // <-- White axis label
         },
         ticks: {
-          color: '#fff',      // <-- White axis ticks
+          color: '#fff', // <-- White axis ticks
         },
       },
       y: {
@@ -332,7 +332,6 @@ function BondingCurveChart() {
 
   return <Line data={data} options={options} />;
 }
-
 
 /********************************************************
  *  Roadmap FAQ-Style
@@ -464,7 +463,9 @@ export default function Hero({
             <Container justifyContent="center" className={styles.buttons}>
               <Container>
                 <Link legacyBehavior passHref href="/feed">
-                  <ButtonLink className={styles.button}>Explore Feed</ButtonLink>
+                  <ButtonLink className={styles.button}>
+                    Explore Feed
+                  </ButtonLink>
                 </Link>
               </Container>
               <Spacer axis="horizontal" size={1} />
@@ -622,197 +623,227 @@ export default function Hero({
             </div>
 
             {/* Vesting Chart + Explanation */}
-                  <div className={styles.vestingSection}>
-                    <h3 className={styles.vestingTitle}>Vesting &amp; Circulating Supply</h3>
-                    <div className={styles.chartWrapper}>
-                    <VestingChart />
-                    </div>
-                    <p className={styles.vestingInfo}>
-                    The Team &amp; Advisors tokens (20% total) have a 3-month cliff
-                    with linear vesting over the following 12 months. Other
-                    allocations unlock immediately. This chart shows how each
-                    category’s percentage contributes to circulating supply over
-                    time.
-                    </p>
-                  </div>
-                  </div>
+            <div className={styles.vestingSection}>
+              <h3 className={styles.vestingTitle}>
+                Vesting &amp; Circulating Supply
+              </h3>
+              <div className={styles.chartWrapper}>
+                <VestingChart />
+              </div>
+              <p className={styles.vestingInfo}>
+                The Team &amp; Advisors tokens (20% total) have a 3-month cliff
+                with linear vesting over the following 12 months. Other
+                allocations unlock immediately. This chart shows how each
+                category’s percentage contributes to circulating supply over
+                time.
+              </p>
+            </div>
+          </div>
 
-                  <Spacer size={0} axis="vertical" />
+          <Spacer size={0} axis="vertical" />
 
-                
-<div className={`${styles.artistTokensSection} ${styles.card}`}>
-  <h2 className={styles.artistTokensTitle}>Artist Tokens &amp; Bonding Curves</h2>
-  <p className={styles.artistTokensText}>
-    Each artist on Limelight can launch their own token, providing
-    fans with a unique way to invest and participate in the artist’s
-    growth. These <strong>Artist Tokens</strong> follow a dynamic
-    <strong> bonding curve</strong>, where the price adjusts in real
-    time based on supply and demand. Early supporters benefit as
-    price rises with demand, while artists gain immediate liquidity
-    to fund future projects.
-  </p>
+          <div className={`${styles.artistTokensSection} ${styles.card}`}>
+            <h2 className={styles.artistTokensTitle}>
+              Artist Tokens &amp; Bonding Curves
+            </h2>
+            <p className={styles.artistTokensText}>
+              Each artist on Limelight can launch their own token, providing
+              fans with a unique way to invest and participate in the artist’s
+              growth. These <strong>Artist Tokens</strong> follow a dynamic
+              <strong> bonding curve</strong>, where the price adjusts in real
+              time based on supply and demand. Early supporters benefit as price
+              rises with demand, while artists gain immediate liquidity to fund
+              future projects.
+            </p>
 
+            <p className={styles.artistTokensText}>
+              Launching an Artist Token costs <strong>0.05 ETH</strong> for
+              smart contract deployment and initial setup. This fee covers the
+              secure creation of your token contract, the bonding curve logic,
+              and your personalized token dashboard. In return, you gain full
+              access to Limelight’s suite of tools for token management,
+              analytics, and fan engagement.
+            </p>
 
-    <p className={styles.artistTokensText}>
-      Launching an Artist Token costs <strong>0.05 ETH</strong> for
-      smart contract deployment and initial setup. This fee covers the
-      secure creation of your token contract, the bonding curve logic,
-      and your personalized token dashboard. In return, you gain full
-      access to Limelight’s suite of tools for token management,
-      analytics, and fan engagement.
-    </p>
+            <div className={styles.distributionSection}>
+              <h3 className={styles.distributionTitle}>Bonding Curve Demo</h3>
+              <div className={styles.chartWrapper}>
+                <BondingCurveChart />
+              </div>
+              <table className={styles.distributionTable}>
+                <thead>
+                  <tr>
+                    <th>Supply</th>
+                    <th>Price (LMLT)</th>
+                    <th>Price (USD)</th>
+                    <th>Key Benefit</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>0</td>
+                    <td>0 LMLT</td>
+                    <td>$0.00</td>
+                    <td>
+                      Initial launch price (essentially free to mint first
+                      tokens)
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>1,000</td>
+                    <td>~0.0001 LMLT</td>
+                    <td>~$0.0001</td>
+                    <td>
+                      Early supporters acquire tokens at a fractional cost
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>5,000</td>
+                    <td>~0.0025 LMLT</td>
+                    <td>~$0.0025</td>
+                    <td>Artist gains traction, price reflects rising demand</td>
+                  </tr>
+                  <tr>
+                    <td>10,000</td>
+                    <td>~0.01 LMLT</td>
+                    <td>~$0.01</td>
+                    <td>
+                      New fans drive demand, increasing token price further
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>50,000</td>
+                    <td>~0.10 LMLT</td>
+                    <td>~$0.10</td>
+                    <td>Significant fanbase expansion, strong liquidity</td>
+                  </tr>
+                  <tr>
+                    <td>100,000</td>
+                    <td>~0.25 LMLT</td>
+                    <td>~$0.25</td>
+                    <td>Artist token sees mainstream attention & coverage</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
 
-    <div className={styles.distributionSection}>
-      <h3 className={styles.distributionTitle}>Bonding Curve Demo</h3>
-      <div className={styles.chartWrapper}>
-        <BondingCurveChart />
-      </div>
-      <table className={styles.distributionTable}>
-        <thead>
-          <tr>
-            <th>Supply</th>
-            <th>Price (LMLT)</th>
-            <th>Price (USD)</th>
-            <th>Key Benefit</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>0</td>
-            <td>0 LMLT</td>
-            <td>$0.00</td>
-            <td>Initial launch price (essentially free to mint first tokens)</td>
-          </tr>
-          <tr>
-            <td>1,000</td>
-            <td>~0.0001 LMLT</td>
-            <td>~$0.0001</td>
-            <td>Early supporters acquire tokens at a fractional cost</td>
-          </tr>
-          <tr>
-            <td>5,000</td>
-            <td>~0.0025 LMLT</td>
-            <td>~$0.0025</td>
-            <td>Artist gains traction, price reflects rising demand</td>
-          </tr>
-          <tr>
-            <td>10,000</td>
-            <td>~0.01 LMLT</td>
-            <td>~$0.01</td>
-            <td>New fans drive demand, increasing token price further</td>
-          </tr>
-          <tr>
-            <td>50,000</td>
-            <td>~0.10 LMLT</td>
-            <td>~$0.10</td>
-            <td>Significant fanbase expansion, strong liquidity</td>
-          </tr>
-          <tr>
-            <td>100,000</td>
-            <td>~0.25 LMLT</td>
-            <td>~$0.25</td>
-            <td>Artist token sees mainstream attention & coverage</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+            {/* Purchase Examples */}
+            <div className={styles.examplesSection}>
+              <h3 className={styles.examplesTitle}>Purchase Scenarios</h3>
+              <p>
+                Below are a few scenarios showing how fans might buy into an
+                Artist Token on the bonding curve.
+              </p>
+              <table className={styles.purchaseTable}>
+                <thead>
+                  <tr>
+                    <th>Fan Purchase</th>
+                    <th>Approx. Tokens Received</th>
+                    <th>Market Impact</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>$100 purchase</td>
+                    <td>
+                      ~1,200 tokens <em>(depends on current price)</em>
+                    </td>
+                    <td>
+                      Incrementally raises the token price for subsequent buyers
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>$1,000 purchase</td>
+                    <td>
+                      ~12,000 tokens <em>(depends on current price)</em>
+                    </td>
+                    <td>
+                      Significant price move, triggers a noticeable jump in the
+                      bonding curve
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>$50 sale</td>
+                    <td>
+                      ~600 tokens <em>(depends on current price)</em>
+                    </td>
+                    <td>
+                      Slightly decreases the token price for subsequent buyers
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>$500 sale</td>
+                    <td>
+                      ~6,000 tokens <em>(depends on current price)</em>
+                    </td>
+                    <td>
+                      Noticeable price drop, triggers a significant decrease in
+                      the bonding curve
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
 
-    {/* Purchase Examples */}
-    <div className={styles.examplesSection}>
-      <h3 className={styles.examplesTitle}>Purchase Scenarios</h3>
-      <p>
-        Below are a few scenarios showing how fans might buy into an
-        Artist Token on the bonding curve.
-      </p>
-      <table className={styles.purchaseTable}>
-        <thead>
-          <tr>
-            <th>Fan Purchase</th>
-            <th>Approx. Tokens Received</th>
-            <th>Market Impact</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>$100 purchase</td>
-            <td>~1,200 tokens <em>(depends on current price)</em></td>
-            <td>Incrementally raises the token price for subsequent buyers</td>
-          </tr>
-          <tr>
-            <td>$1,000 purchase</td>
-            <td>~12,000 tokens <em>(depends on current price)</em></td>
-            <td>Significant price move, triggers a noticeable jump in the bonding curve</td>
-          </tr>
-          <tr>
-            <td>$50 sale</td>
-            <td>~600 tokens <em>(depends on current price)</em></td>
-            <td>Slightly decreases the token price for subsequent buyers</td>
-          </tr>
-          <tr>
-            <td>$500 sale</td>
-            <td>~6,000 tokens <em>(depends on current price)</em></td>
-            <td>Noticeable price drop, triggers a significant decrease in the bonding curve</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+            <div className={styles.unlocksSection}>
+              <h3 className={styles.unlocksTitle}>Market Cap Unlocks</h3>
+              <p>
+                As an Artist Token’s <strong>market cap</strong> (price ×
+                supply) grows, new features become available to the artist for
+                deeper engagement. For example:
+              </p>
+              <table className={styles.unlocksTable}>
+                <thead>
+                  <tr>
+                    <th>Market Cap</th>
+                    <th>Unlocked Feature</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>$50k</td>
+                    <td>Early merch drop & limited-edition collectibles</td>
+                  </tr>
+                  <tr>
+                    <td>$100k</td>
+                    <td>Livestream events + token-gated Q&amp;A sessions</td>
+                  </tr>
+                  <tr>
+                    <td>$250k</td>
+                    <td>
+                      Exclusive singles or pre-release tracks for token holders
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>$500k</td>
+                    <td>
+                      Artist can officially release a <strong>new album</strong>
+                      via Limelight’s platform, token holders get first access
+                      or NFT editions
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>$1M+</td>
+                    <td>
+                      Full-scale tours, festival partnerships, advanced DAO
+                      governance features (e.g., letting top holders vote on
+                      setlists or collaborations)
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
 
+          <Spacer size={0} axis="vertical" />
 
-  <div className={styles.unlocksSection}>
-    <h3 className={styles.unlocksTitle}>Market Cap Unlocks</h3>
-    <p>
-      As an Artist Token’s <strong>market cap</strong> (price × supply)
-      grows, new features become available to the artist for deeper
-      engagement. For example:
-    </p>
-    <table className={styles.unlocksTable}>
-      <thead>
-        <tr>
-          <th>Market Cap</th>
-          <th>Unlocked Feature</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>$50k</td>
-          <td>Early merch drop & limited-edition collectibles</td>
-        </tr>
-        <tr>
-          <td>$100k</td>
-          <td>Livestream events + token-gated Q&amp;A sessions</td>
-        </tr>
-        <tr>
-          <td>$250k</td>
-          <td>Exclusive singles or pre-release tracks for token holders</td>
-        </tr>
-        <tr>
-          <td>$500k</td>
-          <td>Artist can officially release a <strong>new album</strong>
-          via Limelight’s platform, token holders get first access
-          or NFT editions</td>
-        </tr>
-        <tr>
-          <td>$1M+</td>
-          <td>Full-scale tours, festival partnerships, advanced DAO
-          governance features (e.g., letting top holders vote on
-          setlists or collaborations)</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</div>
+          {/* Roadmap */}
 
-
-                  <Spacer size={0} axis="vertical" />
-
-                  {/* Roadmap */}
-     
           <RoadmapSection />
         </Wrapper>
         <Spacer size={3} axis="vertical" />
         <FAQSection />
       </div>
- 
     </>
   );
 }
