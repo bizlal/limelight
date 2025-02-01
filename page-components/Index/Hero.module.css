@@ -259,10 +259,25 @@
   flex-direction: column;
   gap: 2rem;
 }
-
+/* Example snippet of changes for chartWrapper */
 .chartWrapper {
-  max-width: 600px;
-  margin: 0 auto;
+  width: 100%;            /* Allow the wrapper to resize fluidly */
+  max-width: 600px;       /* Optional max width for larger screens */
+  margin: 0 auto;         /* Center it within the parent */
+  overflow-x: auto;       /* Enable horizontal scroll if needed */
+  box-sizing: border-box; /* Ensure padding/border is calculated properly */
+}
+
+.chartWrapper canvas {
+  display: block;                 /* Ensure it behaves like a block element */
+  width: 100% !important;         /* Force canvas to span full wrapper width */
+  height: auto !important;        /* Keep aspect ratio when shrinking */
+}
+
+@media (max-width: 768px) {
+  .chartWrapper {
+    max-width: 100%;             /* Remove any fixed sizing on smaller screens */
+  }
 }
 
 .distributionTable {

@@ -480,14 +480,10 @@ export default function Settings() {
   return (
     <div className={styles.root}>
       <div className={styles.main}>
-        {/* Optionally show email verification note at top */}
-        <EmailVerify user={user} />
 
         {/* Main "About You" card */}
         <AboutYou user={user} mutate={mutate} />
 
-        {/* If you still allow password changes, show this “Auth” card */}
-        <Auth />
       </div>
     </div>
   );
