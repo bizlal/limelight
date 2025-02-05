@@ -1,6 +1,5 @@
 // pages/api/apple/exchange-token.js
 
-
 export default async function handler(req, res) {
   if (req.method === "GET") {
     // Example: generate a Developer Token on the fly (not recommended for production)
