@@ -3,8 +3,9 @@ import React from "react";
 import styles from "./UserTabs.module.css";
 
 const tabs = [
+  { id: "collectibles", label: "Recently Played" },
   { id: "posts", label: "Posts" },
-  { id: "collectibles", label: "Collectibles" },
+
   { id: "repost", label: "Reposts" },
   { id: "likes", label: "Likes" },
 ];
