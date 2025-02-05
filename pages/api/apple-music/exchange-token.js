@@ -1,7 +1,5 @@
 // pages/api/apple/exchange-token.js
 
-import { readFileSync } from "fs";
-import path from "path";
 
 export default async function handler(req, res) {
   if (req.method === "GET") {
