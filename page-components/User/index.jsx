@@ -1,9 +1,9 @@
 // /page-components/User/index.jsx
-import React, { useState, useEffect } from "react";
-import UserHeader from "./UserHeader";
-import UserTabs from "./UserTabs";
-import Poster from "../Feed/Poster";
-import UserPosts from "./UserPosts";
+import React, { useState } from 'react';
+import UserHeader from './UserHeader';
+import UserTabs from './UserTabs';
+import Poster from '../Feed/Poster';
+import UserPosts from './UserPosts';
 
 import styles from "./User.module.css";
 import { useCurrentUser as currentUser } from "@/lib/user";
@@ -11,7 +11,7 @@ import UserRecentlyPlayed from "./UserRecentlyPlayed";
 
 export const User = ({ user }) => {
   // Add 'recentlyPlayed' as one of the possible tabs.
-  const [activeTab, setActiveTab] = useState("posts");
+  const [activeTab, setActiveTab] = useState('collectibles');
 
   return (
     <div className={styles.root}>
