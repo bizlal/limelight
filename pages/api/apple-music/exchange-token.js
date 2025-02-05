@@ -1,6 +1,5 @@
 // pages/api/apple/exchange-token.js
 
-import jwt from "jsonwebtoken";
 import { readFileSync } from "fs";
 import path from "path";
 
@@ -12,15 +11,7 @@ export default async function handler(req, res) {
     const teamId = process.env.APPLE_TEAM_ID;
     const keyId = process.env.APPLE_KEY_ID;
 
-    const token = jwt.sign({}, privateKey, {
-      algorithm: "ES256",
-      expiresIn: "180d", // 6 months
-      issuer: teamId,
-      header: {
-        alg: "ES256",
-        kid: keyId,
-      },
-    });
+    const token = {};
 
     return res.status(200).json({ developerToken: token });
   }
