@@ -3,6 +3,9 @@ import React, { useState, useEffect } from "react";
 import { useCurrentUser, useCurrentUserData } from "@/lib/user"; // adjust the import path as needed
 import { FaSpotify } from "react-icons/fa";
 import styles from "./UserRecentlyPlayed.module.css";
+import React, { useState, useEffect } from 'react';
+import { FaSpotify } from 'react-icons/fa';
+import styles from './UserRecentlyPlayed.module.css';
 
 // Helper to format the date as "x minutes/hours/days ago"
 function timeAgo(dateString) {
@@ -26,13 +29,14 @@ function timeAgo(dateString) {
 }
 
 const UserRecentlyPlayed = ({ user }) => {
+
   const [recentlyPlayed, setRecentlyPlayed] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     if (!user || !user.uid) return;
-
+  
     const fetchRecentlyPlayed = async () => {
       setLoading(true);
       try {
@@ -49,24 +53,20 @@ const UserRecentlyPlayed = ({ user }) => {
         setLoading(false);
       }
     };
-
+  
     fetchRecentlyPlayed();
   }, [user]);
+  
+
 
   if (loading) {
-    return (
-      <div className={styles.message}>Loading recently played tracks...</div>
-    );
+    return <div className={styles.message}>Loading recently played tracks...</div>;
   }
   if (error) {
-    return (
-      <div className={`${styles.message} ${styles.error}`}>Error: {error}</div>
-    );
+    return <div className={`${styles.message} ${styles.error}`}>Error: {error}</div>;
   }
   if (!recentlyPlayed.length) {
-    return (
-      <div className={styles.message}>No recently played tracks found.</div>
-    );
+    return <div className={styles.message}>No recently played tracks found.</div>;
   }
 
   return (
@@ -96,11 +96,11 @@ const UserRecentlyPlayed = ({ user }) => {
                 <span className={styles.trackArtists}>
                   {item.track.artists.map((artist) => artist.name).join(", ")}
                 </span>
-                <span className={styles.albumName}>
-                  {item.track.album.name}
-                </span>
+                <span className={styles.albumName}>{item.track.album.name}</span>
               </div>
-              <div className={styles.playedAt}>{timeAgo(item.played_at)}</div>
+              <div className={styles.playedAt}>
+                {timeAgo(item.played_at)}
+              </div>
             </li>
           );
         })}
