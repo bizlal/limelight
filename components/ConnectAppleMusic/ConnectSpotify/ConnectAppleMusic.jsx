@@ -1,7 +1,7 @@
 // components/ConnectAppleMusic.jsx
-import React from "react";
-import styles from "./ConnectAppleMusic.module.css";
-import { useAppleMusicConnect } from "@/lib/connections";
+import React from 'react';
+import styles from './ConnectAppleMusic.module.css';
+import { useAppleMusicConnect } from '@/lib/connections';
 
 export default function ConnectAppleMusic() {
   const { isLoading, redirectToAppleMusicAuth } = useAppleMusicConnect();
@@ -12,7 +12,7 @@ export default function ConnectAppleMusic() {
       onClick={redirectToAppleMusicAuth}
       disabled={isLoading}
     >
-      {isLoading ? "Connecting..." : "Connect Apple Music"}
+      {isLoading ? 'Connecting...' : 'Connect Apple Music'}
     </button>
   );
 }

@@ -1,5 +1,5 @@
-import clsx from "clsx";
-import styles from "./Container.module.css";
+import clsx from 'clsx';
+import styles from './Container.module.css';
 
 const Container = ({
   justifyContent,

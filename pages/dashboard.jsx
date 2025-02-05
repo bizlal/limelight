@@ -1,5 +1,5 @@
-import React, { useEffect } from "react";
-import { getAccessToken, usePrivy } from "@privy-io/react-auth";
+import React, { useEffect } from 'react';
+import { getAccessToken, usePrivy } from '@privy-io/react-auth';
 
 export default function DashboardPage() {
   const { ready, authenticated, user, logout } = usePrivy();
@@ -9,10 +9,10 @@ export default function DashboardPage() {
       try {
         const token = await getAccessToken();
 
-        await fetch("/api/sync-privy-user", {
-          method: "POST",
+        await fetch('/api/sync-privy-user', {
+          method: 'POST',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
@@ -21,7 +21,7 @@ export default function DashboardPage() {
           }),
         });
       } catch (err) {
-        console.error("Failed to sync user:", err);
+        console.error('Failed to sync user:', err);
       }
     }
 
@@ -34,7 +34,7 @@ export default function DashboardPage() {
     <main>
       {ready && authenticated ? (
         <>
-          <h1>Welcome, {user.email?.address || "Privy User"}</h1>
+          <h1>Welcome, {user.email?.address || 'Privy User'}</h1>
           <button onClick={logout}>Logout</button>
         </>
       ) : (

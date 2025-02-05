@@ -1,3 +1,3 @@
-import map from "./map.png";
+import map from './map.png';
 
 export { map };

@@ -1,7 +1,7 @@
-import Head from "next/head";
-import Link from "next/link";
-import Image from "next/image";
-import { useSpring, animated } from "react-spring";
+import Head from 'next/head';
+import Link from 'next/link';
+import Image from 'next/image';
+import { useSpring, animated } from 'react-spring';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -12,14 +12,14 @@ import {
   PointElement,
   Tooltip,
   Legend,
-} from "chart.js";
-import { Pie, Bar, Line } from "react-chartjs-2";
+} from 'chart.js';
+import { Pie, Bar, Line } from 'react-chartjs-2';
 
-import { ButtonLink } from "@/components/Button";
-import { Container, Spacer, Wrapper } from "@/components/Layout";
-import { useState } from "react";
-import map from "@/assets/images/map.png";
-import styles from "./Hero.module.css";
+import { ButtonLink } from '@/components/Button';
+import { Container, Spacer, Wrapper } from '@/components/Layout';
+import { useState } from 'react';
+import map from '@/assets/images/map.png';
+import styles from './Hero.module.css';
 
 // Register all necessary Chart.js components
 ChartJS.register(
@@ -39,22 +39,22 @@ ChartJS.register(
 function TokenDistributionChart() {
   const data = {
     labels: [
-      "Team & Advisors",
-      "Marketing",
-      "Ecosystem/Rewards",
-      "Liquidity",
-      "Partnerships",
+      'Team & Advisors',
+      'Marketing',
+      'Ecosystem/Rewards',
+      'Liquidity',
+      'Partnerships',
     ],
     datasets: [
       {
-        label: "Token Allocation",
+        label: 'Token Allocation',
         data: [20, 10, 40, 15, 15],
         backgroundColor: [
-          "#f87171", // red
-          "#fbbf24", // amber
-          "#34d399", // green
-          "#60a5fa", // blue
-          "#a78bfa", // purple
+          '#f87171', // red
+          '#fbbf24', // amber
+          '#34d399', // green
+          '#60a5fa', // blue
+          '#a78bfa', // purple
         ],
         hoverOffset: 4,
       },
@@ -65,14 +65,14 @@ function TokenDistributionChart() {
     responsive: true,
     plugins: {
       legend: {
-        position: "bottom",
+        position: 'bottom',
         labels: {
-          color: "#fff", // <-- White legend text
+          color: '#fff', // <-- White legend text
         },
       },
       tooltip: {
-        titleColor: "#fff", // <-- White tooltip text
-        bodyColor: "#fff",
+        titleColor: '#fff', // <-- White tooltip text
+        bodyColor: '#fff',
       },
     },
   };
@@ -85,16 +85,16 @@ function TokenDistributionChart() {
  ********************************************************/
 function FAQItem({ question, answer, isOpen, onToggle }) {
   return (
-    <div className={`${styles.faqItem} ${isOpen ? styles.expanded : ""}`}>
+    <div className={`${styles.faqItem} ${isOpen ? styles.expanded : ''}`}>
       <div className={styles.faqQuestion} onClick={onToggle}>
         <span>{question}</span>
-        <span className={styles.faqIcon}>{isOpen ? "-" : "+"}</span>
+        <span className={styles.faqIcon}>{isOpen ? '-' : '+'}</span>
       </div>
       <div
         className={styles.faqAnswer}
         style={{
-          maxHeight: isOpen ? "300px" : "0px",
-          padding: isOpen ? "0.75rem 0" : "0",
+          maxHeight: isOpen ? '300px' : '0px',
+          padding: isOpen ? '0.75rem 0' : '0',
         }}
       >
         <p>{answer}</p>
@@ -111,24 +111,24 @@ function FAQSection() {
 
   const faqData = [
     {
-      question: "How do I launch an Artist Token?",
+      question: 'How do I launch an Artist Token?',
       answer:
-        "Simply navigate to the “Launch Token” wizard in your dashboard. Pay the 0.05 ETH setup fee, choose a token name, and your token will be live with our bonding curve.",
+        'Simply navigate to the “Launch Token” wizard in your dashboard. Pay the 0.05 ETH setup fee, choose a token name, and your token will be live with our bonding curve.',
     },
     {
-      question: "What is LMLT?",
+      question: 'What is LMLT?',
       answer:
-        "LMLT (Limelight Token) is our native ERC-20 token for rewards, governance, and transactions across the Limelight ecosystem.",
+        'LMLT (Limelight Token) is our native ERC-20 token for rewards, governance, and transactions across the Limelight ecosystem.',
     },
     {
-      question: "Can I withdraw my Artist Tokens at any time?",
+      question: 'Can I withdraw my Artist Tokens at any time?',
       answer:
-        "Yes, your tokens follow our bonding curve, so you can buy or sell them anytime. Price adjusts dynamically based on supply and demand.",
+        'Yes, your tokens follow our bonding curve, so you can buy or sell them anytime. Price adjusts dynamically based on supply and demand.',
     },
     {
-      question: "Are there fees for trading Artist Tokens?",
+      question: 'Are there fees for trading Artist Tokens?',
       answer:
-        "A small transaction fee is taken to cover gas costs and support platform development. The exact fee varies based on network congestion.",
+        'A small transaction fee is taken to cover gas costs and support platform development. The exact fee varies based on network congestion.',
     },
   ];
 
@@ -184,29 +184,29 @@ function VestingChart() {
     labels,
     datasets: [
       {
-        label: "Team & Advisors",
+        label: 'Team & Advisors',
         data: teamData,
-        backgroundColor: "#f87171",
+        backgroundColor: '#f87171',
       },
       {
-        label: "Marketing",
+        label: 'Marketing',
         data: marketingData,
-        backgroundColor: "#fbbf24",
+        backgroundColor: '#fbbf24',
       },
       {
-        label: "Ecosystem/Rewards",
+        label: 'Ecosystem/Rewards',
         data: ecosystemData,
-        backgroundColor: "#34d399",
+        backgroundColor: '#34d399',
       },
       {
-        label: "Liquidity",
+        label: 'Liquidity',
         data: liquidityData,
-        backgroundColor: "#60a5fa",
+        backgroundColor: '#60a5fa',
       },
       {
-        label: "Partnerships",
+        label: 'Partnerships',
         data: partnershipsData,
-        backgroundColor: "#a78bfa",
+        backgroundColor: '#a78bfa',
       },
     ],
   };
@@ -215,18 +215,18 @@ function VestingChart() {
     responsive: true,
     plugins: {
       legend: {
-        position: "bottom",
+        position: 'bottom',
         labels: {
-          color: "#fff", // <-- White legend text
+          color: '#fff', // <-- White legend text
         },
       },
       tooltip: {
-        titleColor: "#fff", // <-- White tooltip text
-        bodyColor: "#fff",
+        titleColor: '#fff', // <-- White tooltip text
+        bodyColor: '#fff',
       },
     },
     interaction: {
-      mode: "index",
+      mode: 'index',
       intersect: false,
     },
     scales: {
@@ -234,24 +234,24 @@ function VestingChart() {
         stacked: true,
         title: {
           display: true,
-          text: "Time (Months)",
-          color: "#fff", // <-- White axis label
+          text: 'Time (Months)',
+          color: '#fff', // <-- White axis label
         },
         ticks: {
-          color: "#fff", // <-- White axis ticks
+          color: '#fff', // <-- White axis ticks
         },
       },
       y: {
         stacked: true,
         title: {
           display: true,
-          text: "Percentage of Total Supply",
-          color: "#fff",
+          text: 'Percentage of Total Supply',
+          color: '#fff',
         },
         ticks: {
-          color: "#fff",
+          color: '#fff',
           callback: function (value) {
-            return value + "%";
+            return value + '%';
           },
         },
       },
@@ -280,10 +280,10 @@ function BondingCurveChart() {
     labels,
     datasets: [
       {
-        label: "Artist Token Price (LMLT)",
+        label: 'Artist Token Price (LMLT)',
         data: dataPoints,
-        borderColor: "#60a5fa",
-        backgroundColor: "#60a5fa88",
+        borderColor: '#60a5fa',
+        backgroundColor: '#60a5fa88',
         fill: true,
         tension: 0.2,
       },
@@ -294,36 +294,36 @@ function BondingCurveChart() {
     responsive: true,
     plugins: {
       legend: {
-        position: "bottom",
+        position: 'bottom',
         labels: {
-          color: "#fff", // White legend text
+          color: '#fff', // White legend text
         },
       },
       tooltip: {
-        titleColor: "#fff", // White tooltip text
-        bodyColor: "#fff",
+        titleColor: '#fff', // White tooltip text
+        bodyColor: '#fff',
       },
     },
     scales: {
       x: {
         title: {
           display: true,
-          text: "Supply of Artist Tokens",
-          color: "#fff",
+          text: 'Supply of Artist Tokens',
+          color: '#fff',
         },
-        ticks: { color: "#fff" },
+        ticks: { color: '#fff' },
       },
       y: {
         title: {
           display: true,
-          text: "Token Price (LMLT)",
-          color: "#fff",
+          text: 'Token Price (LMLT)',
+          color: '#fff',
         },
         ticks: {
-          color: "#fff",
+          color: '#fff',
           // e.g., custom formatting
           callback: function (value) {
-            return value.toFixed(3) + " LMLT";
+            return value.toFixed(3) + ' LMLT';
           },
         },
       },
@@ -341,19 +341,19 @@ function RoadmapSection() {
 
   const roadmapPhases = [
     {
-      phase: "Phase 1: Beta Launch",
+      phase: 'Phase 1: Beta Launch',
       details: `Core platform features, basic user onboarding, initial token distribution.`,
     },
     {
-      phase: "Phase 2: Community Growth",
+      phase: 'Phase 2: Community Growth',
       details: `Introduce new social features, expand geographic reach, build up LMLT liquidity pools.`,
     },
     {
-      phase: "Phase 3: Marketplace & Governance",
+      phase: 'Phase 3: Marketplace & Governance',
       details: `Enable NFT marketplace, staking rewards, and DAO-like governance with LMLT voting.`,
     },
     {
-      phase: "Phase 4: Global Expansion",
+      phase: 'Phase 4: Global Expansion',
       details: `Further partnerships, multi-language support, and large-scale marketing campaigns.`,
     },
   ];
@@ -367,7 +367,7 @@ function RoadmapSection() {
         <div
           key={idx}
           className={`${styles.roadmapItem} ${
-            openIndex === idx ? styles.expanded : ""
+            openIndex === idx ? styles.expanded : ''
           }`}
         >
           <div
@@ -376,14 +376,14 @@ function RoadmapSection() {
           >
             <span>{item.phase}</span>
             <span className={styles.roadmapIcon}>
-              {openIndex === idx ? "-" : "+"}
+              {openIndex === idx ? '-' : '+'}
             </span>
           </div>
           <div
             className={styles.roadmapAnswer}
             style={{
-              maxHeight: openIndex === idx ? "200px" : "0px",
-              padding: openIndex === idx ? "0.75rem 0" : "0",
+              maxHeight: openIndex === idx ? '200px' : '0px',
+              padding: openIndex === idx ? '0.75rem 0' : '0',
             }}
           >
             <p>{item.details}</p>

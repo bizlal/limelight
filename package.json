@@ -8,12 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "format": "prettier --write . --ignore-path .prettierignore"
-  },
-  "prettier": {
-    "ignore": [
-      "protocol/**"
-    ]
+    "format": "prettier --write . && eslint --fix ."
   },
   "repository": {
     "type": "git",

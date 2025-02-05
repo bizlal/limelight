@@ -1,5 +1,5 @@
-import { Onboarding } from "@/page-components/Onboarding/Onboarding";
-import Head from "next/head";
+import { Onboarding } from '@/page-components/Onboarding/Onboarding';
+import Head from 'next/head';
 
 const OnboardingPage = () => {
   return (

@@ -19,7 +19,7 @@
 }
 
 .heroWrapper::before {
-  content: "";
+  content: '';
   position: absolute;
   inset: 0;
   /* Slightly darker overlay so text is easier to read */
@@ -488,7 +488,7 @@
 
 .roadmapList li::before {
   counter-increment: step;
-  content: counter(step) ". ";
+  content: counter(step) '. ';
   color: #fff;
   font-weight: 700;
   margin-right: 0.5rem;

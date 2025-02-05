@@ -1,8 +1,8 @@
-import { Spacer, Wrapper } from "@/components/Layout";
-import { Post as PostItem } from "@/components/Post";
-import Commenter from "./Commenter";
-import CommentList from "./CommentList";
-import styles from "./UserPost.module.css";
+import { Spacer, Wrapper } from '@/components/Layout';
+import { Post as PostItem } from '@/components/Post';
+import Commenter from './Commenter';
+import CommentList from './CommentList';
+import styles from './UserPost.module.css';
 
 export const UserPost = ({ post }) => {
   return (

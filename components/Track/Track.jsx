@@ -1,8 +1,8 @@
-import React, { useMemo, useState } from "react";
-import clsx from "clsx";
-import { format } from "@lukeed/ms";
-import Image from "next/image";
-import styles from "./Track.module.css";
+import React, { useMemo, useState } from 'react';
+import clsx from 'clsx';
+import { format } from '@lukeed/ms';
+import Image from 'next/image';
+import styles from './Track.module.css';
 
 /**
  * Example usage:
@@ -43,7 +43,7 @@ export default function Track({ track, className, onPlay }) {
   // Compute relative timestamp, e.g. "3 days ago"
   const timestampTxt = useMemo(() => {
     const diff = Date.now() - new Date(createdAt).getTime();
-    if (diff < 60_000) return "Just now";
+    if (diff < 60_000) return 'Just now';
     return `${format(diff, true)} ago`;
   }, [createdAt]);
 

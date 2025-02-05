@@ -1,9 +1,9 @@
-import { ObjectId } from "mongodb";
-import { dbProjectionUsers } from ".";
+import { ObjectId } from 'mongodb';
+import { dbProjectionUsers } from '.';
 
 export async function findComments(db, postId, before, limit = 10) {
   return db
-    .collection("comments")
+    .collection('comments')
     .aggregate([
       {
         $match: {
@@ -15,14 +15,14 @@ export async function findComments(db, postId, before, limit = 10) {
       { $limit: limit },
       {
         $lookup: {
-          from: "users",
-          localField: "uid",
-          foreignField: "_id",
-          as: "creator",
+          from: 'users',
+          localField: 'uid',
+          foreignField: '_id',
+          as: 'creator',
         },
       },
-      { $unwind: "$creator" },
-      { $project: dbProjectionUsers("creator.") },
+      { $unwind: '$creator' },
+      { $project: dbProjectionUsers('creator.') },
     ])
     .toArray();
 }
@@ -34,7 +34,7 @@ export async function insertComment(db, postId, { content, uid }) {
     uid,
     createdAt: new Date(),
   };
-  const { insertedId } = await db.collection("comments").insertOne(comment);
+  const { insertedId } = await db.collection('comments').insertOne(comment);
   comment._id = insertedId;
   return comment;
 }

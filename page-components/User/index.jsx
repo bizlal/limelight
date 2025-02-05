@@ -5,9 +5,9 @@ import UserTabs from './UserTabs';
 import Poster from '../Feed/Poster';
 import UserPosts from './UserPosts';
 
-import styles from "./User.module.css";
-import { useCurrentUser as currentUser } from "@/lib/user";
-import UserRecentlyPlayed from "./UserRecentlyPlayed";
+import styles from './User.module.css';
+import { useCurrentUser as currentUser } from '@/lib/user';
+import UserRecentlyPlayed from './UserRecentlyPlayed';
 
 export const User = ({ user }) => {
   // Add 'recentlyPlayed' as one of the possible tabs.
@@ -23,7 +23,7 @@ export const User = ({ user }) => {
 
       {/* 3) Tab content */}
       <div className={styles.tabContent}>
-        {activeTab === "posts" && (
+        {activeTab === 'posts' && (
           <div className={styles.overviewTab}>
             {/* Poster: user can create a post on the user’s wall */}
             <div className={styles.posterContainer}>
@@ -33,24 +33,24 @@ export const User = ({ user }) => {
             <UserPosts user={user} />
           </div>
         )}
-        {activeTab === "collectibles" && (
+        {activeTab === 'collectibles' && (
           <div className={styles.placeholderBox}>
             <UserRecentlyPlayed user={user} />
           </div>
         )}
-        {activeTab === "repost" && (
+        {activeTab === 'repost' && (
           <div className={styles.placeholderBox}>
             <h3>Reposts</h3>
             <p>Show reposted tracks/posts from other users here.</p>
           </div>
         )}
-        {activeTab === "likes" && (
+        {activeTab === 'likes' && (
           <div className={styles.placeholderBox}>
             <h3>Likes</h3>
             <p>Show user’s liked tracks/posts here.</p>
           </div>
         )}
-        {activeTab === "recentlyPlayed" && (
+        {activeTab === 'recentlyPlayed' && (
           <div className={styles.overviewTab}>
             <UserRecentlyPlayed />
           </div>

@@ -1,9 +1,9 @@
 // connections.js
-import { ObjectId } from "mongodb";
+import { ObjectId } from 'mongodb';
 
 // Define collection names as constants for maintainability.
-export const COLLECTION_SPOTIFY_TOKENS = "spotifyTokens";
-export const COLLECTION_RECENTLY_PLAYED = "recentlyPlayed";
+export const COLLECTION_SPOTIFY_TOKENS = 'spotifyTokens';
+export const COLLECTION_RECENTLY_PLAYED = 'recentlyPlayed';
 
 /**
  * Saves (or updates) Spotify tokens in the `COLLECTION_SPOTIFY_TOKENS` collection.
@@ -23,7 +23,7 @@ export async function saveSpotifyTokens(
   const tokensCollection = db.collection(COLLECTION_SPOTIFY_TOKENS);
 
   // Filter by service and uid so each user can have their own token.
-  const filter = { service: "spotify", uid };
+  const filter = { service: 'spotify', uid };
   const update = {
     $set: {
       uid,
@@ -47,7 +47,7 @@ export async function saveSpotifyTokens(
  */
 export async function findSpotifyTokens(db, uid) {
   const tokensCollection = db.collection(COLLECTION_SPOTIFY_TOKENS);
-  return tokensCollection.findOne({ service: "spotify", uid });
+  return tokensCollection.findOne({ service: 'spotify', uid });
 }
 
 /**

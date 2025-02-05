@@ -1,6 +1,6 @@
-import clsx from "clsx";
-import { forwardRef } from "react";
-import styles from "./Input.module.css";
+import clsx from 'clsx';
+import { forwardRef } from 'react';
+import styles from './Input.module.css';
 
 const Input = forwardRef(function Input(
   {

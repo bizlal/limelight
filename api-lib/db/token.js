@@ -1,7 +1,7 @@
-import { nanoid } from "nanoid";
+import { nanoid } from 'nanoid';
 
 export function findTokenByIdAndType(db, id, type) {
-  return db.collection("tokens").findOne({
+  return db.collection('tokens').findOne({
     _id: id,
     type,
   });
@@ -9,7 +9,7 @@ export function findTokenByIdAndType(db, id, type) {
 
 export function findAndDeleteTokenByIdAndType(db, id, type) {
   return db
-    .collection("tokens")
+    .collection('tokens')
     .findOneAndDelete({ _id: id, type })
     .then(({ value }) => value);
 }
@@ -22,6 +22,6 @@ export async function createToken(db, { uid, type, expireAt }) {
     type,
     expireAt,
   };
-  await db.collection("tokens").insertOne(token);
+  await db.collection('tokens').insertOne(token);
   return token;
 }

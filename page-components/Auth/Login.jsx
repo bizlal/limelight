@@ -1,15 +1,15 @@
-import { Button } from "@/components/Button";
-import { ButtonLink } from "@/components/Button/Button";
-import { Input } from "@/components/Input";
-import { Spacer, Wrapper } from "@/components/Layout";
-import { TextLink } from "@/components/Text";
-import { fetcher } from "@/lib/fetch";
-import { useCurrentUser } from "@/lib/user";
-import Link from "next/link";
-import { useRouter } from "next/router";
-import { useCallback, useEffect, useRef, useState } from "react";
-import toast from "react-hot-toast";
-import styles from "./Auth.module.css";
+import { Button } from '@/components/Button';
+import { ButtonLink } from '@/components/Button/Button';
+import { Input } from '@/components/Input';
+import { Spacer, Wrapper } from '@/components/Layout';
+import { TextLink } from '@/components/Text';
+import { fetcher } from '@/lib/fetch';
+import { useCurrentUser } from '@/lib/user';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import toast from 'react-hot-toast';
+import styles from './Auth.module.css';
 
 const Login = () => {
   const emailRef = useRef();
@@ -21,7 +21,7 @@ const Login = () => {
   const router = useRouter();
   useEffect(() => {
     if (isValidating) return;
-    if (user) router.replace("/feed");
+    if (user) router.replace('/feed');
   }, [user, router, isValidating]);
 
   const onSubmit = useCallback(
@@ -29,18 +29,18 @@ const Login = () => {
       setIsLoading(true);
       event.preventDefault();
       try {
-        const response = await fetcher("/api/auth", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
+        const response = await fetcher('/api/auth', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             email: emailRef.current.value,
             password: passwordRef.current.value,
           }),
         });
         mutate({ user: response.user }, false);
-        toast.success("You have been logged in.");
+        toast.success('You have been logged in.');
       } catch (e) {
-        toast.error("Incorrect email or password.");
+        toast.error('Incorrect email or password.');
       } finally {
         setIsLoading(false);
       }

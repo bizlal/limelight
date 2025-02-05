@@ -1,15 +1,15 @@
-import clsx from "clsx";
-import { forwardRef } from "react";
-import styles from "./Text.module.css";
+import clsx from 'clsx';
+import { forwardRef } from 'react';
+import styles from './Text.module.css';
 
 export const Text = forwardRef(function Text(
   { color, children, className, as, ...props },
   ref
 ) {
-  const Component = as || "p";
+  const Component = as || 'p';
   return (
     <Component
-      style={color ? { "--color": `var(--${color})` } : undefined}
+      style={color ? { '--color': `var(--${color})` } : undefined}
       className={clsx(styles.text, className)}
       {...props}
       ref={ref}
@@ -25,7 +25,7 @@ export const TextLink = forwardRef(function Text(
 ) {
   return (
     <a
-      style={color ? { "--color": `var(--${color})` } : undefined}
+      style={color ? { '--color': `var(--${color})` } : undefined}
       className={clsx(
         styles.text,
         styles.link,

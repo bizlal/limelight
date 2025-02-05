@@ -1,4 +1,4 @@
-import { MongoClient } from "mongodb";
+import { MongoClient } from 'mongodb';
 
 let indexesCreated = false;
 async function createIndexes(client) {
@@ -6,16 +6,16 @@ async function createIndexes(client) {
   const db = client.db();
   await Promise.all([
     db
-      .collection("tokens")
+      .collection('tokens')
       .createIndex({ expireAt: -1 }, { expireAfterSeconds: 0 }),
     db
-      .collection("posts")
+      .collection('posts')
       .createIndexes([{ key: { createdAt: -1 } }, { key: { uid: -1 } }]),
     db
-      .collection("comments")
+      .collection('comments')
       .createIndexes([{ key: { createdAt: -1 } }, { key: { postId: -1 } }]),
     db
-      .collection("users")
+      .collection('users')
       .createIndexes([{ key: { username: 1 }, unique: true }]),
   ]);
   indexesCreated = true;

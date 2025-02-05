@@ -1,10 +1,10 @@
-import { findPostById } from "@/api-lib/db";
-import { getMongoDb } from "@/api-lib/mongodb";
-import { UserPost } from "@/page-components/UserPost";
-import Head from "next/head";
+import { findPostById } from '@/api-lib/db';
+import { getMongoDb } from '@/api-lib/mongodb';
+import { UserPost } from '@/page-components/UserPost';
+import Head from 'next/head';
 
 export default function UserPostPage({ post }) {
-  if (typeof post.createdAt !== "string") {
+  if (typeof post.createdAt !== 'string') {
     post.createdAt = new Date(post.createdAt);
   }
   return (

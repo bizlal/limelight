@@ -1,46 +1,46 @@
 // pages-components/Settings/Settings.js
-import { useCallback, useEffect, useRef, useState } from "react";
-import { useRouter } from "next/router";
-import toast from "react-hot-toast";
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { useRouter } from 'next/router';
+import toast from 'react-hot-toast';
 
-import { fetcher } from "@/lib/fetch";
-import { useCurrentUser } from "@/lib/user";
-import { ConnectSpotify } from "@/components/ConnectSpotify/ConnectSpotify";
+import { fetcher } from '@/lib/fetch';
+import { useCurrentUser } from '@/lib/user';
+import { ConnectSpotify } from '@/components/ConnectSpotify/ConnectSpotify';
 
-import styles from "./Settings.module.css";
+import styles from './Settings.module.css';
 
 const ALL_GENRES = [
-  "Afrobeat",
-  "Jazz",
-  "Alternative",
-  "Latin",
-  "Country",
-  "Rap",
-  "Electronic",
-  "Rock",
-  "Reggae",
-  "House",
-  "Indie",
-  "Alt Rock",
-  "R&B",
-  "Freestyle Rap",
+  'Afrobeat',
+  'Jazz',
+  'Alternative',
+  'Latin',
+  'Country',
+  'Rap',
+  'Electronic',
+  'Rock',
+  'Reggae',
+  'House',
+  'Indie',
+  'Alt Rock',
+  'R&B',
+  'Freestyle Rap',
 ];
 
 /**
  * Displays an unverified email note with a "Verify" button.
  */
 function EmailVerify({ user }) {
-  const [status, setStatus] = useState("");
+  const [status, setStatus] = useState('');
 
   const verify = useCallback(async () => {
     try {
-      setStatus("loading");
-      await fetcher("/api/user/email/verify", { method: "POST" });
-      toast.success("A verification email has been sent to your inbox.");
-      setStatus("success");
+      setStatus('loading');
+      await fetcher('/api/user/email/verify', { method: 'POST' });
+      toast.success('A verification email has been sent to your inbox.');
+      setStatus('success');
     } catch (e) {
       toast.error(e.message);
-      setStatus("");
+      setStatus('');
     }
   }, []);
 
@@ -48,21 +48,21 @@ function EmailVerify({ user }) {
 
   return (
     <div className={styles.note}>
-      <p style={{ marginRight: "auto" }}>
-        <strong>Note:</strong> Your email{" "}
-        <span style={{ textDecoration: "underline" }}>{user.email}</span> is
+      <p style={{ marginRight: 'auto' }}>
+        <strong>Note:</strong> Your email{' '}
+        <span style={{ textDecoration: 'underline' }}>{user.email}</span> is
         unverified.
       </p>
       <button
         onClick={verify}
-        disabled={status === "loading" || status === "success"}
+        disabled={status === 'loading' || status === 'success'}
         className={`${styles.btn} ${styles.btnSecondary}`}
       >
-        {status === "loading"
-          ? "Verifying..."
-          : status === "success"
-          ? "Email Sent!"
-          : "Verify"}
+        {status === 'loading'
+          ? 'Verifying...'
+          : status === 'success'
+          ? 'Email Sent!'
+          : 'Verify'}
       </button>
     </div>
   );
@@ -80,21 +80,21 @@ function Auth() {
     e.preventDefault();
     try {
       setIsLoading(true);
-      await fetcher("/api/user/password", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
+      await fetcher('/api/user/password', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           oldPassword: oldPasswordRef.current.value,
           newPassword: newPasswordRef.current.value,
         }),
       });
-      toast.success("Your password has been updated");
+      toast.success('Your password has been updated');
     } catch (err) {
       toast.error(err.message);
     } finally {
       setIsLoading(false);
-      oldPasswordRef.current.value = "";
-      newPasswordRef.current.value = "";
+      oldPasswordRef.current.value = '';
+      newPasswordRef.current.value = '';
     }
   }, []);
 
@@ -128,7 +128,7 @@ function Auth() {
             className={`${styles.btn} ${styles.btnPrimary}`}
             disabled={isLoading}
           >
-            {isLoading ? "Saving..." : "Save"}
+            {isLoading ? 'Saving...' : 'Save'}
           </button>
         </div>
       </form>
@@ -159,8 +159,8 @@ function AboutYou({ user, mutate }) {
   // Images
   const profileImageRef = useRef(null);
   const headerImageRef = useRef(null);
-  const [profileImagePreview, setProfileImagePreview] = useState("");
-  const [headerImagePreview, setHeaderImagePreview] = useState("");
+  const [profileImagePreview, setProfileImagePreview] = useState('');
+  const [headerImagePreview, setHeaderImagePreview] = useState('');
 
   // Genres
   const [selectedGenres, setSelectedGenres] = useState([]);
@@ -172,26 +172,26 @@ function AboutYou({ user, mutate }) {
   useEffect(() => {
     if (!user) return;
 
-    userTypeRef.current.value = user.userType || "Music Fan";
-    usernameRef.current.value = user.username || "";
-    nameRef.current.value = user.name || "";
-    bioRef.current.value = user.bio || "";
-    hometownRef.current.value = user.hometown || "";
+    userTypeRef.current.value = user.userType || 'Music Fan';
+    usernameRef.current.value = user.username || '';
+    nameRef.current.value = user.name || '';
+    bioRef.current.value = user.bio || '';
+    hometownRef.current.value = user.hometown || '';
 
-    websiteRef.current.value = user.links?.website || "";
-    spotifyRef.current.value = user.links?.spotify || "";
-    itunesRef.current.value = user.links?.itunes || "";
-    instagramRef.current.value = user.links?.instagram || "";
-    twitterRef.current.value = user.links?.twitter || "";
-    tiktokRef.current.value = user.links?.tiktok || "";
-    youtubeRef.current.value = user.links?.youtube || "";
+    websiteRef.current.value = user.links?.website || '';
+    spotifyRef.current.value = user.links?.spotify || '';
+    itunesRef.current.value = user.links?.itunes || '';
+    instagramRef.current.value = user.links?.instagram || '';
+    twitterRef.current.value = user.links?.twitter || '';
+    tiktokRef.current.value = user.links?.tiktok || '';
+    youtubeRef.current.value = user.links?.youtube || '';
 
     setSelectedGenres(user.genres || []);
-    setProfileImagePreview(user.profileImage || "");
-    setHeaderImagePreview(user.headerImage || "");
+    setProfileImagePreview(user.profileImage || '');
+    setHeaderImagePreview(user.headerImage || '');
 
-    if (profileImageRef.current) profileImageRef.current.value = "";
-    if (headerImageRef.current) headerImageRef.current.value = "";
+    if (profileImageRef.current) profileImageRef.current.value = '';
+    if (headerImageRef.current) headerImageRef.current.value = '';
   }, [user]);
 
   const handleGenreToggle = useCallback((genre) => {
@@ -227,35 +227,35 @@ function AboutYou({ user, mutate }) {
         setIsSaving(true);
 
         const formData = new FormData();
-        formData.append("userType", userTypeRef.current.value);
-        formData.append("username", usernameRef.current.value);
-        formData.append("name", nameRef.current.value);
-        formData.append("bio", bioRef.current.value);
-        formData.append("hometown", hometownRef.current.value);
+        formData.append('userType', userTypeRef.current.value);
+        formData.append('username', usernameRef.current.value);
+        formData.append('name', nameRef.current.value);
+        formData.append('bio', bioRef.current.value);
+        formData.append('hometown', hometownRef.current.value);
 
-        formData.append("website", websiteRef.current.value);
-        formData.append("spotify", spotifyRef.current.value);
-        formData.append("itunes", itunesRef.current.value);
-        formData.append("instagram", instagramRef.current.value);
-        formData.append("twitter", twitterRef.current.value);
-        formData.append("tiktok", tiktokRef.current.value);
-        formData.append("youtube", youtubeRef.current.value);
+        formData.append('website', websiteRef.current.value);
+        formData.append('spotify', spotifyRef.current.value);
+        formData.append('itunes', itunesRef.current.value);
+        formData.append('instagram', instagramRef.current.value);
+        formData.append('twitter', twitterRef.current.value);
+        formData.append('tiktok', tiktokRef.current.value);
+        formData.append('youtube', youtubeRef.current.value);
 
-        formData.append("genres", JSON.stringify(selectedGenres));
+        formData.append('genres', JSON.stringify(selectedGenres));
 
         if (profileImageRef.current.files?.[0]) {
-          formData.append("profileImage", profileImageRef.current.files[0]);
+          formData.append('profileImage', profileImageRef.current.files[0]);
         }
         if (headerImageRef.current.files?.[0]) {
-          formData.append("headerImage", headerImageRef.current.files[0]);
+          formData.append('headerImage', headerImageRef.current.files[0]);
         }
 
-        const response = await fetcher("/api/user", {
-          method: "PATCH",
+        const response = await fetcher('/api/user', {
+          method: 'PATCH',
           body: formData,
         });
         mutate({ user: response.user }, false);
-        toast.success("Profile updated!");
+        toast.success('Profile updated!');
       } catch (err) {
         toast.error(err.message);
       } finally {
@@ -266,14 +266,14 @@ function AboutYou({ user, mutate }) {
   );
 
   const onCancel = () => {
-    toast("Changes canceled (not actually implemented).");
+    toast('Changes canceled (not actually implemented).');
   };
 
   return (
     <div className={styles.card}>
-      <div style={{ marginBottom: "1rem" }}>
+      <div style={{ marginBottom: '1rem' }}>
         <h2 className={styles.title}>Your Profile</h2>
-        <p style={{ color: "#666", fontSize: "0.9rem", marginTop: "0.25rem" }}>
+        <p style={{ color: '#666', fontSize: '0.9rem', marginTop: '0.25rem' }}>
           Please update your profile settings here
         </p>
       </div>
@@ -282,13 +282,13 @@ function AboutYou({ user, mutate }) {
         {/* Profile Picture + Header */}
         <div
           className={styles.formGroup}
-          style={{ display: "flex", gap: "2rem" }}
+          style={{ display: 'flex', gap: '2rem' }}
         >
           <div>
             <label className={styles.label}>Profile Picture</label>
-            <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
               <img
-                src={profileImagePreview || "/default-avatar.png"}
+                src={profileImagePreview || '/default-avatar.png'}
                 alt="Profile"
                 className={styles.profilePic}
               />
@@ -305,7 +305,7 @@ function AboutYou({ user, mutate }) {
                   accept="image/*"
                   ref={profileImageRef}
                   onChange={onProfileImageChange}
-                  style={{ display: "none" }}
+                  style={{ display: 'none' }}
                 />
               </div>
             </div>
@@ -320,9 +320,9 @@ function AboutYou({ user, mutate }) {
                 className={styles.headerImage}
               />
             ) : (
-              <p style={{ color: "#999" }}>No header image selected</p>
+              <p style={{ color: '#999' }}>No header image selected</p>
             )}
-            <div style={{ marginTop: "0.5rem" }}>
+            <div style={{ marginTop: '0.5rem' }}>
               <label htmlFor="headerImageInput" className={styles.btnSecondary}>
                 Change
               </label>
@@ -332,7 +332,7 @@ function AboutYou({ user, mutate }) {
                 accept="image/*"
                 ref={headerImageRef}
                 onChange={onHeaderImageChange}
-                style={{ display: "none" }}
+                style={{ display: 'none' }}
               />
             </div>
           </div>
@@ -374,8 +374,8 @@ function AboutYou({ user, mutate }) {
 
         <div className={styles.formGroup}>
           <label className={styles.label}>Username</label>
-          <div style={{ display: "flex", alignItems: "center", gap: "0.3rem" }}>
-            <span style={{ color: "#666" }}>@</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+            <span style={{ color: '#666' }}>@</span>
             <input
               type="text"
               ref={usernameRef}
@@ -407,7 +407,7 @@ function AboutYou({ user, mutate }) {
                   key={genre}
                   onClick={() => handleGenreToggle(genre)}
                   className={`${styles.genreItem} ${
-                    selected ? styles.genreItemSelected : ""
+                    selected ? styles.genreItemSelected : ''
                   }`}
                   role="button"
                   tabIndex={0}
@@ -421,8 +421,8 @@ function AboutYou({ user, mutate }) {
         </div>
 
         {/* Social Links */}
-        <div style={{ marginTop: "2rem" }}>
-          <h3 className={styles.title} style={{ fontSize: "1rem" }}>
+        <div style={{ marginTop: '2rem' }}>
+          <h3 className={styles.title} style={{ fontSize: '1rem' }}>
             Social Links
           </h3>
           <div className={styles.formGroup}>
@@ -491,7 +491,7 @@ function AboutYou({ user, mutate }) {
         </div>
 
         {/* Connect Spotify */}
-        <div style={{ marginTop: "1rem" }}>
+        <div style={{ marginTop: '1rem' }}>
           <ConnectSpotify />
         </div>
 
@@ -502,7 +502,7 @@ function AboutYou({ user, mutate }) {
             className={`${styles.btn} ${styles.btnPrimary}`}
             disabled={isSaving}
           >
-            {isSaving ? "Saving..." : "Save"}
+            {isSaving ? 'Saving...' : 'Save'}
           </button>
           <button
             type="button"
@@ -525,7 +525,7 @@ export default function Settings() {
   useEffect(() => {
     if (!data && !error) return;
     if (!data?.user) {
-      router.replace("/login");
+      router.replace('/login');
     }
   }, [data, error, router]);
 

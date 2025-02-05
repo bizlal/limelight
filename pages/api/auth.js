@@ -1,13 +1,13 @@
-import { passport } from "@/api-lib/auth";
-import { auths } from "@/api-lib/middlewares";
-import { ncOpts } from "@/api-lib/nc";
-import nc from "next-connect";
+import { passport } from '@/api-lib/auth';
+import { auths } from '@/api-lib/middlewares';
+import { ncOpts } from '@/api-lib/nc';
+import nc from 'next-connect';
 
 const handler = nc(ncOpts);
 
 handler.use(...auths);
 
-handler.post(passport.authenticate("privy"), (req, res) => {
+handler.post(passport.authenticate('privy'), (req, res) => {
   res.json({ user: req.user });
 });
 

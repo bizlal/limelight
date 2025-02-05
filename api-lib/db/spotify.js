@@ -1,14 +1,14 @@
 // /api-lib/db/spotifyPlaylist.js
 
-import axios from "axios";
-import { findSpotifyTokens, saveSpotifyTokens } from "./connections.js";
+import axios from 'axios';
+import { findSpotifyTokens, saveSpotifyTokens } from './connections.js';
 
 /**
  * Returns the user's Spotify profile.
  * We need this to get the Spotify user ID (so we can create a playlist for them).
  */
 async function getSpotifyProfile(accessToken) {
-  const response = await axios.get("https://api.spotify.com/v1/me", {
+  const response = await axios.get('https://api.spotify.com/v1/me', {
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },
@@ -48,14 +48,14 @@ export async function createOrGetDiscoveredPlaylist(db, uid, accessToken) {
   const createRes = await axios.post(
     `https://api.spotify.com/v1/users/${spotifyUserId}/playlists`,
     {
-      name: "Discovered on Limelight",
-      description: "A special playlist curated by Limelight",
+      name: 'Discovered on Limelight',
+      description: 'A special playlist curated by Limelight',
       public: false,
     },
     {
       headers: {
         Authorization: `Bearer ${accessToken}`,
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
     }
   );
@@ -70,9 +70,9 @@ export async function createOrGetDiscoveredPlaylist(db, uid, accessToken) {
   });
   // We'll do a separate direct update of the discovered_playlist_id
   await db
-    .collection("spotifyTokens")
+    .collection('spotifyTokens')
     .updateOne(
-      { service: "spotify", uid },
+      { service: 'spotify', uid },
       { $set: { discovered_playlist_id: playlistId } }
     );
 
@@ -118,7 +118,7 @@ export async function addTracksToDiscoveredPlaylist(
     {
       headers: {
         Authorization: `Bearer ${accessToken}`,
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
     }
   );

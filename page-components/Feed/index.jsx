@@ -1,7 +1,7 @@
-import { Spacer } from "@/components/Layout";
-import styles from "./Feed.module.css";
-import Poster from "./Poster";
-import PostList from "./PostList";
+import { Spacer } from '@/components/Layout';
+import styles from './Feed.module.css';
+import Poster from './Poster';
+import PostList from './PostList';
 
 export const Feed = () => {
   return (

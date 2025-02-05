@@ -1,23 +1,23 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import { FaSpotify, FaApple } from "react-icons/fa";
-import styles from "./NewRelease.module.css";
-import { useCurrentUser } from "@/lib/user";
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import { FaSpotify, FaApple } from 'react-icons/fa';
+import styles from './NewRelease.module.css';
+import { useCurrentUser } from '@/lib/user';
 // Placeholder: Upload file to Firebase, returns a URL
 async function uploadFileToFirebase(file) {
   // Implement your real logic here
   return new Promise((resolve) => {
     setTimeout(() => {
-      resolve("https://firebase.storage.com/mybucket/" + file.name);
+      resolve('https://firebase.storage.com/mybucket/' + file.name);
     }, 1200);
   });
 }
 
 // Placeholder: Insert release into your Mongo DB
 async function insertReleaseToDB(releaseData) {
-  return fetch("/api/insertRelease", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
+  return fetch('/api/insertRelease', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(releaseData),
   }).then((r) => r.json());
 }
@@ -31,10 +31,10 @@ function FileItem({ file, onRemove }) {
   useEffect(() => {
     if (!file) return;
     // If audio/video, parse duration
-    if (file.type.startsWith("audio/") || file.type.startsWith("video/")) {
+    if (file.type.startsWith('audio/') || file.type.startsWith('video/')) {
       const url = URL.createObjectURL(file);
-      const video = document.createElement("video");
-      video.preload = "metadata";
+      const video = document.createElement('video');
+      video.preload = 'metadata';
       video.onloadedmetadata = () => {
         setDuration(video.duration);
         URL.revokeObjectURL(url);
@@ -85,7 +85,7 @@ function LeftColumn({
 }) {
   const handleMasterChange = (e) => {
     const f = e.target.files?.[0];
-    if (f && (f.type.startsWith("audio/") || f.type.startsWith("video/"))) {
+    if (f && (f.type.startsWith('audio/') || f.type.startsWith('video/'))) {
       setMasterFile(f);
     }
   };
@@ -93,7 +93,7 @@ function LeftColumn({
 
   const handleCoverArtChange = (e) => {
     const f = e.target.files?.[0];
-    if (f && f.type.startsWith("image/")) {
+    if (f && f.type.startsWith('image/')) {
       setCoverArtFile(f);
     }
   };
@@ -184,7 +184,7 @@ export default function NewRelease() {
   const [done, setDone] = useState(false);
 
   // ========== NEW: Shazam Track Search State ==========
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
 
@@ -194,32 +194,32 @@ export default function NewRelease() {
   // Basic release schema
   const [release, setRelease] = useState({
     metadata: {
-      track_title: "",
-      album_title: "",
-      language: "",
-      release_type: "single",
-      isrc: "",
+      track_title: '',
+      album_title: '',
+      language: '',
+      release_type: 'single',
+      isrc: '',
       bpm: 0,
-      artist: "",
-      featured_artists: "",
-      writing_credits: "",
-      producing_credits: "",
+      artist: '',
+      featured_artists: '',
+      writing_credits: '',
+      producing_credits: '',
     },
     is_instrumental: false,
     is_explicit: false,
     dsp_links: {
-      spotify: "",
-      apple_music_url: "",
+      spotify: '',
+      apple_music_url: '',
     },
     release_location: {
-      city: "",
-      state: "",
-      country: "",
+      city: '',
+      state: '',
+      country: '',
     },
     is_active: true,
     // other fields from your schema ...
-    audio_url: "",
-    image_url: "",
+    audio_url: '',
+    image_url: '',
   });
 
   // Files
@@ -227,10 +227,10 @@ export default function NewRelease() {
   const [coverArtFile, setCoverArtFile] = useState(null);
 
   // For the left column "artist" fields
-  const [artist, setArtist] = useState("");
-  const [featuredArtists, setFeaturedArtists] = useState("");
-  const [writingCredits, setWritingCredits] = useState("");
-  const [producingCredits, setProducingCredits] = useState("");
+  const [artist, setArtist] = useState('');
+  const [featuredArtists, setFeaturedArtists] = useState('');
+  const [writingCredits, setWritingCredits] = useState('');
+  const [producingCredits, setProducingCredits] = useState('');
 
   // Progress bar
   const totalSteps = 5;
@@ -249,23 +249,23 @@ export default function NewRelease() {
     setSelectedTrack(null); // reset previous selection
     try {
       const response = await axios.get(
-        "https://shazam-api6.p.rapidapi.com/shazam/search_track/",
+        'https://shazam-api6.p.rapidapi.com/shazam/search_track/',
         {
-          params: { query: searchQuery, limit: "10" },
+          params: { query: searchQuery, limit: '10' },
           headers: {
             // Replace with your own RapidAPI credentials
-            "x-rapidapi-key":
-              "9391c1e74fmsh37008868797f7bap1aae4djsnf4d43714c835",
-            "x-rapidapi-host": "shazam-api6.p.rapidapi.com",
+            'x-rapidapi-key':
+              '9391c1e74fmsh37008868797f7bap1aae4djsnf4d43714c835',
+            'x-rapidapi-host': 'shazam-api6.p.rapidapi.com',
           },
         }
       );
       const { data } = response;
-      console.log("Shazam search results:", data);
+      console.log('Shazam search results:', data);
       setSearchResults(data?.result?.tracks?.hits || []);
     } catch (err) {
-      console.error("Shazam search error:", err);
-      alert("Error searching for track, see console.");
+      console.error('Shazam search error:', err);
+      alert('Error searching for track, see console.');
     }
     setIsSearching(false);
   };
@@ -279,32 +279,32 @@ export default function NewRelease() {
       ...release,
       metadata: {
         ...release.metadata,
-        track_title: trackObj.heading?.title || "",
-        artist: trackObj.heading?.subtitle || "",
+        track_title: trackObj.heading?.title || '',
+        artist: trackObj.heading?.subtitle || '',
       },
-      audio_url: trackObj.previewurl || "",
+      audio_url: trackObj.previewurl || '',
       image_url:
         trackObj.images?.coverart ||
         trackObj.images?.default ||
         trackObj.coverarturl ||
-        "",
+        '',
     };
 
     setRelease(newReleaseData);
 
     // Update left-column "artist" so it’s visible in that input
-    setArtist(trackObj.heading?.subtitle || "");
+    setArtist(trackObj.heading?.subtitle || '');
 
     // Keep track so we can show the horizontal preview row
     setSelectedTrack({
-      title: trackObj.heading?.title || "",
-      artist: trackObj.heading?.subtitle || "",
-      audioUrl: trackObj.stores?.apple?.previewurl || trackObj.previewurl || "",
+      title: trackObj.heading?.title || '',
+      artist: trackObj.heading?.subtitle || '',
+      audioUrl: trackObj.stores?.apple?.previewurl || trackObj.previewurl || '',
       coverUrl:
         trackObj.images?.coverart ||
         trackObj.images?.default ||
         trackObj.coverarturl ||
-        "",
+        '',
     });
   };
 
@@ -314,10 +314,10 @@ export default function NewRelease() {
   // Replace this function to call the new API
   async function submitNewTrack(track) {
     return axios
-      .post("/api/track/", track)
+      .post('/api/track/', track)
       .then((response) => response.data)
       .catch((err) => {
-        console.error("API Error:", err);
+        console.error('API Error:', err);
         throw err;
       });
   }
@@ -337,9 +337,9 @@ export default function NewRelease() {
         isrc: release.metadata.isrc,
         bpm: release.metadata.bpm,
         artist,
-        featured_artists: featuredArtists.split(",").map((a) => a.trim()),
-        writing_credits: writingCredits.split(",").map((w) => w.trim()),
-        producing_credits: producingCredits.split(",").map((p) => p.trim()),
+        featured_artists: featuredArtists.split(',').map((a) => a.trim()),
+        writing_credits: writingCredits.split(',').map((w) => w.trim()),
+        producing_credits: producingCredits.split(',').map((p) => p.trim()),
         is_instrumental: release.is_instrumental,
         is_explicit: release.is_explicit,
         dsp_links: {
@@ -361,12 +361,12 @@ export default function NewRelease() {
 
       // 2) Call the new API with the constructed `track` object
       const result = await submitNewTrack({ track });
-      console.log("API Response:", result);
+      console.log('API Response:', result);
 
       setDone(true);
     } catch (err) {
-      console.error("Error during submission:", err);
-      alert("Failed to submit release. See console for details.");
+      console.error('Error during submission:', err);
+      alert('Failed to submit release. See console for details.');
     }
   };
   // Done screen
@@ -531,7 +531,7 @@ export default function NewRelease() {
             className={styles.input}
             type="number"
             placeholder="e.g. 120"
-            value={release.metadata.bpm || ""}
+            value={release.metadata.bpm || ''}
             onChange={(e) =>
               setRelease((prev) => ({
                 ...prev,
@@ -582,7 +582,7 @@ export default function NewRelease() {
         </div>
         <div className={styles.fieldGroup}>
           <label>
-            <FaSpotify style={{ marginRight: "6px" }} />
+            <FaSpotify style={{ marginRight: '6px' }} />
             Spotify DSP Link
           </label>
           <input
@@ -600,7 +600,7 @@ export default function NewRelease() {
         </div>
         <div className={styles.fieldGroup}>
           <label>
-            <FaApple style={{ marginRight: "6px" }} />
+            <FaApple style={{ marginRight: '6px' }} />
             Apple Music DSP Link
           </label>
           <input
@@ -709,8 +709,8 @@ export default function NewRelease() {
           <strong>Artist:</strong> {release.metadata.artist}
         </p>
         <p>
-          <strong>Featured Artists:</strong>{" "}
-          {release.metadata.featured_artists || "(none)"}
+          <strong>Featured Artists:</strong>{' '}
+          {release.metadata.featured_artists || '(none)'}
         </p>
         <p>
           <strong>Track Title:</strong> {release.metadata.track_title}
@@ -768,12 +768,12 @@ export default function NewRelease() {
       <div className={styles.main}>
         {/* Search Card */}
         <div className={styles.formCard}>
-          <h2 style={{ color: "#fff", marginBottom: "1rem" }}>
+          <h2 style={{ color: '#fff', marginBottom: '1rem' }}>
             Search for a Track
           </h2>
 
           <div className={styles.fieldGroup}>
-            <label style={{ color: "#fff" }}>
+            <label style={{ color: '#fff' }}>
               Enter a search term (artist, track):
             </label>
             <input
@@ -787,21 +787,21 @@ export default function NewRelease() {
               className={styles.button}
               onClick={handleSearch}
               disabled={isSearching}
-              style={{ marginTop: "0.5rem", width: "100px" }}
+              style={{ marginTop: '0.5rem', width: '100px' }}
             >
-              {isSearching ? "..." : "Search"}
+              {isSearching ? '...' : 'Search'}
             </button>
           </div>
 
           {/* Display dropdown */}
           {searchResults.length > 0 && (
             <div className={styles.fieldGroup}>
-              <label style={{ color: "#fff" }}>Select a track:</label>
+              <label style={{ color: '#fff' }}>Select a track:</label>
               <select
                 className={styles.select}
                 onChange={(e) => {
                   const idx = e.target.value;
-                  if (idx !== "none") {
+                  if (idx !== 'none') {
                     handleSelectTrack(searchResults[idx]);
                   } else {
                     setSelectedTrack(null);
@@ -846,7 +846,7 @@ export default function NewRelease() {
                   Your browser does not support the audio element.
                 </audio>
               ) : (
-                <div style={{ color: "#ccc" }}>No audio</div>
+                <div style={{ color: '#ccc' }}>No audio</div>
               )}
             </div>
           )}

@@ -1,12 +1,12 @@
 // pages/api/spotify/add-to-discovered-playlist.js
 
-import { getMongoDb } from "@/api-lib/mongodb";
-import { findSpotifyTokens, saveSpotifyTokens } from "@/api-lib/db/connections";
+import { getMongoDb } from '@/api-lib/mongodb';
+import { findSpotifyTokens, saveSpotifyTokens } from '@/api-lib/db/connections';
 import {
   createOrGetDiscoveredPlaylist,
   addTracksToDiscoveredPlaylist,
-} from "@/api-lib/db";
-import axios from "axios";
+} from '@/api-lib/db';
+import axios from 'axios';
 
 /**
  * Helper: Refresh the user's Spotify token if it's expired or near expiry.
@@ -38,33 +38,33 @@ async function ensureValidAccessToken(uid, db, tokensDoc) {
 
   // If we have no refresh token, we can't refresh. Throw error or handle gracefully.
   if (!tokensDoc.refresh_token) {
-    throw new Error("No refresh token found. Cannot refresh access token.");
+    throw new Error('No refresh token found. Cannot refresh access token.');
   }
 
-  console.log("Refreshing Spotify token for user:", uid);
+  console.log('Refreshing Spotify token for user:', uid);
 
   const clientId = process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_ID;
   const clientSecret = process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_SECRET;
 
   if (!clientId || !clientSecret) {
     throw new Error(
-      "Missing Spotify client credentials. Cannot refresh token."
+      'Missing Spotify client credentials. Cannot refresh token.'
     );
   }
 
-  const tokenUrl = "https://accounts.spotify.com/api/token";
+  const tokenUrl = 'https://accounts.spotify.com/api/token';
   const params = new URLSearchParams({
-    grant_type: "refresh_token",
+    grant_type: 'refresh_token',
     refresh_token: tokensDoc.refresh_token,
   });
 
   // Request new token from Spotify
   const response = await axios.post(tokenUrl, params.toString(), {
     headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
+      'Content-Type': 'application/x-www-form-urlencoded',
       Authorization:
-        "Basic " +
-        Buffer.from(`${clientId}:${clientSecret}`).toString("base64"),
+        'Basic ' +
+        Buffer.from(`${clientId}:${clientSecret}`).toString('base64'),
     },
   });
 
@@ -89,18 +89,18 @@ async function ensureValidAccessToken(uid, db, tokensDoc) {
 }
 
 export default async function handler(req, res) {
-  if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method not allowed" });
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
   }
 
   try {
     const { uid, trackUris } = req.body;
     if (!uid) {
-      return res.status(400).json({ error: "Missing user ID (uid)." });
+      return res.status(400).json({ error: 'Missing user ID (uid).' });
     }
     if (!Array.isArray(trackUris) || trackUris.length === 0) {
       return res.status(400).json({
-        error: "trackUris must be a non-empty array of Spotify URIs.",
+        error: 'trackUris must be a non-empty array of Spotify URIs.',
       });
     }
 
@@ -111,7 +111,7 @@ export default async function handler(req, res) {
     if (!tokensDoc) {
       return res
         .status(401)
-        .json({ error: "Spotify tokens not found for this user." });
+        .json({ error: 'Spotify tokens not found for this user.' });
     }
 
     // 2) Refresh token if expired
@@ -134,7 +134,7 @@ export default async function handler(req, res) {
         'Tracks added to "Discovered on Limelight" playlist successfully.',
     });
   } catch (error) {
-    console.error("Error in /add-to-discovered-playlist handler:", error);
-    return res.status(500).json({ error: "Internal server error." });
+    console.error('Error in /add-to-discovered-playlist handler:', error);
+    return res.status(500).json({ error: 'Internal server error.' });
   }
 }

@@ -1,21 +1,21 @@
-import { ValidateProps } from "@/api-lib/constants";
-import { updateUserPasswordByOldPassword } from "@/api-lib/db";
-import { auths, validateBody } from "@/api-lib/middlewares";
-import { getMongoDb } from "@/api-lib/mongodb";
-import { ncOpts } from "@/api-lib/nc";
-import nc from "next-connect";
+import { ValidateProps } from '@/api-lib/constants';
+import { updateUserPasswordByOldPassword } from '@/api-lib/db';
+import { auths, validateBody } from '@/api-lib/middlewares';
+import { getMongoDb } from '@/api-lib/mongodb';
+import { ncOpts } from '@/api-lib/nc';
+import nc from 'next-connect';
 
 const handler = nc(ncOpts);
 handler.use(...auths);
 
 handler.put(
   validateBody({
-    type: "object",
+    type: 'object',
     properties: {
       oldPassword: ValidateProps.user.password,
       newPassword: ValidateProps.user.password,
     },
-    required: ["oldPassword", "newPassword"],
+    required: ['oldPassword', 'newPassword'],
     additionalProperties: false,
   }),
   async (req, res) => {
@@ -37,7 +37,7 @@ handler.put(
 
     if (!success) {
       res.status(401).json({
-        error: { message: "The old password you entered is incorrect." },
+        error: { message: 'The old password you entered is incorrect.' },
       });
       return;
     }

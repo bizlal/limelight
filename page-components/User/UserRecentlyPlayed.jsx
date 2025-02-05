@@ -1,8 +1,4 @@
 // components/UserRecentlyPlayed.js
-import React, { useState, useEffect } from "react";
-import { useCurrentUser, useCurrentUserData } from "@/lib/user"; // adjust the import path as needed
-import { FaSpotify } from "react-icons/fa";
-import styles from "./UserRecentlyPlayed.module.css";
 import React, { useState, useEffect } from 'react';
 import { FaSpotify } from 'react-icons/fa';
 import styles from './UserRecentlyPlayed.module.css';
@@ -15,34 +11,33 @@ function timeAgo(dateString) {
 
   if (diffInSeconds < 60) {
     const seconds = Math.floor(diffInSeconds);
-    return seconds <= 1 ? "just now" : `${seconds} seconds ago`;
+    return seconds <= 1 ? 'just now' : `${seconds} seconds ago`;
   } else if (diffInSeconds < 3600) {
     const minutes = Math.floor(diffInSeconds / 60);
-    return minutes === 1 ? "1 minute ago" : `${minutes} minutes ago`;
+    return minutes === 1 ? '1 minute ago' : `${minutes} minutes ago`;
   } else if (diffInSeconds < 86400) {
     const hours = Math.floor(diffInSeconds / 3600);
-    return hours === 1 ? "1 hour ago" : `${hours} hours ago`;
+    return hours === 1 ? '1 hour ago' : `${hours} hours ago`;
   } else {
     const days = Math.floor(diffInSeconds / 86400);
-    return days === 1 ? "1 day ago" : `${days} days ago`;
+    return days === 1 ? '1 day ago' : `${days} days ago`;
   }
 }
 
 const UserRecentlyPlayed = ({ user }) => {
-
   const [recentlyPlayed, setRecentlyPlayed] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     if (!user || !user.uid) return;
-  
+
     const fetchRecentlyPlayed = async () => {
       setLoading(true);
       try {
         const res = await fetch(`/api/spotify/recently-played?uid=${user.uid}`);
         if (!res.ok) {
-          throw new Error("Error fetching recently played tracks");
+          throw new Error('Error fetching recently played tracks');
         }
         const data = await res.json();
         setRecentlyPlayed(data.recentlyPlayed || []);
@@ -53,20 +48,24 @@ const UserRecentlyPlayed = ({ user }) => {
         setLoading(false);
       }
     };
-  
+
     fetchRecentlyPlayed();
   }, [user]);
-  
-
 
   if (loading) {
-    return <div className={styles.message}>Loading recently played tracks...</div>;
+    return (
+      <div className={styles.message}>Loading recently played tracks...</div>
+    );
   }
   if (error) {
-    return <div className={`${styles.message} ${styles.error}`}>Error: {error}</div>;
+    return (
+      <div className={`${styles.message} ${styles.error}`}>Error: {error}</div>
+    );
   }
   if (!recentlyPlayed.length) {
-    return <div className={styles.message}>No recently played tracks found.</div>;
+    return (
+      <div className={styles.message}>No recently played tracks found.</div>
+    );
   }
 
   return (
@@ -80,7 +79,7 @@ const UserRecentlyPlayed = ({ user }) => {
         {recentlyPlayed.map((item) => {
           const coverUrl =
             item.track.album?.images?.[0]?.url ||
-            "https://via.placeholder.com/64?text=No+Image";
+            'https://via.placeholder.com/64?text=No+Image';
 
           return (
             <li key={item.played_at} className={styles.trackItem}>
@@ -94,13 +93,13 @@ const UserRecentlyPlayed = ({ user }) => {
               <div className={styles.trackDetails}>
                 <span className={styles.trackName}>{item.track.name}</span>
                 <span className={styles.trackArtists}>
-                  {item.track.artists.map((artist) => artist.name).join(", ")}
+                  {item.track.artists.map((artist) => artist.name).join(', ')}
                 </span>
-                <span className={styles.albumName}>{item.track.album.name}</span>
+                <span className={styles.albumName}>
+                  {item.track.album.name}
+                </span>
               </div>
-              <div className={styles.playedAt}>
-                {timeAgo(item.played_at)}
-              </div>
+              <div className={styles.playedAt}>{timeAgo(item.played_at)}</div>
             </li>
           );
         })}

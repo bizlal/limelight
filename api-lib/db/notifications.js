@@ -5,7 +5,7 @@
  */
 async function getUserFromDb(db, uid) {
   let user = await db
-    .collection("users2")
+    .collection('users2')
     .findOne({ uid })
     .then((user) => user || null);
 
@@ -26,7 +26,7 @@ export async function addNotification(
   engagement_data
 ) {
   // Create a notificationsCollection handle
-  const notificationsCollection = db.collection("user_notifications");
+  const notificationsCollection = db.collection('user_notifications');
 
   // Add the title, content and engagement_data to the engagement_data object
 
@@ -52,10 +52,10 @@ export async function addNotification(
  * @param {type} uid - Description
  */
 export async function incrementUnreadNotifications(db, uid) {
-  const usersCollection = db.collection("users2");
+  const usersCollection = db.collection('users2');
   const result = await usersCollection.updateOne(
     { uid },
-    { $inc: { "profile.unread_notifications": 1 } }
+    { $inc: { 'profile.unread_notifications': 1 } }
   );
   return result.modifiedCount;
 }
@@ -65,7 +65,7 @@ export async function getActivityNotificationsByUid(db, uid) {
     const user = await getUserFromDb(db, uid);
 
     const notifications = await db
-      .collection("user_notifications")
+      .collection('user_notifications')
       .aggregate([
         {
           $match: {
@@ -76,13 +76,13 @@ export async function getActivityNotificationsByUid(db, uid) {
         { $limit: 100 },
         {
           $lookup: {
-            from: "users2",
-            localField: "notification.uid",
-            foreignField: "uid",
-            as: "user",
+            from: 'users2',
+            localField: 'notification.uid',
+            foreignField: 'uid',
+            as: 'user',
           },
         },
-        { $unwind: "$user" },
+        { $unwind: '$user' },
         {
           $project: {
             _id: 1,
@@ -90,15 +90,15 @@ export async function getActivityNotificationsByUid(db, uid) {
             title: 1,
             content: 1,
             notification: {
-              profileUID: "$notification.profile_uid",
-              trackID: "$notification.track_id",
-              uid: "$notification.uid",
-              title: "$notification.title",
-              mongodbLocation: "$notification.mongodb_location",
-              elapsedTime: "$notification.elapsed_time",
-              isPlayingTrack: "$notification.is_playing_track",
-              dateCreated: "$notification.date_created",
-              type: "$notification.type",
+              profileUID: '$notification.profile_uid',
+              trackID: '$notification.track_id',
+              uid: '$notification.uid',
+              title: '$notification.title',
+              mongodbLocation: '$notification.mongodb_location',
+              elapsedTime: '$notification.elapsed_time',
+              isPlayingTrack: '$notification.is_playing_track',
+              dateCreated: '$notification.date_created',
+              type: '$notification.type',
             },
             createdAt: 1,
             user: 1,
@@ -106,38 +106,38 @@ export async function getActivityNotificationsByUid(db, uid) {
         },
         {
           $addFields: {
-            trackIDNotNull: { $ne: ["$notification.trackID", null] },
+            trackIDNotNull: { $ne: ['$notification.trackID', null] },
           },
         },
         {
           $lookup: {
-            from: "test_tracks",
-            localField: "notification.trackID",
-            foreignField: "track_id",
-            as: "track",
+            from: 'test_tracks',
+            localField: 'notification.trackID',
+            foreignField: 'track_id',
+            as: 'track',
           },
         },
         {
           $addFields: {
             track: {
-              $cond: ["$trackIDNotNull", { $arrayElemAt: ["$track", 0] }, null],
+              $cond: ['$trackIDNotNull', { $arrayElemAt: ['$track', 0] }, null],
             },
           },
         },
         {
           $lookup: {
-            from: "user_following",
+            from: 'user_following',
             let: {
-              followerUid: "$uid",
-              profileUid: "$notification.profile_uid",
+              followerUid: '$uid',
+              profileUid: '$notification.profile_uid',
             },
             pipeline: [
               {
                 $match: {
                   $expr: {
                     $and: [
-                      { $eq: ["$uid", "$$profileUid"] },
-                      { $eq: ["$profile_uid", "$$followerUid"] },
+                      { $eq: ['$uid', '$$profileUid'] },
+                      { $eq: ['$profile_uid', '$$followerUid'] },
                     ],
                   },
                 },
@@ -150,13 +150,13 @@ export async function getActivityNotificationsByUid(db, uid) {
                 },
               },
             ],
-            as: "userIsFollowingArray",
+            as: 'userIsFollowingArray',
           },
         },
         // Transform the userIsFollowingArray into a boolean
         {
           $addFields: {
-            isUserFollowing: { $gt: [{ $size: "$userIsFollowingArray" }, 0] },
+            isUserFollowing: { $gt: [{ $size: '$userIsFollowingArray' }, 0] },
           },
         },
         // Remove the temporary array field
@@ -201,7 +201,7 @@ export async function getActivityNotificationsByUid(db, uid) {
     return categorizedNotifications;
   } catch (error) {
     // Handle the error appropriately
-    console.error("Error in getActivityNotificationsByUid:", error);
+    console.error('Error in getActivityNotificationsByUid:', error);
     throw error;
   }
 }
@@ -228,10 +228,10 @@ function isWithinThisMonth(date, today) {
  * @param {type} uid - Description
  */
 export async function resetUnreadNotifications(db, uid) {
-  const usersCollection = db.collection("users2");
+  const usersCollection = db.collection('users2');
   const result = await usersCollection.updateOne(
     { uid },
-    { $set: { "profile.unread_notifications": 0 } }
+    { $set: { 'profile.unread_notifications': 0 } }
   );
   return result.modifiedCount;
 }
@@ -239,79 +239,79 @@ export async function resetUnreadNotifications(db, uid) {
 // Map event types to functions that generate the title and content
 const engagementEventHandlers = {
   follow: (u) => ({
-    title: "New Follower",
+    title: 'New Follower',
     content: `${u.profile.name} (@${u.profile.username}) is now following you.`,
   }),
   stream: (u) => ({
-    title: "New Stream",
+    title: 'New Stream',
     content: `${u.profile.name} (@${u.profile.username}) streamed your song.`,
   }),
   track_like: (u) => ({
-    title: "New Track Like",
+    title: 'New Track Like',
     content: `${u.profile.name} (@${u.profile.username}) liked your song.`,
   }),
   track_dislike: (u) => ({
-    title: "Track Disliked",
+    title: 'Track Disliked',
     content: `${u.profile.name} (@${u.profile.username}) disliked your song.`,
   }),
   track_comment: (u) => ({
-    title: "New Track Comment",
+    title: 'New Track Comment',
     content: `${u.profile.name} (@${u.profile.username}) commented on your song.`,
   }),
   comment_reply: (u) => ({
-    title: "New Comment Reply",
+    title: 'New Comment Reply',
     content: `${u.profile.name} (@${u.profile.username}) replied to your comment.`,
   }),
   comment_like: (u) => ({
-    title: "New Comment Like",
+    title: 'New Comment Like',
     content: `${u.profile.name} (@${u.profile.username}) liked your comment.`,
   }),
   profile_visit: (u) => ({
-    title: "New Profile Visit",
+    title: 'New Profile Visit',
     content: `${u.profile.name} (@${u.profile.username}) visited your profile.`,
   }),
   profile_post: (u) => ({
-    title: "New Profile Post",
+    title: 'New Profile Post',
     content: `${u.profile.name} (@${u.profile.username}) posted on your profile.`,
   }),
   post_like: (u) => ({
-    title: "New Post Like",
+    title: 'New Post Like',
     content: `${u.profile.name} (@${u.profile.username}) liked your post.`,
   }),
   post_reply: (u) => ({
-    title: "New Post Reply",
+    title: 'New Post Reply',
     content: `${u.profile.name} (@${u.profile.username}) replied to your post.`,
   }),
   track_spotify_click: (u) => ({
-    title: "New Spotify Click",
+    title: 'New Spotify Click',
     content: `${u.profile.name} (@${u.profile.username}) clicked on your Spotify link.`,
   }),
   track_apple_music_click: (u) => ({
-    title: "New Apple Music Click",
+    title: 'New Apple Music Click',
     content: `${u.profile.name} (@${u.profile.username}) clicked on your Apple Music link.`,
   }),
   track_youtube_click: (u) => ({
-    title: "New YouTube Click",
+    title: 'New YouTube Click',
     content: `${u.profile.name} (@${u.profile.username}) clicked on your YouTube link.`,
   }),
   track_share: (u) => ({
-    title: "New Track Share",
+    title: 'New Track Share',
     content: `${u.profile.name} (@${u.profile.username}) shared your song.`,
   }),
   track_edited: (u) => ({
-    title: "Track Edited",
+    title: 'Track Edited',
     content: `${u.profile.name} (@${u.profile.username}) edited their song.`,
   }),
   track_uploaded: (u) => ({
-    title: "Track Uploaded",
+    title: 'Track Uploaded',
     content: `${u.profile.name} (@${u.profile.username}) uploaded a new song.`,
   }),
   account_deleted: (u) => ({
-    title: "Account Deleted",
+    title: 'Account Deleted',
     content: `${u.profile.name} (@${u.profile.username}) deleted their account.`,
   }),
   account_created: (u) => ({
-    title: "Account Created",
+    title: 'Account Created',
     content: `${u.profile.name} (@${u.profile.username}) created their account.`,
   }),
 };
@@ -333,7 +333,7 @@ export async function addEngagementEvent(
     uid,
     title,
     mongodb_location: {
-      type: "Point",
+      type: 'Point',
       coordinates: [
         parseFloat(u.location.longitude),
         parseFloat(u.location.latitude),
@@ -352,7 +352,7 @@ export async function addEngagementEvent(
   }
 
   trackEvent(
-    "engagement",
+    'engagement',
     type,
     `${u.location.state}, ${u.location.country}`,
     1,
@@ -363,8 +363,8 @@ export async function addEngagementEvent(
   const imageUrl = u.profile.image
     ? u.profile.image
     : `https://ui-avatars.com/api/?background=random&name=${u.profile.name?.replaceAll(
-        " ",
-        "+"
+        ' ',
+        '+'
       )}`;
   const notificationObject = {
     fcmToken: p.fcmToken,
@@ -375,12 +375,12 @@ export async function addEngagementEvent(
   };
 
   console.log(notificationObject);
-  console.log("Sending notification to user: ", p.uid);
+  console.log('Sending notification to user: ', p.uid);
   await sendNotification(db, notificationObject);
 
   // eslint-disable-next-line consistent-return
   return await db
-    .collection("user_engagement")
+    .collection('user_engagement')
     .insertOne(engagement_data)
     .then((result) => {
       console.log(`Successfully inserted item with _id: ${result.insertedId}`);
@@ -402,7 +402,7 @@ export async function addEngagementEvent2(db, uid, profile_uid, type) {
   trackEvent();
   let engagement_data = {
     profile_uid,
-    track_id: "",
+    track_id: '',
     uid,
     latitude: u.location.latitude,
     longitude: u.location.longitude,
@@ -410,7 +410,7 @@ export async function addEngagementEvent2(db, uid, profile_uid, type) {
     state: u.location.state,
     country: u.location.country,
     mongodb_location: {
-      type: "Point",
+      type: 'Point',
       coordinates: [
         parseFloat(u.location.longitude),
         parseFloat(u.location.latitude),
@@ -422,134 +422,134 @@ export async function addEngagementEvent2(db, uid, profile_uid, type) {
     type,
   };
 
-  var title = "";
-  var content = "";
+  var title = '';
+  var content = '';
   const { fcmToken } = p;
 
-  if (type == "follow") {
-    title = "New Follower";
+  if (type == 'follow') {
+    title = 'New Follower';
     content = `${u.profile.name} (@${u.profile.username}) is now following you.`;
     trackEvent(
-      "engagement",
-      "follow",
+      'engagement',
+      'follow',
       `${u.location.state}, ${u.location.country}`,
       0,
       u.profile.username
     );
-  } else if (type == "stream") {
-    title = "New Stream";
+  } else if (type == 'stream') {
+    title = 'New Stream';
     content = `${u.profile.name} (@${u.profile.username}) streamed your song.`;
     trackEvent(
-      "engagement",
-      "stream",
+      'engagement',
+      'stream',
       `${u.location.state}, ${u.location.country}`,
       1,
       u.profile.username
     );
-  } else if (type == "track_like") {
-    title = "New Track Like";
+  } else if (type == 'track_like') {
+    title = 'New Track Like';
     content = `${u.profile.name} (@${u.profile.username}) liked your song.`;
     trackEvent(
-      "engagement",
-      "track_like",
+      'engagement',
+      'track_like',
       `${u.location.state}, ${u.location.country}`,
       1,
       u.profile.username
     );
-  } else if (type == "track_dislike") {
+  } else if (type == 'track_dislike') {
     trackEvent(
-      "engagement",
-      "track_dislike",
+      'engagement',
+      'track_dislike',
       `${u.location.state}, ${u.location.country}`,
       1,
       u.profile.username
     );
-  } else if (type == "track_comment") {
-    title = "New Track Comment";
+  } else if (type == 'track_comment') {
+    title = 'New Track Comment';
     content = `${u.profile.name} (@${u.profile.username}) commented on your song.`;
     trackEvent(
-      "engagement",
-      "comment",
+      'engagement',
+      'comment',
       `${u.location.state}, ${u.location.country}`,
       1,
       u.profile.username
     );
-  } else if (type == "profile_visit") {
-    title = "New Profile Visit";
+  } else if (type == 'profile_visit') {
+    title = 'New Profile Visit';
     content = `Somebody from ${u.location.state}, ${u.location.country} visited your profile.`;
     trackEvent(
-      "engagement",
-      "profile_visit",
+      'engagement',
+      'profile_visit',
       `${u.location.state}, ${u.location.country}`,
       1,
       u.profile.username
     );
-  } else if (type == "profile_post") {
-    title = "New Profile Post";
+  } else if (type == 'profile_post') {
+    title = 'New Profile Post';
     content = `${u.profile.name} (@${u.profile.username}) posted on your profile.`;
     trackEvent(
-      "engagement",
-      "profile_post",
+      'engagement',
+      'profile_post',
       `${u.location.state}, ${u.location.country}`,
       1,
       u.profile.username
     );
-  } else if (type == "track_spotify_click") {
-    title = "New Spotify Click";
+  } else if (type == 'track_spotify_click') {
+    title = 'New Spotify Click';
     content = `${u.profile.name} (@${u.profile.username}) clicked on your Spotify link.`;
     trackEvent(
-      "engagement",
-      "track_spotify_click",
+      'engagement',
+      'track_spotify_click',
       `${u.location.state}, ${u.location.country}`,
       1,
       u.profile.username
     );
-  } else if (type == "track_apple_music_click") {
-    title = "New Apple Music Click";
+  } else if (type == 'track_apple_music_click') {
+    title = 'New Apple Music Click';
     content = `${u.profile.name} (@${u.profile.username}) clicked on your Apple Music link.`;
     trackEvent(
-      "engagement",
-      "track_apple_music_click",
+      'engagement',
+      'track_apple_music_click',
       `${u.location.state}, ${u.location.country}`,
       1,
       u.profile.username
     );
-  } else if (type == "track_youtube_click") {
-    title = "New YouTube Click";
+  } else if (type == 'track_youtube_click') {
+    title = 'New YouTube Click';
     content = `${u.profile.name} (@${u.profile.username}) clicked on your YouTube link.`;
     trackEvent(
-      "engagement",
-      "track_youtube_click",
+      'engagement',
+      'track_youtube_click',
       `${u.location.state}, ${u.location.country}`,
       1,
       u.profile.username
     );
-  } else if (type == "track_share") {
-    title = "New Track Share";
+  } else if (type == 'track_share') {
+    title = 'New Track Share';
     content = `${u.profile.name} (@${u.profile.username}) shared your song.`;
     trackEvent(
-      "engagement",
-      "track_share",
+      'engagement',
+      'track_share',
       `${u.location.state}, ${u.location.country}`,
       1,
       u.profile.username
     );
-  } else if (type == "track_edited") {
-    title = "Track Edited";
+  } else if (type == 'track_edited') {
+    title = 'Track Edited';
     content = `${u.profile.name} (@${u.profile.username}) edited their song.`;
     trackEvent(
-      "engagement",
-      "track_edited",
+      'engagement',
+      'track_edited',
       `${u.location.state}, ${u.location.country}`,
       1,
       u.profile.username
     );
-  } else if (type == "track_uploaded") {
-    title = "Track Uploaded";
+  } else if (type == 'track_uploaded') {
+    title = 'Track Uploaded';
     content = `${u.profile.name} (@${u.profile.username}) uploaded a new song.`;
     trackEvent(
-      "engagement",
-      "track_uploaded",
+      'engagement',
+      'track_uploaded',
       `${u.location.state}, ${u.location.country}`,
       1,
       u.profile.username
@@ -564,7 +564,7 @@ export async function addEngagementEvent2(db, uid, profile_uid, type) {
     engagement_data,
   });
   return await db
-    .collection("user_engagement")
+    .collection('user_engagement')
     .insertOne(engagement_data)
     .then((result) => {
       console.log(`Successfully inserted item with _id: ${result.insertedId}`);
@@ -591,7 +591,7 @@ export async function sendNotificationByUID(db, uid, title, content) {
     title,
     content,
     imageUrl: u.profile.image,
-    dataPayload: { title, content, imageUrl: u.profile.image, type: "test" },
+    dataPayload: { title, content, imageUrl: u.profile.image, type: 'test' },
   });
 }
 
@@ -623,12 +623,12 @@ async function sendNotification(
     apns: {
       payload: {
         aps: {
-          "mutable-content": 1,
+          'mutable-content': 1,
           alert: {
             title,
             body: content,
           },
-          "content-available": 1,
+          'content-available': 1,
         },
       },
       fcm_options: {
@@ -647,10 +647,10 @@ async function sendNotification(
 
   try {
     const response = await admin.messaging().send(message);
-    console.log("Successfully sent message:", response);
+    console.log('Successfully sent message:', response);
     return response;
   } catch (error) {
-    console.error("Error sending message:", error);
-    return "Error sending message: " + error;
+    console.error('Error sending message:', error);
+    return 'Error sending message: ' + error;
   }
 }

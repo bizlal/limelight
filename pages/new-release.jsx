@@ -1,5 +1,5 @@
-import { NewRelease } from "@/page-components/NewRelease";
-import Head from "next/head";
+import { NewRelease } from '@/page-components/NewRelease';
+import Head from 'next/head';
 
 const NewReleasePage = () => {
   return (

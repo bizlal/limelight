@@ -1,12 +1,12 @@
-import { Button } from "@/components/Button";
-import { Container, Spacer } from "@/components/Layout";
-import Wrapper from "@/components/Layout/Wrapper";
-import { Track } from "@/components/Track"; // The track component we wrote earlier
-import { Text } from "@/components/Text";
+import { Button } from '@/components/Button';
+import { Container, Spacer } from '@/components/Layout';
+import Wrapper from '@/components/Layout/Wrapper';
+import { Track } from '@/components/Track'; // The track component we wrote earlier
+import { Text } from '@/components/Text';
 // Replace with your real data hook
-import { useTrackPages } from "@/lib/track";
-import Link from "next/link";
-import styles from "./TrackList.module.css";
+import { useTrackPages } from '@/lib/track';
+import Link from 'next/link';
+import styles from './TrackList.module.css';
 
 const TrackList = () => {
   // Hypothetical hook that paginates track data (similar to usePostPages)

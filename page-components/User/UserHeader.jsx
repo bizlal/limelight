@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useRouter } from "next/router";
+import React, { useState } from 'react';
+import { useRouter } from 'next/router';
 import {
   FaArrowLeft,
   FaEdit,
@@ -10,10 +10,10 @@ import {
   FaTwitter,
   FaTiktok,
   FaYoutube,
-} from "react-icons/fa";
-import { MdCalendarToday } from "react-icons/md";
-import { Avatar } from "@/components/Avatar";
-import styles from "./UserHeader.module.css";
+} from 'react-icons/fa';
+import { MdCalendarToday } from 'react-icons/md';
+import { Avatar } from '@/components/Avatar';
+import styles from './UserHeader.module.css';
 
 const UserHeader = ({ user, currentUser }) => {
   const router = useRouter();
@@ -26,13 +26,13 @@ const UserHeader = ({ user, currentUser }) => {
   const [isFollowing, setIsFollowing] = useState(false);
 
   // Derived values
-  const displayName = user?.name || user?.username || "Anonymous";
+  const displayName = user?.name || user?.username || 'Anonymous';
   const joinedDateString = user?.createdAt
-    ? new Date(user.createdAt).toLocaleString("default", {
-        month: "long",
-        year: "numeric",
+    ? new Date(user.createdAt).toLocaleString('default', {
+        month: 'long',
+        year: 'numeric',
       })
-    : "Unknown";
+    : 'Unknown';
 
   // Handlers
   const handleFollowToggle = () => {
@@ -42,13 +42,13 @@ const UserHeader = ({ user, currentUser }) => {
 
   const handleEditProfile = () => {
     // e.g. push to /edit-profile or open a modal
-    alert("Edit profile clicked!");
+    alert('Edit profile clicked!');
   };
 
   const handleCopyProfileUrl = () => {
     const profileUrl = window.location.href;
     navigator.clipboard.writeText(profileUrl);
-    alert("Profile URL copied!");
+    alert('Profile URL copied!');
   };
 
   return (
@@ -59,7 +59,7 @@ const UserHeader = ({ user, currentUser }) => {
           className={styles.coverImage}
           style={{
             backgroundImage: `url(${
-              user?.headerImage || "/default-cover.jpg"
+              user?.headerImage || '/default-cover.jpg'
             })`,
           }}
         />
@@ -78,7 +78,7 @@ const UserHeader = ({ user, currentUser }) => {
           <Avatar
             size={120}
             username={displayName}
-            url={user?.profileImage || "/default-avatar.png"}
+            url={user?.profileImage || '/default-avatar.png'}
           />
         </div>
 
@@ -129,7 +129,7 @@ const UserHeader = ({ user, currentUser }) => {
                 rel="noopener noreferrer"
                 className={styles.socialLink}
               >
-                <FaGlobe style={{ color: "#58a6ff" }} />
+                <FaGlobe style={{ color: '#58a6ff' }} />
                 {user.links.website}
               </a>
             )}
@@ -141,7 +141,7 @@ const UserHeader = ({ user, currentUser }) => {
                 rel="noopener noreferrer"
                 className={styles.socialLink}
               >
-                <FaInstagram style={{ color: "#C13584" }} />
+                <FaInstagram style={{ color: '#C13584' }} />
                 Instagram
               </a>
             )}
@@ -153,7 +153,7 @@ const UserHeader = ({ user, currentUser }) => {
                 rel="noopener noreferrer"
                 className={styles.socialLink}
               >
-                <FaTwitter style={{ color: "#1DA1F2" }} />
+                <FaTwitter style={{ color: '#1DA1F2' }} />
                 Twitter
               </a>
             )}
@@ -165,7 +165,7 @@ const UserHeader = ({ user, currentUser }) => {
                 rel="noopener noreferrer"
                 className={styles.socialLink}
               >
-                <FaTiktok style={{ color: "#000000" }} />
+                <FaTiktok style={{ color: '#000000' }} />
                 TikTok
               </a>
             )}
@@ -177,7 +177,7 @@ const UserHeader = ({ user, currentUser }) => {
                 rel="noopener noreferrer"
                 className={styles.socialLink}
               >
-                <FaYoutube style={{ color: "#FF0000" }} />
+                <FaYoutube style={{ color: '#FF0000' }} />
                 YouTube
               </a>
             )}
@@ -207,7 +207,7 @@ const UserHeader = ({ user, currentUser }) => {
           ) : (
             <>
               <button className={styles.followBtn} onClick={handleFollowToggle}>
-                {isFollowing ? "Following" : "Follow"}
+                {isFollowing ? 'Following' : 'Follow'}
               </button>
               <div className={styles.dropdownWrapper}>
                 <button className={styles.moreBtn}>

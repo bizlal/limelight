@@ -1,1 +1,1 @@
-export { default as NewRelease } from "./NewRelease";
+export { default as NewRelease } from './NewRelease';
