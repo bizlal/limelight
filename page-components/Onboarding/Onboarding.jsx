@@ -1,15 +1,15 @@
 // pages/onboarding.js
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
-import toast from 'react-hot-toast';
+import { useState, useEffect } from "react";
+import { useRouter } from "next/router";
+import toast from "react-hot-toast";
 
-import { useCurrentUser } from '@/lib/user';
+import { useCurrentUser } from "@/lib/user";
 
-import { Wrapper, Spacer } from '@/components/Layout';
-import { Button } from '@/components/Button';
-import { Input } from '@/components/Input';
+import { Wrapper, Spacer } from "@/components/Layout";
+import { Button } from "@/components/Button";
+import { Input } from "@/components/Input";
 
-import styles from './Onboarding.module.css';
+import styles from "./Onboarding.module.css";
 
 export const Onboarding = () => {
   const router = useRouter();
@@ -24,21 +24,21 @@ export const Onboarding = () => {
   }, [user]);
 
   // We assume `user.userType` was set at sign-up: 'fan', 'artist', 'producer', 'dj', 'label'
-  const userType = user?.userType || 'fan';
+  const userType = user?.userType || "fan";
 
   // States for each onboarding field
-  const [bio, setBio] = useState('');
-  const [homeTown, setHomeTown] = useState('');
+  const [bio, setBio] = useState("");
+  const [homeTown, setHomeTown] = useState("");
   const [profileImage, setprofileImage] = useState(null); // file object
 
   // Music fan fields
-  const [favoriteGenres, setFavoriteGenres] = useState('');
+  const [favoriteGenres, setFavoriteGenres] = useState("");
 
   // Artist fields
-  const [monthlyListeners, setMonthlyListeners] = useState('');
-  const [distributionInterest, setDistributionInterest] = useState('no');
-  const [wantsArtistToken, setWantsArtistToken] = useState('no');
-  const [walletAddress, setWalletAddress] = useState('');
+  const [monthlyListeners, setMonthlyListeners] = useState("");
+  const [distributionInterest, setDistributionInterest] = useState("no");
+  const [wantsArtistToken, setWantsArtistToken] = useState("no");
+  const [walletAddress, setWalletAddress] = useState("");
   const [isPaying, setIsPaying] = useState(false);
   const [hasPaid, setHasPaid] = useState(false);
 
@@ -61,10 +61,10 @@ export const Onboarding = () => {
       await new Promise((resolve) => setTimeout(resolve, 2000));
       setHasPaid(true);
       toast.success(
-        'Transaction confirmed! You’re whitelisted for Artist Token.'
+        "Transaction confirmed! You’re whitelisted for Artist Token."
       );
     } catch (err) {
-      toast.error('Transaction failed.');
+      toast.error("Transaction failed.");
     } finally {
       setIsPaying(false);
     }
@@ -72,51 +72,51 @@ export const Onboarding = () => {
 
   const handleOnboardingSubmit = async () => {
     // If they want an artist token, require payment first
-    if (userType !== 'fan' && wantsArtistToken === 'yes' && !hasPaid) {
+    if (userType !== "fan" && wantsArtistToken === "yes" && !hasPaid) {
       toast.error(
-        'Please complete the 0.05 ETH payment first to be whitelisted.'
+        "Please complete the 0.05 ETH payment first to be whitelisted."
       );
       return;
     }
 
     try {
       const formData = new FormData();
-      formData.append('bio', bio);
-      formData.append('homeTown', homeTown);
+      formData.append("bio", bio);
+      formData.append("homeTown", homeTown);
 
       // Add fan field
-      if (userType === 'fan') {
-        formData.append('favoriteGenres', favoriteGenres);
+      if (userType === "fan") {
+        formData.append("favoriteGenres", favoriteGenres);
       } else {
         // Add artist fields
-        formData.append('monthlyListeners', monthlyListeners);
-        formData.append('distributionInterest', distributionInterest);
-        formData.append('wantsArtistToken', wantsArtistToken);
-        formData.append('walletAddress', walletAddress);
-        formData.append('hasPaidForToken', hasPaid.toString());
+        formData.append("monthlyListeners", monthlyListeners);
+        formData.append("distributionInterest", distributionInterest);
+        formData.append("wantsArtistToken", wantsArtistToken);
+        formData.append("walletAddress", walletAddress);
+        formData.append("hasPaidForToken", hasPaid.toString());
       }
 
       // If user uploaded a profile pic
       if (profileImage) {
-        formData.append('profileImage', profileImage);
+        formData.append("profileImage", profileImage);
       }
 
       // Example: POST to /api/user/onboarding or /api/users with multipart form
-      const response = await fetch('/api/user/onboarding', {
-        method: 'POST',
+      const response = await fetch("/api/user/onboarding", {
+        method: "POST",
         body: formData,
       });
 
       if (!response.ok) {
-        throw new Error('Error saving onboarding info.');
+        throw new Error("Error saving onboarding info.");
       }
       const data = await response.json();
 
       // Optionally update local user context with the new data
       mutate({ user: data.user }, false);
 
-      toast.success('Onboarding complete!');
-      router.replace('/feed');
+      toast.success("Onboarding complete!");
+      router.replace("/feed");
     } catch (err) {
       toast.error(err.message);
     }
@@ -128,7 +128,7 @@ export const Onboarding = () => {
         <h1 className={styles.title}>Complete Your Profile</h1>
 
         <p className={styles.subtitle}>
-          Welcome{user?.name ? `, ${user.name}` : ''}! Let’s finalize your
+          Welcome{user?.name ? `, ${user.name}` : ""}! Let’s finalize your
           profile.
         </p>
         <Spacer size={1} axis="vertical" />
@@ -178,7 +178,7 @@ export const Onboarding = () => {
         <Spacer size={1} axis="vertical" />
 
         {/* Conditionals for userType */}
-        {userType === 'fan' ? (
+        {userType === "fan" ? (
           <>
             <label className={styles.label}>
               Favorite Genres
@@ -228,7 +228,7 @@ export const Onboarding = () => {
               </select>
             </label>
 
-            {wantsArtistToken === 'yes' && (
+            {wantsArtistToken === "yes" && (
               <>
                 <Spacer size={0.5} axis="vertical" />
                 <label className={styles.label}>
@@ -253,7 +253,7 @@ export const Onboarding = () => {
                       disabled={isPaying}
                       onClick={handlePayment}
                     >
-                      {isPaying ? 'Processing...' : 'Pay 0.05 ETH'}
+                      {isPaying ? "Processing..." : "Pay 0.05 ETH"}
                     </Button>
                   </div>
                 ) : (

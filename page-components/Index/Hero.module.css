@@ -19,7 +19,7 @@
 }
 
 .heroWrapper::before {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
   /* Slightly darker overlay so text is easier to read */
@@ -261,22 +261,22 @@
 }
 /* Example snippet of changes for chartWrapper */
 .chartWrapper {
-  width: 100%;            /* Allow the wrapper to resize fluidly */
-  max-width: 600px;       /* Optional max width for larger screens */
-  margin: 0 auto;         /* Center it within the parent */
-  overflow-x: auto;       /* Enable horizontal scroll if needed */
+  width: 100%; /* Allow the wrapper to resize fluidly */
+  max-width: 600px; /* Optional max width for larger screens */
+  margin: 0 auto; /* Center it within the parent */
+  overflow-x: auto; /* Enable horizontal scroll if needed */
   box-sizing: border-box; /* Ensure padding/border is calculated properly */
 }
 
 .chartWrapper canvas {
-  display: block;                 /* Ensure it behaves like a block element */
-  width: 100% !important;         /* Force canvas to span full wrapper width */
-  height: auto !important;        /* Keep aspect ratio when shrinking */
+  display: block; /* Ensure it behaves like a block element */
+  width: 100% !important; /* Force canvas to span full wrapper width */
+  height: auto !important; /* Keep aspect ratio when shrinking */
 }
 
 @media (max-width: 768px) {
   .chartWrapper {
-    max-width: 100%;             /* Remove any fixed sizing on smaller screens */
+    max-width: 100%; /* Remove any fixed sizing on smaller screens */
   }
 }
 
@@ -488,7 +488,7 @@
 
 .roadmapList li::before {
   counter-increment: step;
-  content: counter(step) '. ';
+  content: counter(step) ". ";
   color: #fff;
   font-weight: 700;
   margin-right: 0.5rem;

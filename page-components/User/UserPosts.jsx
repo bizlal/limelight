@@ -1,12 +1,12 @@
 // /page-components/User/UserPosts.jsx
-import React from 'react';
-import Link from 'next/link';
-import { Button } from '@/components/Button';
-import { Container, Spacer, Wrapper } from '@/components/Layout';
-import { Post } from '@/components/Post';
-import { Text } from '@/components/Text';
-import { usePostPages } from '@/lib/post'; // hypothetical pagination hook
-import styles from './UserPosts.module.css';
+import React from "react";
+import Link from "next/link";
+import { Button } from "@/components/Button";
+import { Container, Spacer, Wrapper } from "@/components/Layout";
+import { Post } from "@/components/Post";
+import { Text } from "@/components/Text";
+import { usePostPages } from "@/lib/post"; // hypothetical pagination hook
+import styles from "./UserPosts.module.css";
 
 const UserPosts = ({ user }) => {
   // We assume you have a custom pagination hook for fetching posts

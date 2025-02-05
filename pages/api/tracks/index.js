@@ -1,9 +1,9 @@
-import { ValidateProps } from '@/api-lib/constants';
-import { findTracks, insertPost } from '@/api-lib/db';
-import { auths, validateBody } from '@/api-lib/middlewares';
-import { getMongoDb } from '@/api-lib/mongodb';
-import { ncOpts } from '@/api-lib/nc';
-import nc from 'next-connect';
+import { ValidateProps } from "@/api-lib/constants";
+import { findTracks, insertPost } from "@/api-lib/db";
+import { auths, validateBody } from "@/api-lib/middlewares";
+import { getMongoDb } from "@/api-lib/mongodb";
+import { ncOpts } from "@/api-lib/nc";
+import nc from "next-connect";
 
 const handler = nc(ncOpts);
 
@@ -23,12 +23,12 @@ handler.get(async (req, res) => {
 handler.post(
   ...auths,
   validateBody({
-    type: 'object',
+    type: "object",
     properties: {
       content: ValidateProps.post.properties.content,
       uid: ValidateProps.post.properties.uid,
     },
-    required: ['content'],
+    required: ["content"],
     additionalProperties: false,
   }),
   async (req, res) => {

@@ -1,9 +1,9 @@
-import { Button } from '@/components/Button';
-import { Comment } from '@/components/Comment';
-import { Container, Spacer } from '@/components/Layout';
-import { Text } from '@/components/Text';
-import { useCommentPages } from '@/lib/comment';
-import styles from './CommentList.module.css';
+import { Button } from "@/components/Button";
+import { Comment } from "@/components/Comment";
+import { Container, Spacer } from "@/components/Layout";
+import { Text } from "@/components/Text";
+import { useCommentPages } from "@/lib/comment";
+import styles from "./CommentList.module.css";
 
 const CommentList = ({ post }) => {
   const { data, size, setSize, isLoadingMore, isReachingEnd } = useCommentPages(

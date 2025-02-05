@@ -1,10 +1,10 @@
-import { ValidateProps } from '@/api-lib/constants';
-import { findPostById } from '@/api-lib/db';
-import { findComments, insertComment } from '@/api-lib/db/comment';
-import { auths, validateBody } from '@/api-lib/middlewares';
-import { getMongoDb } from '@/api-lib/mongodb';
-import { ncOpts } from '@/api-lib/nc';
-import nc from 'next-connect';
+import { ValidateProps } from "@/api-lib/constants";
+import { findPostById } from "@/api-lib/db";
+import { findComments, insertComment } from "@/api-lib/db/comment";
+import { auths, validateBody } from "@/api-lib/middlewares";
+import { getMongoDb } from "@/api-lib/mongodb";
+import { ncOpts } from "@/api-lib/nc";
+import nc from "next-connect";
 
 const handler = nc(ncOpts);
 
@@ -14,7 +14,7 @@ handler.get(async (req, res) => {
   const post = await findPostById(db, req.query.postId);
 
   if (!post) {
-    return res.status(404).json({ error: { message: 'Post is not found.' } });
+    return res.status(404).json({ error: { message: "Post is not found." } });
   }
 
   const comments = await findComments(
@@ -30,11 +30,11 @@ handler.get(async (req, res) => {
 handler.post(
   ...auths,
   validateBody({
-    type: 'object',
+    type: "object",
     properties: {
       content: ValidateProps.comment.content,
     },
-    required: ['content'],
+    required: ["content"],
     additionalProperties: false,
   }),
   async (req, res) => {
@@ -49,7 +49,7 @@ handler.post(
     const post = await findPostById(db, req.query.postId);
 
     if (!post) {
-      return res.status(404).json({ error: { message: 'Post is not found.' } });
+      return res.status(404).json({ error: { message: "Post is not found." } });
     }
 
     const comment = await insertComment(db, post._id, {

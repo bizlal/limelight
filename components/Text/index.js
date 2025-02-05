@@ -1,1 +1,1 @@
-export { Text, TextLink } from './Text';
+export { Text, TextLink } from "./Text";

@@ -1,9 +1,9 @@
 // /api-lib/auth/passport.js
-import passport from 'passport';
-import { Strategy as CustomStrategy } from 'passport-custom';
-import { getMongoDb } from '@/api-lib/mongodb';
-import { verifyPrivyAndGetUser } from '@/api-lib/privy';
-import { findUserForAuth } from '@/api-lib/db';
+import passport from "passport";
+import { Strategy as CustomStrategy } from "passport-custom";
+import { getMongoDb } from "@/api-lib/mongodb";
+import { verifyPrivyAndGetUser } from "@/api-lib/privy";
+import { findUserForAuth } from "@/api-lib/db";
 
 // Optional: for session-based
 passport.serializeUser((user, done) => {
@@ -21,17 +21,17 @@ passport.deserializeUser((req, id, done) => {
 
 // Example custom "privy" strategy
 passport.use(
-  'privy',
+  "privy",
   new CustomStrategy(async (req, done) => {
     try {
       const { dbUser } = await verifyPrivyAndGetUser(req);
       if (!dbUser) {
-        return done(null, false, { message: 'No user in DB for Privy token' });
+        return done(null, false, { message: "No user in DB for Privy token" });
       }
       return done(null, dbUser);
     } catch (err) {
-      console.error('PrivyStrategy error:', err);
-      return done(null, false, { message: 'Invalid or missing Privy token' });
+      console.error("PrivyStrategy error:", err);
+      return done(null, false, { message: "Invalid or missing Privy token" });
     }
   })
 );

@@ -1,4 +1,4 @@
-import Ajv from 'ajv';
+import Ajv from "ajv";
 
 export function validateBody(schema) {
   const ajv = new Ajv();

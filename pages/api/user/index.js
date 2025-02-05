@@ -1,16 +1,16 @@
 // /pages/api/user/index.js
-import multer from 'multer';
-import nc from 'next-connect';
-import { v2 as cloudinary } from 'cloudinary';
+import multer from "multer";
+import nc from "next-connect";
+import { v2 as cloudinary } from "cloudinary";
 
-import { getMongoDb } from '@/api-lib/mongodb';
-import { findUserByUsername, updateUserById } from '@/api-lib/db';
-import { slugUsername } from '@/lib/user';
-import { ncOpts } from '@/api-lib/nc';
-import { ValidateProps } from '@/api-lib/constants';
-import { verifyPrivyAndGetUser } from '@/api-lib/privy';
+import { getMongoDb } from "@/api-lib/mongodb";
+import { findUserByUsername, updateUserById } from "@/api-lib/db";
+import { slugUsername } from "@/lib/user";
+import { ncOpts } from "@/api-lib/nc";
+import { ValidateProps } from "@/api-lib/constants";
+import { verifyPrivyAndGetUser } from "@/api-lib/privy";
 
-const upload = multer({ dest: '/tmp' });
+const upload = multer({ dest: "/tmp" });
 
 if (process.env.CLOUDINARY_URL) {
   const {
@@ -41,7 +41,7 @@ handler.get(async (req, res) => {
     }
     return res.json({ user: dbUser });
   } catch (err) {
-    console.error('GET /api/user error:', err);
+    console.error("GET /api/user error:", err);
     return res.status(401).json({ error: err.message });
   }
 });
@@ -55,21 +55,21 @@ handler.get(async (req, res) => {
  *  - Updates user doc
  */
 handler.patch(
-  upload.fields([{ name: 'profileImage' }, { name: 'headerImage' }]),
+  upload.fields([{ name: "profileImage" }, { name: "headerImage" }]),
   // (Optional) minimal validation step
   async (req, res, next) => {
     try {
       // Check the minimal length for username from your constants
       const { username: usernameProps } = ValidateProps.user.properties;
-      const rawUsername = req.body.username || '';
+      const rawUsername = req.body.username || "";
 
       if (rawUsername && rawUsername.length < usernameProps.minLength) {
-        throw new Error('Username too short');
+        throw new Error("Username too short");
       }
 
       return next();
     } catch (err) {
-      console.error('Validation error:', err);
+      console.error("Validation error:", err);
       return res.status(400).json({ error: err.message });
     }
   },
@@ -78,7 +78,7 @@ handler.patch(
       // 1) Verify Privy token & get local user
       const { dbUser } = await verifyPrivyAndGetUser(req);
       if (!dbUser) {
-        return res.status(404).json({ error: 'User not found' });
+        return res.status(404).json({ error: "User not found" });
       }
       const db = await getMongoDb();
 
@@ -110,13 +110,13 @@ handler.patch(
         try {
           parsedGenres = JSON.parse(genres);
           if (!Array.isArray(parsedGenres)) {
-            throw new Error('Genres must be an array');
+            throw new Error("Genres must be an array");
           }
         } catch (err) {
-          console.error('Could not parse genres:', err);
+          console.error("Could not parse genres:", err);
           return res
             .status(400)
-            .json({ error: 'Genres must be valid JSON array' });
+            .json({ error: "Genres must be valid JSON array" });
         }
       }
 
@@ -124,7 +124,7 @@ handler.patch(
       if (username && username !== dbUser.username) {
         const existing = await findUserByUsername(db, username);
         if (existing) {
-          return res.status(403).json({ error: 'That username is taken.' });
+          return res.status(403).json({ error: "That username is taken." });
         }
       }
 
@@ -137,7 +137,7 @@ handler.patch(
             {
               width: 512,
               height: 512,
-              crop: 'fill',
+              crop: "fill",
             }
           );
           profileImage = uploadRes.secure_url;
@@ -148,7 +148,7 @@ handler.patch(
             {
               width: 1500,
               height: 500,
-              crop: 'fill',
+              crop: "fill",
             }
           );
           headerImage = uploadRes.secure_url;
@@ -170,13 +170,13 @@ handler.patch(
 
       // Handle links as a nested object
       const linksObj = {
-        website: website || '',
-        spotify: spotify || '',
-        itunes: itunes || '',
-        instagram: instagram || '',
-        twitter: twitter || '',
-        tiktok: tiktok || '',
-        youtube: youtube || '',
+        website: website || "",
+        spotify: spotify || "",
+        itunes: itunes || "",
+        instagram: instagram || "",
+        twitter: twitter || "",
+        tiktok: tiktok || "",
+        youtube: youtube || "",
       };
       // If you want to do partial updates, you'd merge with existing `dbUser.links`
       // But for simplicity, let's just overwrite the entire object:
@@ -187,7 +187,7 @@ handler.patch(
 
       return res.json({ user });
     } catch (err) {
-      console.error('PATCH /api/user error:', err);
+      console.error("PATCH /api/user error:", err);
       return res.status(500).json({ error: err.message });
     }
   }

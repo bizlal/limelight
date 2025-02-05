@@ -1,0 +1,105 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap");
+
+.recentlyPlayedContainer {
+  background-color: #1b1b1b;
+  color: #fff;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  margin: 1rem 0;
+  font-family: "Poppins", sans-serif;
+  text-align: left;
+}
+
+.recentlyPlayedHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+/* Slightly larger to match text size */
+.spotifyIcon {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  color: #1db954; /* Spotify green */
+}
+
+.recentlyPlayedTitle {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.trackList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.trackItem {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  transition: background-color 0.2s ease;
+}
+.trackItem:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+.trackItem:last-child {
+  border-bottom: none;
+}
+
+.coverContainer {
+  flex-shrink: 0;
+  width: 64px;
+  height: 64px;
+  margin-right: 1rem;
+}
+.trackCover {
+  width: 100%;
+  height: 100%;
+  border-radius: 4px;
+  object-fit: cover;
+}
+
+.trackDetails {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.trackName {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #fff;
+}
+.trackArtists {
+  font-size: 0.95rem;
+  color: #ccc;
+}
+.albumName {
+  font-size: 0.85rem;
+  color: #999;
+}
+
+.playedAt {
+  font-size: 0.85rem;
+  color: #888;
+  white-space: nowrap;
+  margin-left: 1rem;
+}
+
+/* Loading / error messages */
+.message {
+  text-align: left;
+  padding: 1rem;
+  font-size: 1.1rem;
+  color: #ccc;
+}
+.error {
+  color: #d9534f;
+}

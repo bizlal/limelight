@@ -1,5 +1,5 @@
-import { Discover } from '@/page-components/Discover';
-import Head from 'next/head';
+import { Discover } from "@/page-components/Discover";
+import Head from "next/head";
 
 const DiscoverPage = () => {
   return (

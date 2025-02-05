@@ -1,7 +1,7 @@
 // This project uses the nodemailer library to send email
 // However, it is recommended to switch over to dedicated email services
 // like Mailgun, AWS SES, etc.
-import nodemailer from 'nodemailer';
+import nodemailer from "nodemailer";
 
 const nodemailerConfig = process.env.NODEMAILER_CONFIG
   ? JSON.parse(process.env.NODEMAILER_CONFIG)

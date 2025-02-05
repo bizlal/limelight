@@ -1,6 +1,6 @@
-import { Spacer } from '@/components/Layout';
-import styles from './Discover.module.css';
-import TrackList from './TrackList';
+import { Spacer } from "@/components/Layout";
+import styles from "./Discover.module.css";
+import TrackList from "./TrackList";
 
 export const Discover = () => {
   return (

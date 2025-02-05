@@ -1,17 +1,17 @@
 // pages/artists/index.js
-import React, { useState } from 'react';
-import Image from 'next/image';
-import styles from './Artists.module.css';
+import React, { useState } from "react";
+import Image from "next/image";
+import styles from "./Artists.module.css";
 
 export default function ArtistsPage() {
   // State for each form field
-  const [artistName, setArtistName] = useState('');
-  const [handle, setHandle] = useState('');
-  const [location, setLocation] = useState('');
+  const [artistName, setArtistName] = useState("");
+  const [handle, setHandle] = useState("");
+  const [location, setLocation] = useState("");
   const [avatar, setAvatar] = useState(null); // We'll store a File object or null
-  const [instagram, setInstagram] = useState('');
-  const [twitter, setTwitter] = useState('');
-  const [spotifyUrl, setSpotifyUrl] = useState('');
+  const [instagram, setInstagram] = useState("");
+  const [twitter, setTwitter] = useState("");
+  const [spotifyUrl, setSpotifyUrl] = useState("");
 
   const handleAvatarChange = (e) => {
     if (e.target.files && e.target.files[0]) {

@@ -1,5 +1,5 @@
-import { ForgetPasswordIndex } from '@/page-components/ForgetPassword';
-import Head from 'next/head';
+import { ForgetPasswordIndex } from "@/page-components/ForgetPassword";
+import Head from "next/head";
 
 const ForgetPasswordPage = () => {
   return (

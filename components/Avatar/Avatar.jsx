@@ -1,12 +1,12 @@
-import styles from './Avatar.module.css';
-import Image from 'next/image';
+import styles from "./Avatar.module.css";
+import Image from "next/image";
 
 const Avatar = ({ size, username, url }) => {
-  console.log('Avatar -> url', url);
+  console.log("Avatar -> url", url);
   return (
     <Image
       className={styles.avatar}
-      src={url || '/images/default_user.jpg'}
+      src={url || "/images/default_user.jpg"}
       alt={username}
       width={size}
       height={size}

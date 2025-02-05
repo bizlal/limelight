@@ -1,8 +1,8 @@
-import { createNewReleaseFinal } from '@/api-lib/db';
-import { auths } from '@/api-lib/middlewares';
-import { getMongoDb } from '@/api-lib/mongodb';
-import { ncOpts } from '@/api-lib/nc';
-import nc from 'next-connect';
+import { createNewReleaseFinal } from "@/api-lib/db";
+import { auths } from "@/api-lib/middlewares";
+import { getMongoDb } from "@/api-lib/mongodb";
+import { ncOpts } from "@/api-lib/nc";
+import nc from "next-connect";
 
 const handler = nc(ncOpts);
 

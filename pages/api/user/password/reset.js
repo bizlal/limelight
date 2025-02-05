@@ -1,26 +1,26 @@
-import { ValidateProps } from '@/api-lib/constants';
+import { ValidateProps } from "@/api-lib/constants";
 import {
   createToken,
   findAndDeleteTokenByIdAndType,
   findUserByEmail,
   UNSAFE_updateUserPassword,
-} from '@/api-lib/db';
-import { CONFIG as MAIL_CONFIG, sendMail } from '@/api-lib/mail';
-import { validateBody } from '@/api-lib/middlewares';
-import { getMongoDb } from '@/api-lib/mongodb';
-import { ncOpts } from '@/api-lib/nc';
-import nc from 'next-connect';
-import normalizeEmail from 'validator/lib/normalizeEmail';
+} from "@/api-lib/db";
+import { CONFIG as MAIL_CONFIG, sendMail } from "@/api-lib/mail";
+import { validateBody } from "@/api-lib/middlewares";
+import { getMongoDb } from "@/api-lib/mongodb";
+import { ncOpts } from "@/api-lib/nc";
+import nc from "next-connect";
+import normalizeEmail from "validator/lib/normalizeEmail";
 
 const handler = nc(ncOpts);
 
 handler.post(
   validateBody({
-    type: 'object',
+    type: "object",
     properties: {
       email: ValidateProps.user.email,
     },
-    required: ['email'],
+    required: ["email"],
     additionalProperties: false,
   }),
   async (req, res) => {
@@ -30,21 +30,21 @@ handler.post(
     const user = await findUserByEmail(db, email);
     if (!user) {
       res.status(400).json({
-        error: { message: 'We couldn’t find that email. Please try again.' },
+        error: { message: "We couldn’t find that email. Please try again." },
       });
       return;
     }
 
     const token = await createToken(db, {
       uid: user._id,
-      type: 'passwordReset',
+      type: "passwordReset",
       expireAt: new Date(Date.now() + 1000 * 60 * 20),
     });
 
     await sendMail({
       to: email,
       from: MAIL_CONFIG.from,
-      subject: '[nextjs-mongodb-app] Reset your password.',
+      subject: "[nextjs-mongodb-app] Reset your password.",
       html: `
       <div>
         <p>Hello, ${user.name}</p>
@@ -59,12 +59,12 @@ handler.post(
 
 handler.put(
   validateBody({
-    type: 'object',
+    type: "object",
     properties: {
       password: ValidateProps.user.password,
-      token: { type: 'string', minLength: 0 },
+      token: { type: "string", minLength: 0 },
     },
-    required: ['password', 'token'],
+    required: ["password", "token"],
     additionalProperties: false,
   }),
   async (req, res) => {
@@ -73,7 +73,7 @@ handler.put(
     const deletedToken = await findAndDeleteTokenByIdAndType(
       db,
       req.body.token,
-      'passwordReset'
+      "passwordReset"
     );
     if (!deletedToken) {
       res.status(403).end();

@@ -1,8 +1,8 @@
-import bcrypt from 'bcryptjs';
-import { ObjectId } from 'mongodb';
-import normalizeEmail from 'validator/lib/normalizeEmail';
-import { addEngagementEvent } from '@/api-lib/db';
-import { dbProjectionUsers } from '.';
+import bcrypt from "bcryptjs";
+import { ObjectId } from "mongodb";
+import normalizeEmail from "validator/lib/normalizeEmail";
+import { addEngagementEvent } from "@/api-lib/db";
+import { dbProjectionUsers } from ".";
 
 /**
  * getDiscoveryTracksByGenreAndUID - Description
@@ -14,7 +14,7 @@ export async function getDiscoveryTracksByGenreAndUID(db, uid, genres) {
   const ids = [];
   let i = 0;
   const blacklist = await db
-    .collection('user_discovered_tracks')
+    .collection("user_discovered_tracks")
     .find({ uid: { $in: [uid] } })
     .toArray()
     .then((tracks) => {
@@ -25,16 +25,16 @@ export async function getDiscoveryTracksByGenreAndUID(db, uid, genres) {
     });
 
   return db
-    .collection('test_tracks')
+    .collection("test_tracks")
     .find({ track_id: { $nin: ids }, genre: { $in: genres } })
     .limit(100)
     .sort({
-      'metrics.total_comments': -1,
-      'dsp_clicks.apple_music': -1,
-      'dsp_clicks.spotify': 1,
-      'metrics.total_likes': -1,
-      'metrics.total_saves': 1,
-      'metrics.total_outreach': -1,
+      "metrics.total_comments": -1,
+      "dsp_clicks.apple_music": -1,
+      "dsp_clicks.spotify": 1,
+      "metrics.total_likes": -1,
+      "metrics.total_saves": 1,
+      "metrics.total_outreach": -1,
     })
     .toArray()
     .then((items) => {
@@ -73,17 +73,17 @@ export async function getEngagementWeights() {
   const min_shares = 0;
   const min_upload_date = 1561680067;
 }
-const STREAM = 'stream';
-const LIKE = 'like';
-const DISLIKE = 'dislike';
-const SPOTIFY_CLICK = 'spotify_click';
-const APPLE_MUSIC_CLICK = 'apple_music_click';
-const SOCIAL_SHARE = 'social_share';
-const INACTION = 'inaction';
-const SKIP = 'skip'; // can only happen on first impression
-const IMPRESSION = 'impression';
-const LISTENER = 'listener';
-const REPLAY = 'replay';
+const STREAM = "stream";
+const LIKE = "like";
+const DISLIKE = "dislike";
+const SPOTIFY_CLICK = "spotify_click";
+const APPLE_MUSIC_CLICK = "apple_music_click";
+const SOCIAL_SHARE = "social_share";
+const INACTION = "inaction";
+const SKIP = "skip"; // can only happen on first impression
+const IMPRESSION = "impression";
+const LISTENER = "listener";
+const REPLAY = "replay";
 
 /**
  * updateTrackEngagement - Description
@@ -103,10 +103,10 @@ function updateTrackEngagement(db, type, uid, track_id) {
 export async function recordTrackEngagement(engagementType) {
   switch (engagementType) {
     case LIKE:
-      console.log('like');
+      console.log("like");
       break;
     case DISLIKE:
-      console.log('dislike');
+      console.log("dislike");
       break;
     default:
       updateTrackEngagement();
@@ -121,7 +121,7 @@ export async function recordTrackEngagement(engagementType) {
  * @param {type} content - Description
  */
 export async function postTrackComment(db, trackId, uid, content) {
-  const all_tracks_collection = db.collection('test_tracks');
+  const all_tracks_collection = db.collection("test_tracks");
   const id = new ObjectId();
   const data = {
     _id: id,
@@ -134,7 +134,7 @@ export async function postTrackComment(db, trackId, uid, content) {
     date_created: Date.now(),
   };
   await db
-    .collection('track_comments')
+    .collection("track_comments")
     .insertOne(data)
     .then((result) =>
       console.log(`Successfully inserted item with _id: ${result.insertedId}`)
@@ -143,7 +143,7 @@ export async function postTrackComment(db, trackId, uid, content) {
   await all_tracks_collection
     .updateOne(
       { track_id: trackId },
-      { $inc: { 'release_metrics.total_comments': 1 } }
+      { $inc: { "release_metrics.total_comments": 1 } }
     )
     .then((result) => {
       const { matchedCount, modifiedCount } = result;
@@ -162,7 +162,7 @@ export async function postTrackComment(db, trackId, uid, content) {
  */
 export async function getTrackComments(db, trackId, limit = 100) {
   return db
-    .collection('track_comments')
+    .collection("track_comments")
     .aggregate([
       {
         $match: {
@@ -173,13 +173,13 @@ export async function getTrackComments(db, trackId, limit = 100) {
       { $limit: limit },
       {
         $lookup: {
-          from: 'users2',
-          localField: 'uid',
-          foreignField: 'uid',
-          as: 'user',
+          from: "users2",
+          localField: "uid",
+          foreignField: "uid",
+          as: "user",
         },
       },
-      { $unwind: '$user' },
+      { $unwind: "$user" },
     ])
     .toArray();
 }
@@ -191,7 +191,7 @@ export async function getTrackComments(db, trackId, limit = 100) {
  * @param {type} inc - Description
  */
 async function incrementTrackMetric(metric, trackId, inc) {
-  const all_tracks_collection = db.collection('Releases');
+  const all_tracks_collection = db.collection("Releases");
   await all_tracks_collection
     .updateOne({ track_id: trackId }, { $inc: { metric: inc } })
     .then((result) => {
@@ -210,19 +210,19 @@ async function incrementTrackMetric(metric, trackId, inc) {
  */
 export async function findTrackById(db, id) {
   const posts = await db
-    .collection('test_tracks')
+    .collection("test_tracks")
     .aggregate([
       { $match: { track_id: id } },
       { $limit: 1 },
       {
         $lookup: {
-          from: 'accounts',
-          localField: 'uid',
-          foreignField: 'uid',
-          as: 'artist',
+          from: "accounts",
+          localField: "uid",
+          foreignField: "uid",
+          as: "artist",
         },
       },
-      { $unwind: '$artist' },
+      { $unwind: "$artist" },
       // { $project: dbProjectionUsers('creator.') },
     ])
     .toArray();
@@ -232,25 +232,25 @@ export async function findTrackById(db, id) {
 
 export async function findTracks(db, before, by, limit = 10) {
   const tracks = await db
-    .collection('tracks')
+    .collection("tracks")
     .aggregate([
       {
         $match: {
           ...(by && { uid: by }),
-          ...(before && { 'metadata.release_date': { $lt: before } }),
+          ...(before && { "metadata.release_date": { $lt: before } }),
         },
       },
       { $sort: { _id: -1 } },
       { $limit: limit },
       {
         $lookup: {
-          from: 'accounts',
-          localField: 'uid',
-          foreignField: 'uid',
-          as: 'artist',
+          from: "accounts",
+          localField: "uid",
+          foreignField: "uid",
+          as: "artist",
         },
       },
-      { $unwind: '$artist' },
+      { $unwind: "$artist" },
     ])
     .toArray();
 
@@ -262,30 +262,30 @@ export async function findTracks(db, before, by, limit = 10) {
 
 export async function getTrackActivity(db, trackId) {
   const collections = [
-    { collection: 'user_discovered_tracks', valueKey: 'library' },
-    'user_liked_tracks',
-    'user_skipped_tracks',
-    'user_disliked_tracks',
-    'user_spotify_clicks',
-    'user_apple_music_clicks',
-    'user_reposted_tracks',
-    'user_shared_tracks',
+    { collection: "user_discovered_tracks", valueKey: "library" },
+    "user_liked_tracks",
+    "user_skipped_tracks",
+    "user_disliked_tracks",
+    "user_spotify_clicks",
+    "user_apple_music_clicks",
+    "user_reposted_tracks",
+    "user_shared_tracks",
   ];
 
   const activity = {};
 
   for (const collection of collections) {
     const valueKey =
-      typeof collection === 'string' ? null : collection.valueKey;
+      typeof collection === "string" ? null : collection.valueKey;
     const collectionName =
-      typeof collection === 'string' ? collection : collection.collection;
+      typeof collection === "string" ? collection : collection.collection;
     const query = valueKey ? { track_id: trackId } : { uid: trackId };
     const docs = await db.collection(collectionName).find(query).toArray();
     for (const doc of docs) {
-      const timeKey = doc.elapsed_time || 'unknown_time';
+      const timeKey = doc.elapsed_time || "unknown_time";
       const action = valueKey
         ? doc[valueKey]
-        : collectionName.replace('user_', '');
+        : collectionName.replace("user_", "");
 
       if (!activity[timeKey]) {
         activity[timeKey] = [];
@@ -306,7 +306,7 @@ export async function getTrackActivity(db, trackId) {
  */
 export async function checkIfTrackInUserDiscovered(db, trackId, { uid }) {
   const user_discovered_tracks_collection = db.collection(
-    'user_discovered_tracks'
+    "user_discovered_tracks"
   );
 
   const query = {
@@ -322,13 +322,13 @@ export async function checkIfTrackInUserDiscovered(db, trackId, { uid }) {
       );
       return doc;
     })
-    .catch((err) => console.error('Failed to count documents: ', err));
+    .catch((err) => console.error("Failed to count documents: ", err));
 
   return inLibrary;
 }
 
 export async function checkIfTrackInUserSaved(db, trackId, { uid }) {
-  const user_saved_tracks_collection = db.collection('user_saved_tracks');
+  const user_saved_tracks_collection = db.collection("user_saved_tracks");
 
   const query = {
     track_id: trackId,
@@ -343,13 +343,13 @@ export async function checkIfTrackInUserSaved(db, trackId, { uid }) {
       );
       return doc;
     })
-    .catch((err) => console.error('Failed to count documents: ', err));
+    .catch((err) => console.error("Failed to count documents: ", err));
 
   return inLibrary;
 }
 
 export async function checkIfTrackInUseReposted(db, trackId, { uid }) {
-  const user_reposted_tracks_collection = db.collection('user_reposted_tracks');
+  const user_reposted_tracks_collection = db.collection("user_reposted_tracks");
 
   const query = {
     track_id: trackId,
@@ -364,7 +364,7 @@ export async function checkIfTrackInUseReposted(db, trackId, { uid }) {
       );
       return doc;
     })
-    .catch((err) => console.error('Failed to count documents: ', err));
+    .catch((err) => console.error("Failed to count documents: ", err));
 
   return inLibrary;
 }
@@ -377,13 +377,13 @@ export async function checkIfTrackInUseReposted(db, trackId, { uid }) {
  */
 export async function checkIfUserLikedTrack(db, { uid, trackId }) {
   const user_discovered_tracks_collection = db.collection(
-    'user_discovered_tracks'
+    "user_discovered_tracks"
   );
 
   const query = {
     track_id: trackId,
     uid,
-    library: 'user_liked_tracks',
+    library: "user_liked_tracks",
   };
 
   const isLiked = await user_discovered_tracks_collection
@@ -394,7 +394,7 @@ export async function checkIfUserLikedTrack(db, { uid, trackId }) {
       );
       return numDocs == 1;
     })
-    .catch((err) => console.error('Failed to count documents: ', err));
+    .catch((err) => console.error("Failed to count documents: ", err));
 
   return isLiked;
 }
@@ -420,17 +420,17 @@ export async function addTrackToLibrary(
 ) {
   const collection = db.collection(library);
   const user_discovered_tracks_collection = db.collection(
-    'user_discovered_tracks'
+    "user_discovered_tracks"
   );
-  const user_saved_tracks_collection = db.collection('user_saved_tracks');
-  const user_shared_tracks_collection = db.collection('user_shared_tracks');
-  const user_dsp_tracks_collection = db.collection('user_dsp_tracks');
-  const user_skipped_tracks_collection = db.collection('user_skipped_tracks');
-  const user_streamed_tracks_collection = db.collection('user_streamed_tracks');
-  const user_replayed_tracks_collection = db.collection('user_replayed_tracks');
-  const track_engagement_collection = db.collection('track_engagement');
-  const all_tracks_collection = db.collection('test_tracks');
-  const user_reposted_tracks_collection = db.collection('user_reposted_tracks');
+  const user_saved_tracks_collection = db.collection("user_saved_tracks");
+  const user_shared_tracks_collection = db.collection("user_shared_tracks");
+  const user_dsp_tracks_collection = db.collection("user_dsp_tracks");
+  const user_skipped_tracks_collection = db.collection("user_skipped_tracks");
+  const user_streamed_tracks_collection = db.collection("user_streamed_tracks");
+  const user_replayed_tracks_collection = db.collection("user_replayed_tracks");
+  const track_engagement_collection = db.collection("track_engagement");
+  const all_tracks_collection = db.collection("test_tracks");
+  const user_reposted_tracks_collection = db.collection("user_reposted_tracks");
   const query = {
     track_id: trackId,
     uid,
@@ -452,7 +452,7 @@ export async function addTrackToLibrary(
       console.log(JSON.stringify(doc));
       return doc;
     })
-    .catch((err) => console.error('Failed to count documents: ', err));
+    .catch((err) => console.error("Failed to count documents: ", err));
 
   const engagement_data = {
     uid,
@@ -464,9 +464,9 @@ export async function addTrackToLibrary(
     date_created: timestamp,
   };
 
-  let param = '';
-  if (library === 'user_saved_tracks') {
-    param = 'release_metrics.total_saves';
+  let param = "";
+  if (library === "user_saved_tracks") {
+    param = "release_metrics.total_saves";
     const is_not_saved = await user_saved_tracks_collection
       .count(query)
       .then((numDocs) => {
@@ -475,7 +475,7 @@ export async function addTrackToLibrary(
         );
         return numDocs === 0;
       })
-      .catch((err) => console.error('Failed to count documents: ', err));
+      .catch((err) => console.error("Failed to count documents: ", err));
 
     if (is_not_saved) {
       await collection
@@ -489,7 +489,7 @@ export async function addTrackToLibrary(
       await all_tracks_collection
         .updateOne(
           { track_id: trackId },
-          { $inc: { 'release_metrics.total_saves': 1 } }
+          { $inc: { "release_metrics.total_saves": 1 } }
         )
         .then((result) => {
           const { matchedCount, modifiedCount } = result;
@@ -510,7 +510,7 @@ export async function addTrackToLibrary(
       await all_tracks_collection
         .updateOne(
           { track_id: trackId },
-          { $inc: { 'release_metrics.total_saves': -1 } }
+          { $inc: { "release_metrics.total_saves": -1 } }
         )
         .then((result) => {
           const { matchedCount, modifiedCount } = result;
@@ -520,7 +520,7 @@ export async function addTrackToLibrary(
         })
         .catch((err) => console.error(`Failed to update the item: ${err}`));
     }
-  } else if (library === 'user_reposted_tracks') {
+  } else if (library === "user_reposted_tracks") {
     const is_not_reposted = await user_reposted_tracks_collection
       .count(query)
       .then((numDocs) => {
@@ -529,14 +529,14 @@ export async function addTrackToLibrary(
         );
         return numDocs === 0;
       })
-      .catch((err) => console.error('Failed to count documents: ', err));
+      .catch((err) => console.error("Failed to count documents: ", err));
 
     if (is_not_reposted) {
       await user_reposted_tracks_collection.insertOne(data);
       await all_tracks_collection
         .updateOne(
           { track_id: trackId },
-          { $inc: { 'release_metrics.total_reposts': 1 } }
+          { $inc: { "release_metrics.total_reposts": 1 } }
         )
         .then((result) => {
           const { matchedCount, modifiedCount } = result;
@@ -553,7 +553,7 @@ export async function addTrackToLibrary(
       await all_tracks_collection
         .updateOne(
           { track_id: trackId },
-          { $inc: { 'release_metrics.total_reposts': -1 } }
+          { $inc: { "release_metrics.total_reposts": -1 } }
         )
         .then((result) => {
           const { matchedCount, modifiedCount } = result;
@@ -563,7 +563,7 @@ export async function addTrackToLibrary(
         })
         .catch((err) => console.error(`Failed to update the item: ${err}`));
     }
-  } else if (library === 'user_shared_tracks') {
+  } else if (library === "user_shared_tracks") {
     const is_not_shared = await user_shared_tracks_collection
       .count(query)
       .then((numDocs) => {
@@ -572,14 +572,14 @@ export async function addTrackToLibrary(
         );
         return numDocs === 0;
       })
-      .catch((err) => console.error('Failed to count documents: ', err));
+      .catch((err) => console.error("Failed to count documents: ", err));
 
     if (is_not_shared) {
       await user_shared_tracks_collection.insertOne(data);
       await all_tracks_collection
         .updateOne(
           { track_id: trackId },
-          { $inc: { 'release_metrics.total_shares': 1 } }
+          { $inc: { "release_metrics.total_shares": 1 } }
         )
         .then((result) => {
           const { matchedCount, modifiedCount } = result;
@@ -589,7 +589,7 @@ export async function addTrackToLibrary(
         })
         .catch((err) => console.error(`Failed to update the item: ${err}`));
     }
-  } else if (library === 'user_streamed_tracks') {
+  } else if (library === "user_streamed_tracks") {
     const q2 = {
       track_id: trackId,
       uid,
@@ -599,7 +599,7 @@ export async function addTrackToLibrary(
       .count({
         track_id: trackId,
         uid,
-        library: { $ne: 'user_skipped_tracks' },
+        library: { $ne: "user_skipped_tracks" },
       })
       .then((numDocs) => {
         console.log(
@@ -608,7 +608,7 @@ export async function addTrackToLibrary(
         return numDocs === 1;
       })
 
-      .catch((err) => console.error('Failed to count documents: ', err));
+      .catch((err) => console.error("Failed to count documents: ", err));
 
     const is_not_streamed = await user_stusreamed_tracks_collection
       .count(query)
@@ -618,7 +618,7 @@ export async function addTrackToLibrary(
         );
         return numDocs === 0;
       })
-      .catch((err) => console.error('Failed to count documents: ', err));
+      .catch((err) => console.error("Failed to count documents: ", err));
 
     const now = Date.now();
 
@@ -639,7 +639,7 @@ export async function addTrackToLibrary(
         );
         return numDocs === 0;
       })
-      .catch((err) => console.error('Failed to count documents: ', err));
+      .catch((err) => console.error("Failed to count documents: ", err));
     const is_not_discovered = await user_discovered_tracks_collection
       .count(query)
       .then((numDocs) => {
@@ -648,14 +648,14 @@ export async function addTrackToLibrary(
         );
         return numDocs === 0;
       })
-      .catch((err) => console.error('Failed to count documents: ', err));
+      .catch((err) => console.error("Failed to count documents: ", err));
 
     if (is_not_discovered && !is_not_streamed) {
       // ensure more than 5 seconds before counting as skip
       await all_tracks_collection
         .updateOne(
           { track_id: trackId },
-          { $inc: { 'release_metrics.total_skips': 1 } }
+          { $inc: { "release_metrics.total_skips": 1 } }
         )
         .then((result) => {
           const { matchedCount, modifiedCount } = result;
@@ -667,7 +667,7 @@ export async function addTrackToLibrary(
       await user_discovered_tracks_collection
         .insertOne({
           uid,
-          library: 'user_skipped_tracks',
+          library: "user_skipped_tracks",
           track_id: trackId,
           artist_uid: artistUid,
           outreach_on_creation: outreach,
@@ -687,7 +687,7 @@ export async function addTrackToLibrary(
       await all_tracks_collection
         .updateOne(
           { track_id: trackId },
-          { $inc: { 'release_metrics.total_streams': 1 } }
+          { $inc: { "release_metrics.total_streams": 1 } }
         )
         .then((result) => {
           const { matchedCount, modifiedCount } = result;
@@ -704,8 +704,8 @@ export async function addTrackToLibrary(
           { track_id: trackId },
           {
             $inc: {
-              'release_metrics.total_streams': 1,
-              'release_metrics.total_replays': 1,
+              "release_metrics.total_streams": 1,
+              "release_metrics.total_replays": 1,
             },
           }
         )
@@ -717,14 +717,14 @@ export async function addTrackToLibrary(
         })
         .catch((err) => console.error(`Failed to update the item: ${err}`));
     } else if (did_not_recently_stream) {
-      await addEngagementEvent(db, uid, artistUid, 'stream', trackId);
+      await addEngagementEvent(db, uid, artistUid, "stream", trackId);
       await user_streamed_tracks_collection.insertOne(data);
       await all_tracks_collection
         .updateOne(
           { track_id: trackId },
           {
             $inc: {
-              'release_metrics.total_streams': 1,
+              "release_metrics.total_streams": 1,
             },
           }
         )
@@ -736,7 +736,7 @@ export async function addTrackToLibrary(
         })
         .catch((err) => console.error(`Failed to update the item: ${err}`));
     }
-  } else if (library === 'user_skipped_tracks') {
+  } else if (library === "user_skipped_tracks") {
     const did_not_user_skip = await user_skipped_tracks_collection
       .count(query)
       .then((numDocs) => {
@@ -745,14 +745,14 @@ export async function addTrackToLibrary(
         );
         return numDocs === 0;
       })
-      .catch((err) => console.error('Failed to count documents: ', err));
+      .catch((err) => console.error("Failed to count documents: ", err));
 
     if (did_not_user_skip && elapsedTime > 5) {
       await user_skipped_tracks_collection.insertOne(data);
       await all_tracks_collection
         .updateOne(
           { track_id: trackId },
-          { $inc: { 'release_metrics.total_skips': 1 } }
+          { $inc: { "release_metrics.total_skips": 1 } }
         )
         .then((result) => {
           const { matchedCount, modifiedCount } = result;
@@ -763,8 +763,8 @@ export async function addTrackToLibrary(
         .catch((err) => console.error(`Failed to update the item: ${err}`));
     }
   } else if (
-    library === 'user_spotify_tracks' ||
-    library === 'user_apple_music_tracks'
+    library === "user_spotify_tracks" ||
+    library === "user_apple_music_tracks"
   ) {
     const is_not_dsp_opened = await user_dsp_tracks_collection
       .count(query)
@@ -774,15 +774,15 @@ export async function addTrackToLibrary(
         );
         return numDocs === 0;
       })
-      .catch((err) => console.error('Failed to count documents: ', err));
+      .catch((err) => console.error("Failed to count documents: ", err));
 
     if (is_not_dsp_opened) {
       await user_dsp_tracks_collection.insertOne(data);
-      if (library === 'user_spotify_tracks') {
+      if (library === "user_spotify_tracks") {
         await all_tracks_collection
           .updateOne(
             { track_id: trackId },
-            { $inc: { 'release_metrics.dsp_clicks.spotify': 1 } }
+            { $inc: { "release_metrics.dsp_clicks.spotify": 1 } }
           )
           .then((result) => {
             const { matchedCount, modifiedCount } = result;
@@ -791,11 +791,11 @@ export async function addTrackToLibrary(
             }
           })
           .catch((err) => console.error(`Failed to update the item: ${err}`));
-      } else if (library === 'user_apple_music_tracks') {
+      } else if (library === "user_apple_music_tracks") {
         await all_tracks_collection
           .updateOne(
             { track_id: trackId },
-            { $inc: { 'release_metrics.dsp_clicks.apple_music': 1 } }
+            { $inc: { "release_metrics.dsp_clicks.apple_music": 1 } }
           )
           .then((result) => {
             const { matchedCount, modifiedCount } = result;
@@ -808,25 +808,25 @@ export async function addTrackToLibrary(
     }
   } else {
     const is_skipped = await user_discovered_tracks_collection
-      .count({ track_id: trackId, uid, library: 'user_skipped_tracks' })
+      .count({ track_id: trackId, uid, library: "user_skipped_tracks" })
       .then((numDocs) => {
         console.log(
           `${numDocs} documents match the specified query in user_discovered_tracks_collection`
         );
         return numDocs === 0;
       })
-      .catch((err) => console.error('Failed to count documents: ', err));
+      .catch((err) => console.error("Failed to count documents: ", err));
 
     if (!is_skipped) {
-      if (library === 'user_liked_tracks') {
-        param = 'release_metrics.total_likes';
+      if (library === "user_liked_tracks") {
+        param = "release_metrics.total_likes";
         await user_discovered_tracks_collection.insertOne(data);
-        console.log('added to user_discovered_tracks');
+        console.log("added to user_discovered_tracks");
 
         await all_tracks_collection
           .updateOne(
             { track_id: trackId },
-            { $inc: { 'release_metrics.total_likes': 1 } }
+            { $inc: { "release_metrics.total_likes": 1 } }
           )
           .then((result) => {
             const { matchedCount, modifiedCount } = result;
@@ -835,15 +835,15 @@ export async function addTrackToLibrary(
             }
           })
           .catch((err) => console.error(`Failed to update the item: ${err}`));
-      } else if (library === 'user_disliked_tracks') {
-        param = 'release_metrics.total_dislikes';
+      } else if (library === "user_disliked_tracks") {
+        param = "release_metrics.total_dislikes";
         await user_discovered_tracks_collection.insertOne(data);
-        console.log('added to user_discovered_tracks');
+        console.log("added to user_discovered_tracks");
 
         await all_tracks_collection
           .updateOne(
             { track_id: trackId },
-            { $inc: { 'release_metrics.total_dislikes': 1 } }
+            { $inc: { "release_metrics.total_dislikes": 1 } }
           )
           .then((result) => {
             const { matchedCount, modifiedCount } = result;
@@ -860,12 +860,12 @@ export async function addTrackToLibrary(
       });
       const discovered_library = is_discovered.library;
 
-      if (discovered_library !== 'user_skipped_tracks') {
-        if (discovered_library !== library && library === 'user_liked_tracks') {
+      if (discovered_library !== "user_skipped_tracks") {
+        if (discovered_library !== library && library === "user_liked_tracks") {
           await all_tracks_collection
             .updateOne(
               { track_id: trackId },
-              { $inc: { 'release_metrics.total_dislikes': -1 } }
+              { $inc: { "release_metrics.total_dislikes": -1 } }
             )
             .then((result) => {
               const { matchedCount, modifiedCount } = result;
@@ -877,7 +877,7 @@ export async function addTrackToLibrary(
           await all_tracks_collection
             .updateOne(
               { track_id: trackId },
-              { $inc: { 'release_metrics.total_likes': 1 } }
+              { $inc: { "release_metrics.total_likes": 1 } }
             )
             .then((result) => {
               const { matchedCount, modifiedCount } = result;
@@ -896,12 +896,12 @@ export async function addTrackToLibrary(
             });
         } else if (
           discovered_library !== library &&
-          library === 'user_disliked_tracks'
+          library === "user_disliked_tracks"
         ) {
           await all_tracks_collection
             .updateOne(
               { track_id: trackId },
-              { $inc: { 'release_metrics.total_likes': -1 } }
+              { $inc: { "release_metrics.total_likes": -1 } }
             )
             .then((result) => {
               const { matchedCount, modifiedCount } = result;
@@ -913,7 +913,7 @@ export async function addTrackToLibrary(
           await all_tracks_collection
             .updateOne(
               { track_id: trackId },
-              { $inc: { 'release_metrics.total_dislikes': 1 } }
+              { $inc: { "release_metrics.total_dislikes": 1 } }
             )
             .then((result) => {
               const { matchedCount, modifiedCount } = result;
@@ -931,11 +931,11 @@ export async function addTrackToLibrary(
               }
             });
         }
-      } else if (library === 'user_liked_tracks') {
+      } else if (library === "user_liked_tracks") {
         await all_tracks_collection
           .updateOne(
             { track_id: trackId },
-            { $inc: { 'release_metrics.total_skips': -1 } }
+            { $inc: { "release_metrics.total_skips": -1 } }
           )
           .then((result) => {
             const { matchedCount, modifiedCount } = result;
@@ -947,7 +947,7 @@ export async function addTrackToLibrary(
         await all_tracks_collection
           .updateOne(
             { track_id: trackId },
-            { $inc: { 'release_metrics.total_likes': 1 } }
+            { $inc: { "release_metrics.total_likes": 1 } }
           )
           .then((result) => {
             const { matchedCount, modifiedCount } = result;
@@ -964,11 +964,11 @@ export async function addTrackToLibrary(
               console.log(`Successfully updated the item.`);
             }
           });
-      } else if (library === 'user_disliked_tracks') {
+      } else if (library === "user_disliked_tracks") {
         await all_tracks_collection
           .updateOne(
             { track_id: trackId },
-            { $inc: { 'release_metrics.total_skips': -1 } }
+            { $inc: { "release_metrics.total_skips": -1 } }
           )
           .then((result) => {
             const { matchedCount, modifiedCount } = result;
@@ -977,11 +977,11 @@ export async function addTrackToLibrary(
             }
           })
           .catch((err) => console.error(`Failed to update the item: ${err}`));
-        console.log('hello');
+        console.log("hello");
         await all_tracks_collection
           .updateOne(
             { track_id: trackId },
-            { $inc: { 'release_metrics.total_dislikes': 1 } }
+            { $inc: { "release_metrics.total_dislikes": 1 } }
           )
           .then((result) => {
             const { matchedCount, modifiedCount } = result;
@@ -1016,8 +1016,8 @@ export async function addTrackToLibrary(
  * @param {type} db - Description
  */
 async function getTopTracks(db) {
-  const collection = db.collection('test_tracks');
-  const tracks_collection = db.collection('release_top_charts');
+  const collection = db.collection("test_tracks");
+  const tracks_collection = db.collection("release_top_charts");
 
   const tracks = await tracks_collection
     .find()
@@ -1043,11 +1043,11 @@ async function getTopTracks(db) {
 
     {
       $sort: {
-        'metadata.release_date': -1.0,
-        'release_metrics.total_likes': -1.0,
-        'release_metrics.total_shares': -1.0,
-        'release_metrics.total_streams': 1.0,
-        'release_metrics.total_outreach': -1.0,
+        "metadata.release_date": -1.0,
+        "release_metrics.total_likes": -1.0,
+        "release_metrics.total_shares": -1.0,
+        "release_metrics.total_streams": 1.0,
+        "release_metrics.total_outreach": -1.0,
       },
     },
     {
@@ -1055,17 +1055,17 @@ async function getTopTracks(db) {
     },
     {
       $lookup: {
-        from: 'users2',
-        localField: 'uid',
-        foreignField: 'uid',
-        as: 'profile',
+        from: "users2",
+        localField: "uid",
+        foreignField: "uid",
+        as: "profile",
       },
     },
 
     {
       $unwind: {
-        path: '$profile',
-        includeArrayIndex: '0',
+        path: "$profile",
+        includeArrayIndex: "0",
         preserveNullAndEmptyArrays: true,
       },
     },
@@ -1085,7 +1085,7 @@ async function getTopTracks(db) {
  * @param {type} uid2 - Description
  */
 export async function getUserUploadedTracks(db, uid2) {
-  const collection = db.collection('test_tracks');
+  const collection = db.collection("test_tracks");
 
   const pipeline = [
     {
@@ -1098,11 +1098,11 @@ export async function getUserUploadedTracks(db, uid2) {
 
     {
       $sort: {
-        'release_metrics.total_dislikes': 1.0,
-        'metadata.release_date': -1.0,
-        'release_metrics.total_shares': -1.0,
-        'release_metrics.total_streams': 1.0,
-        'release_metrics.total_outreach': -1.0,
+        "release_metrics.total_dislikes": 1.0,
+        "metadata.release_date": -1.0,
+        "release_metrics.total_shares": -1.0,
+        "release_metrics.total_streams": 1.0,
+        "release_metrics.total_outreach": -1.0,
       },
     },
     {
@@ -1110,17 +1110,17 @@ export async function getUserUploadedTracks(db, uid2) {
     },
     {
       $lookup: {
-        from: 'users2',
-        localField: 'uid',
-        foreignField: 'uid',
-        as: 'profile',
+        from: "users2",
+        localField: "uid",
+        foreignField: "uid",
+        as: "profile",
       },
     },
 
     {
       $unwind: {
-        path: '$profile',
-        includeArrayIndex: '0',
+        path: "$profile",
+        includeArrayIndex: "0",
         preserveNullAndEmptyArrays: true,
       },
     },
@@ -1135,7 +1135,7 @@ export async function getUserUploadedTracks(db, uid2) {
 }
 
 export async function getLatestTracksByGenre(db, genres) {
-  const collection = db.collection('test_tracks');
+  const collection = db.collection("test_tracks");
 
   const pipeline = [
     {
@@ -1146,7 +1146,7 @@ export async function getLatestTracksByGenre(db, genres) {
 
     {
       $sort: {
-        'metadata.release_date': -1.0,
+        "metadata.release_date": -1.0,
       },
     },
     {
@@ -1154,17 +1154,17 @@ export async function getLatestTracksByGenre(db, genres) {
     },
     {
       $lookup: {
-        from: 'users2',
-        localField: 'uid',
-        foreignField: 'uid',
-        as: 'profile',
+        from: "users2",
+        localField: "uid",
+        foreignField: "uid",
+        as: "profile",
       },
     },
 
     {
       $unwind: {
-        path: '$profile',
-        includeArrayIndex: '0',
+        path: "$profile",
+        includeArrayIndex: "0",
         preserveNullAndEmptyArrays: true,
       },
     },
@@ -1189,92 +1189,92 @@ export async function getTopTracksByRangeV2(db, dateRange, userId) {
         // Existing lookup for track
         {
           $lookup: {
-            from: 'test_tracks',
-            localField: 'track_id',
-            foreignField: 'track_id',
-            as: 'track',
+            from: "test_tracks",
+            localField: "track_id",
+            foreignField: "track_id",
+            as: "track",
           },
         },
         {
           $unwind: {
-            path: '$track',
+            path: "$track",
           },
         },
 
         // Adding lookup for user within track
         {
           $lookup: {
-            from: 'users2',
-            localField: 'track.uid',
-            foreignField: 'uid',
-            as: 'track.user',
+            from: "users2",
+            localField: "track.uid",
+            foreignField: "uid",
+            as: "track.user",
           },
         },
         {
           $unwind: {
-            path: '$track.user',
+            path: "$track.user",
           },
         },
 
         // Adding lookup to check if the user liked the track
         {
           $lookup: {
-            from: 'user_discovered_tracks',
-            let: { trackId: '$track_id' },
+            from: "user_discovered_tracks",
+            let: { trackId: "$track_id" },
             pipeline: [
               {
                 $match: {
                   $expr: {
                     $and: [
-                      { $eq: ['$track_id', '$$trackId'] },
-                      { $eq: ['$uid', userId] },
-                      { $eq: ['$library', 'user_liked_tracks'] },
+                      { $eq: ["$track_id", "$$trackId"] },
+                      { $eq: ["$uid", userId] },
+                      { $eq: ["$library", "user_liked_tracks"] },
                     ],
                   },
                 },
               },
             ],
-            as: 'userLiked',
+            as: "userLiked",
           },
         },
         // Adding lookup to check if the user saved the track
         {
           $lookup: {
-            from: 'user_saved_tracks',
-            let: { trackId: '$track_id' },
+            from: "user_saved_tracks",
+            let: { trackId: "$track_id" },
             pipeline: [
               {
                 $match: {
                   $expr: {
                     $and: [
-                      { $eq: ['$track_id', '$$trackId'] },
-                      { $eq: ['$uid', userId] },
+                      { $eq: ["$track_id", "$$trackId"] },
+                      { $eq: ["$uid", userId] },
                     ],
                   },
                 },
               },
             ],
-            as: 'userSaved',
+            as: "userSaved",
           },
         },
         // Adding lookup to check if the user reposted the track
         {
           $lookup: {
-            from: 'user_reposted_tracks',
-            let: { trackId: '$track_id' },
+            from: "user_reposted_tracks",
+            let: { trackId: "$track_id" },
             pipeline: [
               {
                 $match: {
                   $expr: {
                     $and: [
-                      { $eq: ['$track_id', '$$trackId'] },
-                      { $eq: ['$uid', userId] },
+                      { $eq: ["$track_id", "$$trackId"] },
+                      { $eq: ["$uid", userId] },
                     ],
                   },
                 },
               },
             ],
-            as: 'userReposted',
+            as: "userReposted",
           },
         },
         // Projecting the necessary fields
@@ -1288,21 +1288,21 @@ export async function getTopTracksByRangeV2(db, dateRange, userId) {
             track: 1,
             userDidLike: {
               $cond: {
-                if: { $gt: [{ $size: '$userLiked' }, 0] },
+                if: { $gt: [{ $size: "$userLiked" }, 0] },
                 then: true,
                 else: false,
               },
             },
             userDidSave: {
               $cond: {
-                if: { $gt: [{ $size: '$userSaved' }, 0] },
+                if: { $gt: [{ $size: "$userSaved" }, 0] },
                 then: true,
                 else: false,
               },
             },
             userDidRepost: {
               $cond: {
-                if: { $gt: [{ $size: '$userReposted' }, 0] },
+                if: { $gt: [{ $size: "$userReposted" }, 0] },
                 then: true,
                 else: false,
               },
@@ -1324,7 +1324,7 @@ export async function getTopTracksByRangeV2(db, dateRange, userId) {
  */
 export async function getTopTracksByRange(db, dateRange, genre = null) {
   const collection = db.collection(`top_tracks_${dateRange}`);
-  const matchGenre = genre ? { 'track.metadata.primary_genre': genre } : {};
+  const matchGenre = genre ? { "track.metadata.primary_genre": genre } : {};
 
   const top_tracks = await collection
     .aggregate(
@@ -1332,15 +1332,15 @@ export async function getTopTracksByRange(db, dateRange, genre = null) {
         // Existing lookup for track
         {
           $lookup: {
-            from: 'test_tracks',
-            localField: 'track_id',
-            foreignField: 'track_id',
-            as: 'track',
+            from: "test_tracks",
+            localField: "track_id",
+            foreignField: "track_id",
+            as: "track",
           },
         },
         {
           $unwind: {
-            path: '$track',
+            path: "$track",
           },
         },
         {
@@ -1349,15 +1349,15 @@ export async function getTopTracksByRange(db, dateRange, genre = null) {
         // Adding lookup for user within track
         {
           $lookup: {
-            from: 'users2',
-            localField: 'track.uid',
-            foreignField: 'uid',
-            as: 'track.user',
+            from: "users2",
+            localField: "track.uid",
+            foreignField: "uid",
+            as: "track.user",
           },
         },
         {
           $unwind: {
-            path: '$track.user',
+            path: "$track.user",
           },
         },
         {
@@ -1386,18 +1386,18 @@ export async function getTopArtistsByRange(db, dateRange) {
       [
         {
           $lookup: {
-            from: 'users2',
-            localField: 'artist_uid',
-            foreignField: 'uid',
-            as: 'user',
+            from: "users2",
+            localField: "artist_uid",
+            foreignField: "uid",
+            as: "user",
           },
         },
         {
           $unwind: {
-            path: '$user',
+            path: "$user",
           },
         },
-        { $project: dbProjectionUsers('user') },
+        { $project: dbProjectionUsers("user") },
         {
           $sort: {
             rank: 1, // sort by rank in descending order
@@ -1424,18 +1424,18 @@ export async function getTopListenersByRange(db, dateRange) {
       [
         {
           $lookup: {
-            from: 'users2',
-            localField: 'uid',
-            foreignField: 'uid',
-            as: 'user',
+            from: "users2",
+            localField: "uid",
+            foreignField: "uid",
+            as: "user",
           },
         },
         {
           $unwind: {
-            path: '$user',
+            path: "$user",
           },
         },
-        { $project: dbProjectionUsers('user') },
+        { $project: dbProjectionUsers("user") },
         {
           $sort: {
             rank: 1, // sort by rank in descending order
@@ -1498,11 +1498,11 @@ export async function createNewReleaseFinal(db, { track }) {
       producing_credits: producers,
       album_title: title,
       track_title: title,
-      language: 'English',
-      description: '',
-      release_type: 'Single',
+      language: "English",
+      description: "",
+      release_type: "Single",
       release_date: timestamp,
-      isrc: '',
+      isrc: "",
       cover_art: image_url,
       bitrate,
       bpm: 0,
@@ -1529,7 +1529,7 @@ export async function createNewReleaseFinal(db, { track }) {
     tags: [genre],
     is_instrumental,
     is_explicit,
-    mood: '',
+    mood: "",
     image_url,
     audio_url,
     video_url,
@@ -1539,17 +1539,17 @@ export async function createNewReleaseFinal(db, { track }) {
     },
     nft: { owner_address: null, contract_address: null },
     mongodb_location: {
-      type: 'Point',
+      type: "Point",
       coordinates: [parseFloat(lng), parseFloat(lat)],
     },
     release_location: {
       city,
       state,
       country,
-      geohash: '',
+      geohash: "",
       latitude: String(lat),
       longitude: String(lng),
-      continent: '',
+      continent: "",
     },
     genre,
     autotags: [],
@@ -1559,20 +1559,20 @@ export async function createNewReleaseFinal(db, { track }) {
     file_size,
     tempo: 0,
   };
-  const collection = db.collection('test_tracks');
-  const collection2 = db.collection('test_tracks2');
+  const collection = db.collection("test_tracks");
+  const collection2 = db.collection("test_tracks2");
   if (track.is_edit) {
     await db
-      .collection('test_tracks')
+      .collection("test_tracks")
       .updateOne(
         { track_id, uid },
         {
           $set: {
-            'metadata.artist': artist,
-            'metadata.track_title': title,
-            'metadata.featured_artists': features,
-            'metadata.writing_credits': writers,
-            'metadata.producing_credits': producers,
+            "metadata.artist": artist,
+            "metadata.track_title": title,
+            "metadata.featured_artists": features,
+            "metadata.writing_credits": writers,
+            "metadata.producing_credits": producers,
             caption,
             is_instrumental,
             is_explicit,
@@ -1584,10 +1584,10 @@ export async function createNewReleaseFinal(db, { track }) {
               apple_music_url,
             },
             genre,
-            'metadata.cover_art': image_url,
+            "metadata.cover_art": image_url,
 
-            'metadata.primary_genre': genre,
-            'metadata.secondary_genre': genre,
+            "metadata.primary_genre": genre,
+            "metadata.secondary_genre": genre,
           },
         }
       )
@@ -1602,18 +1602,18 @@ export async function createNewReleaseFinal(db, { track }) {
     await addEngagementEvent(
       db,
       uid,
-      'RyFcbEUP8IUucwNSbLoft6JovZJ3',
-      'track_edited'
+      "RyFcbEUP8IUucwNSbLoft6JovZJ3",
+      "track_edited"
     );
 
     release = await db
-      .collection('test_tracks')
+      .collection("test_tracks")
       .findOne({ track_id, uid })
       .then((doc) => {
         console.log(JSON.stringify(doc));
         return doc;
       })
-      .catch((err) => console.error('Failed to count documents: ', err));
+      .catch((err) => console.error("Failed to count documents: ", err));
 
     return release;
   }
@@ -1647,14 +1647,14 @@ export async function createNewReleaseFinal(db, { track }) {
  * @param {type} uid - Description
  */
 async function getUserTracksByLibrary(db, library, uid) {
-  const collection = db.collection('test_tracks');
+  const collection = db.collection("test_tracks");
   const tracks_collection = db.collection(library);
   const track_ids = [];
-  if (library === 'new') {
+  if (library === "new") {
     const tracks = await collection
       .find()
       .project({ track_id: 1 })
-      .sort({ 'metadata.release_date': -1 })
+      .sort({ "metadata.release_date": -1 })
       .limit(5)
       .toArray();
 
@@ -1662,11 +1662,11 @@ async function getUserTracksByLibrary(db, library, uid) {
       const discovered = tracks[x];
       track_ids.push(discovered.track_id);
     }
-  } else if (library === 'user_discovered_tracks') {
+  } else if (library === "user_discovered_tracks") {
     const tracks = await tracks_collection
       .find({
         library: {
-          $ne: 'user_skipped_tracks',
+          $ne: "user_skipped_tracks",
         },
         uid,
       })
@@ -1706,11 +1706,11 @@ async function getUserTracksByLibrary(db, library, uid) {
 
     {
       $sort: {
-        'metadata.release_date': -1.0,
-        'release_metrics.total_likes': -1.0,
-        'release_metrics.total_shares': -1.0,
-        'release_metrics.total_streams': 1.0,
-        'release_metrics.total_outreach': -1.0,
+        "metadata.release_date": -1.0,
+        "release_metrics.total_likes": -1.0,
+        "release_metrics.total_shares": -1.0,
+        "release_metrics.total_streams": 1.0,
+        "release_metrics.total_outreach": -1.0,
       },
     },
     {
@@ -1718,17 +1718,17 @@ async function getUserTracksByLibrary(db, library, uid) {
     },
     {
       $lookup: {
-        from: 'users2',
-        localField: 'uid',
-        foreignField: 'uid',
-        as: 'profile',
+        from: "users2",
+        localField: "uid",
+        foreignField: "uid",
+        as: "profile",
       },
     },
 
     {
       $unwind: {
-        path: '$profile',
-        includeArrayIndex: '0',
+        path: "$profile",
+        includeArrayIndex: "0",
         preserveNullAndEmptyArrays: true,
       },
     },
@@ -1747,8 +1747,8 @@ async function getUserTracksByLibrary(db, library, uid) {
  * @param {type} uid - Description
  */
 async function getUserDiscoveredTracks(db, uid) {
-  const collection = db.collection('test_tracks');
-  const tracks_collection = db.collection('user_discovered_tracks');
+  const collection = db.collection("test_tracks");
+  const tracks_collection = db.collection("user_discovered_tracks");
   const tracks = await tracks_collection
     .find({
       uid,
@@ -1775,11 +1775,11 @@ async function getUserDiscoveredTracks(db, uid) {
 
     {
       $sort: {
-        'metadata.release_date': -1.0,
-        'release_metrics.total_likes': -1.0,
-        'release_metrics.total_shares': -1.0,
-        'release_metrics.total_streams': 1.0,
-        'release_metrics.total_outreach': -1.0,
+        "metadata.release_date": -1.0,
+        "release_metrics.total_likes": -1.0,
+        "release_metrics.total_shares": -1.0,
+        "release_metrics.total_streams": 1.0,
+        "release_metrics.total_outreach": -1.0,
       },
     },
     {
@@ -1787,17 +1787,17 @@ async function getUserDiscoveredTracks(db, uid) {
     },
     {
       $lookup: {
-        from: 'users2',
-        localField: 'uid',
-        foreignField: 'uid',
-        as: 'profile',
+        from: "users2",
+        localField: "uid",
+        foreignField: "uid",
+        as: "profile",
       },
     },
 
     {
       $unwind: {
-        path: '$profile',
-        includeArrayIndex: '0',
+        path: "$profile",
+        includeArrayIndex: "0",
         preserveNullAndEmptyArrays: true,
       },
     },
@@ -1816,13 +1816,13 @@ async function getUserDiscoveredTracks(db, uid) {
  * @param {type} uid - Description
  */
 async function run(db, uid) {
-  const collection = db.collection('test_tracks');
-  const discovered_tracks_collection = db.collection('user_discovered_tracks');
+  const collection = db.collection("test_tracks");
+  const discovered_tracks_collection = db.collection("user_discovered_tracks");
   const discovered_tracks = await discovered_tracks_collection
     .find({
       uid,
       library: {
-        $nin: ['user_skipped_tracks'],
+        $nin: ["user_skipped_tracks"],
       },
     })
     .limit(50)
@@ -1839,16 +1839,16 @@ async function run(db, uid) {
     {
       $geoNear: {
         near: {
-          type: 'Point',
+          type: "Point",
           coordinates: [-79.843826, 43.255203],
         },
-        distanceField: 'dist.calculated',
+        distanceField: "dist.calculated",
         query: {
           track_id: {
             $nin: discovered_track_ids,
           },
         },
-        includeLocs: 'mongodb_location',
+        includeLocs: "mongodb_location",
         spherical: true,
       },
     },
@@ -1865,12 +1865,12 @@ async function run(db, uid) {
 
     {
       $sort: {
-        'release_metrics.total_shares': -1.0,
-        'metadata.release_date': -1.0,
-        'release_metrics.total_likes': -1.0,
-        'release_metrics.total_dislikes': 1.0,
-        'release_metrics.total_streams': 1.0,
-        'release_metrics.total_outreach': -1.0,
+        "release_metrics.total_shares": -1.0,
+        "metadata.release_date": -1.0,
+        "release_metrics.total_likes": -1.0,
+        "release_metrics.total_dislikes": 1.0,
+        "release_metrics.total_streams": 1.0,
+        "release_metrics.total_outreach": -1.0,
       },
     },
     {
@@ -1878,17 +1878,17 @@ async function run(db, uid) {
     },
     {
       $lookup: {
-        from: 'users2',
-        localField: 'uid',
-        foreignField: 'uid',
-        as: 'profile',
+        from: "users2",
+        localField: "uid",
+        foreignField: "uid",
+        as: "profile",
       },
     },
 
     {
       $unwind: {
-        path: '$profile',
-        includeArrayIndex: '0',
+        path: "$profile",
+        includeArrayIndex: "0",
         preserveNullAndEmptyArrays: true,
       },
     },
@@ -1910,8 +1910,8 @@ async function run(db, uid) {
  * @param {type} lng - Description
  */
 async function runNear(db, uid, lat, lng) {
-  const collection = db.collection('test_tracks');
-  const discovered_tracks_collection = db.collection('user_discovered_tracks');
+  const collection = db.collection("test_tracks");
+  const discovered_tracks_collection = db.collection("user_discovered_tracks");
   const discovered_tracks = await discovered_tracks_collection
     .find({
       uid,
@@ -1933,16 +1933,16 @@ async function runNear(db, uid, lat, lng) {
     {
       $geoNear: {
         near: {
-          type: 'Point',
+          type: "Point",
           coordinates: [lng, lat],
         },
-        distanceField: 'dist.calculated',
+        distanceField: "dist.calculated",
         query: {
           track_id: {
             $nin: discovered_track_ids,
           },
         },
-        includeLocs: 'mongodb_location',
+        includeLocs: "mongodb_location",
         spherical: true,
       },
     },
@@ -1959,13 +1959,13 @@ async function runNear(db, uid, lat, lng) {
 
     {
       $sort: {
-        'dist.calculated': 1.0,
-        'release_metrics.total_shares': -1.0,
-        'metadata.release_date': -1.0,
-        'release_metrics.total_likes': -1.0,
-        'release_metrics.total_dislikes': 1.0,
-        'release_metrics.total_streams': 1.0,
-        'release_metrics.total_outreach': -1.0,
+        "dist.calculated": 1.0,
+        "release_metrics.total_shares": -1.0,
+        "metadata.release_date": -1.0,
+        "release_metrics.total_likes": -1.0,
+        "release_metrics.total_dislikes": 1.0,
+        "release_metrics.total_streams": 1.0,
+        "release_metrics.total_outreach": -1.0,
       },
     },
     {
@@ -1973,17 +1973,17 @@ async function runNear(db, uid, lat, lng) {
     },
     {
       $lookup: {
-        from: 'users2',
-        localField: 'uid',
-        foreignField: 'uid',
-        as: 'profile',
+        from: "users2",
+        localField: "uid",
+        foreignField: "uid",
+        as: "profile",
       },
     },
 
     {
       $unwind: {
-        path: '$profile',
-        includeArrayIndex: '0',
+        path: "$profile",
+        includeArrayIndex: "0",
         preserveNullAndEmptyArrays: true,
       },
     },
@@ -2011,35 +2011,35 @@ export async function getTopTracksForUser(db) {
   for (let i = 0; i < library.length; i++) {
     const track = library[i];
     const card = {
-      id: '',
-      title: 'How To Live Forever',
-      artist: 'AR',
-      genre: 'Hip-Hop',
+      id: "",
+      title: "How To Live Forever",
+      artist: "AR",
+      genre: "Hip-Hop",
       total_likes: 0,
       total_dislikes: 0,
       total_streams: 0,
       total_comments: 0,
       total_shares: 0,
       total_reposts: 0,
-      audio_url: 'hh',
-      video_url: 'hh',
-      image_url: 'hh',
-      vibes: ['Hype'],
+      audio_url: "hh",
+      video_url: "hh",
+      image_url: "hh",
+      vibes: ["Hype"],
       total_outreach: 0,
       total_impressions: 0,
-      in_library: '',
+      in_library: "",
       saved: false,
-      spotify: '',
-      apple_music: '',
-      artist_uid: '',
+      spotify: "",
+      apple_music: "",
+      artist_uid: "",
       user_profile: {
-        name: 'AR Paisley',
-        username: 'arpaisley',
-        bio: '',
-        webite_url: '',
-        image_url: '',
-        header_url: '',
-        uid: '123',
+        name: "AR Paisley",
+        username: "arpaisley",
+        bio: "",
+        webite_url: "",
+        image_url: "",
+        header_url: "",
+        uid: "123",
         total_followers: 12,
         total_following: 14,
         total_releases: 0,
@@ -2084,9 +2084,9 @@ export async function getLibraryTracksByType(db, uid, type) {
   let library = [];
   const tracks = [];
 
-  if (type === 'user_discovered_tracks') {
+  if (type === "user_discovered_tracks") {
     library = await getUserDiscoveredTracks(db, uid);
-  } else if (type === 'user_uploaded_tracks') {
+  } else if (type === "user_uploaded_tracks") {
     library = await getUserUploadedTracks(db, uid);
   } else {
     library = await getUserTracksByLibrary(db, type, uid);
@@ -2094,35 +2094,35 @@ export async function getLibraryTracksByType(db, uid, type) {
   for (let i = 0; i < library.length; i++) {
     const track = library[i];
     const card = {
-      id: '',
-      title: 'How To Live Forever',
-      artist: 'AR',
-      genre: 'Hip-Hop',
+      id: "",
+      title: "How To Live Forever",
+      artist: "AR",
+      genre: "Hip-Hop",
       total_likes: 0,
       total_dislikes: 0,
       total_streams: 0,
       total_comments: 0,
       total_shares: 0,
       total_reposts: 0,
-      audio_url: 'hh',
-      video_url: 'hh',
-      image_url: 'hh',
-      vibes: ['Hype'],
+      audio_url: "hh",
+      video_url: "hh",
+      image_url: "hh",
+      vibes: ["Hype"],
       total_outreach: 0,
       total_impressions: 0,
-      in_library: '',
+      in_library: "",
       saved: false,
-      spotify: '',
-      apple_music: '',
-      artist_uid: '',
+      spotify: "",
+      apple_music: "",
+      artist_uid: "",
       user_profile: {
-        name: 'AR Paisley',
-        username: 'arpaisley',
-        bio: '',
-        webite_url: '',
-        image_url: '',
-        header_url: '',
-        uid: '123',
+        name: "AR Paisley",
+        username: "arpaisley",
+        bio: "",
+        webite_url: "",
+        image_url: "",
+        header_url: "",
+        uid: "123",
         total_followers: 12,
         total_following: 14,
         total_releases: 0,
@@ -2164,9 +2164,9 @@ export async function getLibraryTracksByType(db, uid, type) {
  * @param {type} near - Description
  */
 export async function getNearDiscoveryTracksByUID(db, uid, near) {
-  const res = { response: 'success', tracks: [] };
+  const res = { response: "success", tracks: [] };
   const feed = [];
-  const loc = near.split(',');
+  const loc = near.split(",");
   const lat = parseFloat(loc[0]);
   const lng = parseFloat(loc[1]);
 
@@ -2175,35 +2175,35 @@ export async function getNearDiscoveryTracksByUID(db, uid, near) {
   for (let i = 0; i < tracks.length; i++) {
     const track = tracks[i];
     const card = {
-      id: '',
-      title: 'How To Live Forever',
-      artist: 'AR',
-      genre: 'Hip-Hop',
+      id: "",
+      title: "How To Live Forever",
+      artist: "AR",
+      genre: "Hip-Hop",
       total_likes: 0,
       total_dislikes: 0,
       total_streams: 0,
       total_comments: 0,
       total_shares: 0,
       total_reposts: 0,
-      audio_url: 'hh',
-      video_url: 'hh',
-      image_url: 'hh',
-      vibes: ['Hype'],
+      audio_url: "hh",
+      video_url: "hh",
+      image_url: "hh",
+      vibes: ["Hype"],
       total_outreach: 0,
       total_impressions: 0,
-      in_library: '',
+      in_library: "",
       saved: false,
-      spotify: '',
-      apple_music: '',
-      artist_uid: '',
+      spotify: "",
+      apple_music: "",
+      artist_uid: "",
       user_profile: {
-        name: ' ',
-        username: '',
-        bio: '',
-        webite_url: '',
-        image_url: '',
-        header_url: '',
-        uid: '123',
+        name: " ",
+        username: "",
+        bio: "",
+        webite_url: "",
+        image_url: "",
+        header_url: "",
+        uid: "123",
         total_followers: 12,
         total_following: 14,
         total_releases: 0,
@@ -2244,42 +2244,42 @@ export async function getNearDiscoveryTracksByUID(db, uid, near) {
  * @param {type} uid - Description
  */
 export async function getDiscoveryTracksByUID(db, uid) {
-  const res = { response: 'success', tracks: [] };
+  const res = { response: "success", tracks: [] };
   const feed = [];
   // swag
   const tracks = await run(db, uid);
   for (let i = 0; i < tracks.length; i++) {
     const track = tracks[i];
     const card = {
-      id: '',
-      title: 'How To Live Forever',
-      artist: 'AR',
-      genre: 'Hip-Hop',
+      id: "",
+      title: "How To Live Forever",
+      artist: "AR",
+      genre: "Hip-Hop",
       total_likes: 0,
       total_dislikes: 0,
       total_streams: 0,
       total_comments: 0,
       total_shares: 0,
       total_reposts: 0,
-      audio_url: 'hh',
-      video_url: 'hh',
-      image_url: 'hh',
-      vibes: ['Hype'],
+      audio_url: "hh",
+      video_url: "hh",
+      image_url: "hh",
+      vibes: ["Hype"],
       total_outreach: 0,
       total_impressions: 0,
-      in_library: '',
+      in_library: "",
       saved: false,
-      spotify: '',
-      apple_music: '',
-      artist_uid: '',
+      spotify: "",
+      apple_music: "",
+      artist_uid: "",
       user_profile: {
-        name: ' ',
-        username: '',
-        bio: '',
-        webite_url: '',
-        image_url: '',
-        header_url: '',
-        uid: '123',
+        name: " ",
+        username: "",
+        bio: "",
+        webite_url: "",
+        image_url: "",
+        header_url: "",
+        uid: "123",
         total_followers: 12,
         total_following: 14,
         total_releases: 0,
@@ -2378,7 +2378,7 @@ export async function insertTrack(
   };
 
   const { insertedId } = await db
-    .collection('test_tracks')
+    .collection("test_tracks")
     .insertOne({ ...track });
   user._id = insertedId;
   return user;

@@ -1,5 +1,5 @@
-import clsx from 'clsx';
-import styles from './Skeleton.module.css';
+import clsx from "clsx";
+import styles from "./Skeleton.module.css";
 
 const Skeleton = ({ width, height, className, children, hide }) => {
   return (

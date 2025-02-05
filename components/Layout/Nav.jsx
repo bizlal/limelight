@@ -1,10 +1,10 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/router';
-import toast from 'react-hot-toast';
-import { usePrivy } from '@privy-io/react-auth';
+import { useState, useEffect, useRef, useCallback } from "react";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import toast from "react-hot-toast";
+import { usePrivy } from "@privy-io/react-auth";
 // Ethers for reading balances
-import { ethers } from 'ethers';
+import { ethers } from "ethers";
 // 1) Import react-icons
 import {
   FaUser,
@@ -12,42 +12,42 @@ import {
   FaUpload,
   FaSignOutAlt,
   FaAdjust,
-} from 'react-icons/fa';
+} from "react-icons/fa";
 
-import { fetcher } from '@/lib/fetch';
-import { Avatar } from '@/components/Avatar';
-import { Button } from '@/components/Button';
-import { ThemeSwitcher } from '@/components/ThemeSwitcher';
-import Spacer from './Spacer';
-import Container from './Container';
-import Wrapper from './Wrapper';
+import { fetcher } from "@/lib/fetch";
+import { Avatar } from "@/components/Avatar";
+import { Button } from "@/components/Button";
+import { ThemeSwitcher } from "@/components/ThemeSwitcher";
+import Spacer from "./Spacer";
+import Container from "./Container";
+import Wrapper from "./Wrapper";
 
-import styles from './Nav.module.css';
+import styles from "./Nav.module.css";
 // Simple ERC-20 ABI for balanceOf, symbol, decimals, etc.
 const ERC20_ABI = [
-  'function balanceOf(address) view returns (uint256)',
-  'function symbol() view returns (string)',
-  'function decimals() view returns (uint8)',
+  "function balanceOf(address) view returns (uint256)",
+  "function symbol() view returns (string)",
+  "function decimals() view returns (uint8)",
   // If your contract actually has a "vestedBalanceOf" method:
-  'function vestedBalanceOf(address) view returns (uint256)',
+  "function vestedBalanceOf(address) view returns (uint256)",
 ];
 
 // Or if you have a separate vesting contract, define that address + ABI here.
-const LMLT_CONTRACT = '0x041040e0A67150BCaf126456b52751017f1c368E';
+const LMLT_CONTRACT = "0x041040e0A67150BCaf126456b52751017f1c368E";
 
 // Example providers
 const baseProvider = new ethers.providers.JsonRpcProvider(
-  'https://mainnet.base.org'
+  "https://mainnet.base.org"
 );
 const ethProvider = new ethers.providers.JsonRpcProvider(
-  'https://8453.rpc.thirdweb.com/a34344b907a4dd3c2811807c82a1b4bd'
+  "https://8453.rpc.thirdweb.com/a34344b907a4dd3c2811807c82a1b4bd"
 );
 
 // Helper for large-number formatting (“K”, “M”, “B”)
 function formatBalance(balance) {
-  if (balance >= 1e9) return (balance / 1e9).toFixed(2) + 'B';
-  if (balance >= 1e6) return (balance / 1e6).toFixed(2) + 'M';
-  if (balance >= 1e3) return (balance / 1e3).toFixed(2) + 'K';
+  if (balance >= 1e9) return (balance / 1e9).toFixed(2) + "B";
+  if (balance >= 1e6) return (balance / 1e6).toFixed(2) + "M";
+  if (balance >= 1e3) return (balance / 1e3).toFixed(2) + "K";
   return balance.toFixed(2);
 }
 
@@ -97,7 +97,7 @@ export function Balances({ address }) {
           // setVestedBalance(vestedFloat);
         }
       } catch (err) {
-        console.error('Error fetching balances:', err);
+        console.error("Error fetching balances:", err);
       } finally {
         if (isMounted) setLoading(false);
       }
@@ -129,7 +129,7 @@ export function Balances({ address }) {
             <span className={styles.chainBalance}>
               {ethBalance !== null
                 ? `${formatBalance(ethBalance)} ETH`
-                : '0 ETH'}
+                : "0 ETH"}
             </span>
           </div>
 
@@ -139,7 +139,7 @@ export function Balances({ address }) {
             <span className={styles.chainBalance}>
               {lmltBalance !== null
                 ? `${formatBalance(lmltBalance)} LMLT`
-                : '0 LMLT'}
+                : "0 LMLT"}
             </span>
           </div>
 
@@ -166,9 +166,9 @@ const UserMenu = ({ user, onDisconnect }) => {
 
   useEffect(() => {
     const onRouteChangeComplete = () => setVisible(false);
-    router.events.on('routeChangeComplete', onRouteChangeComplete);
+    router.events.on("routeChangeComplete", onRouteChangeComplete);
     return () => {
-      router.events.off('routeChangeComplete', onRouteChangeComplete);
+      router.events.off("routeChangeComplete", onRouteChangeComplete);
     };
   }, [router.events]);
   const { user: privyUser } = usePrivy();
@@ -185,9 +185,9 @@ const UserMenu = ({ user, onDisconnect }) => {
         setVisible(false);
       }
     };
-    document.addEventListener('mousedown', onMouseDown);
+    document.addEventListener("mousedown", onMouseDown);
     return () => {
-      document.removeEventListener('mousedown', onMouseDown);
+      document.removeEventListener("mousedown", onMouseDown);
     };
   }, []);
 
@@ -208,8 +208,8 @@ const UserMenu = ({ user, onDisconnect }) => {
         <div className={styles.avatarContainer}>
           <Avatar
             size={32}
-            url={user.profileImage || '/default-avatar.png'}
-            username={user.username || 'NoUsername'}
+            url={user.profileImage || "/default-avatar.png"}
+            username={user.username || "NoUsername"}
           />
           <span className={styles.userName}>{user.username}</span>
         </div>
@@ -287,24 +287,24 @@ const Nav = () => {
       return;
     }
 
-    if (router.pathname === '/sign-up') {
+    if (router.pathname === "/sign-up") {
       return;
     }
     fetcher(`/api/user?uid=${encodeURIComponent(privyUser.id)}`)
       .then((res) => {
         if (!res.user) {
-          router.push('/sign-up');
+          router.push("/sign-up");
           return;
         }
         if (!res.user.username) {
-          router.push('/sign-up');
+          router.push("/sign-up");
           return;
         }
         setLocalUser(res.user);
       })
       .catch((err) => {
-        console.error('Error fetching local user doc:', err);
-        router.push('/sign-up');
+        console.error("Error fetching local user doc:", err);
+        router.push("/sign-up");
       });
   }, [ready, authenticated, privyUser?.id, router]);
 
@@ -314,18 +314,18 @@ const Nav = () => {
       try {
         const token = await getAccessToken();
         if (!token) {
-          console.warn('No Privy token found, cannot server-login');
+          console.warn("No Privy token found, cannot server-login");
           return;
         }
-        await fetch('/api/privy', {
-          method: 'POST',
+        await fetch("/api/privy", {
+          method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
         setServerLoggedIn(true);
       } catch (err) {
-        console.error('Server login via /api/privy failed:', err);
+        console.error("Server login via /api/privy failed:", err);
       }
     };
     if (localUser?.username && !serverLoggedIn) {
@@ -339,11 +339,11 @@ const Nav = () => {
       await logout();
       setLocalUser(null);
       setServerLoggedIn(false);
-      toast.success('Disconnected');
-      router.push('/');
+      toast.success("Disconnected");
+      router.push("/");
     } catch (err) {
       console.error(err);
-      toast.error('Error disconnecting');
+      toast.error("Error disconnecting");
     }
   }, [logout, router]);
 
@@ -378,7 +378,7 @@ const Nav = () => {
           {/* MIDDLE SECTION */}
           <div
             className={`${styles.navCenter} ${
-              mobileOpen ? styles.navCenterOpen : ''
+              mobileOpen ? styles.navCenterOpen : ""
             }`}
           >
             <div className={styles.navLinks}>

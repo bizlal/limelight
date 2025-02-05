@@ -1,42 +1,42 @@
 // pages/sign-up.js
-import { useState, useRef, useCallback } from 'react';
-import { useRouter } from 'next/router';
-import toast from 'react-hot-toast';
+import { useState, useRef, useCallback } from "react";
+import { useRouter } from "next/router";
+import toast from "react-hot-toast";
 
-import { Button } from '@/components/Button';
-import { Input } from '@/components/Input';
-import { Container, Spacer, Wrapper } from '@/components/Layout';
-import { TextLink } from '@/components/Text';
-import { fetcher } from '@/lib/fetch';
-import { useCurrentUser } from '@/lib/user';
-import Link from 'next/link';
+import { Button } from "@/components/Button";
+import { Input } from "@/components/Input";
+import { Container, Spacer, Wrapper } from "@/components/Layout";
+import { TextLink } from "@/components/Text";
+import { fetcher } from "@/lib/fetch";
+import { useCurrentUser } from "@/lib/user";
+import Link from "next/link";
 
-import styles from './Auth.module.css';
+import styles from "./Auth.module.css";
 
 const USER_TYPE_OPTIONS = [
-  { value: 'fan', label: 'Music Fan' },
-  { value: 'artist', label: 'Artist' },
-  { value: 'producer', label: 'Producer' },
-  { value: 'dj', label: 'DJ' },
-  { value: 'label', label: 'Label' },
+  { value: "fan", label: "Music Fan" },
+  { value: "artist", label: "Artist" },
+  { value: "producer", label: "Producer" },
+  { value: "dj", label: "DJ" },
+  { value: "label", label: "Label" },
 ];
 
 // Example list of genres
 const GENRE_OPTIONS = [
-  'Afrobeat',
-  'Jazz',
-  'Alternative',
-  'Latin',
-  'Country',
-  'Rap',
-  'Electronic',
-  'Rock',
-  'Reggae',
-  'House',
-  'Indie',
-  'Alt Rock',
-  'R&B',
-  'Freestyle Rap',
+  "Afrobeat",
+  "Jazz",
+  "Alternative",
+  "Latin",
+  "Country",
+  "Rap",
+  "Electronic",
+  "Rock",
+  "Reggae",
+  "House",
+  "Indie",
+  "Alt Rock",
+  "R&B",
+  "Freestyle Rap",
 ];
 
 // ... user type and genre arrays as before ...
@@ -49,22 +49,22 @@ export default function SignUp() {
   const hometownRef = useRef();
 
   // Local states
-  const [userType, setUserType] = useState('fan');
+  const [userType, setUserType] = useState("fan");
   const [selectedGenres, setSelectedGenres] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
   // --------------------------------------
   // 1. Username State & Validation
   // --------------------------------------
-  const [username, setUsername] = useState('@'); // Start with '@'
+  const [username, setUsername] = useState("@"); // Start with '@'
   const [usernameStatus, setUsernameStatus] = useState(null);
   // null | 'checking' | 'available' | 'taken' | 'invalid'
 
   const handleUsernameChange = (e) => {
     let val = e.target.value.trim();
     // Ensure it starts with '@'
-    if (!val.startsWith('@')) {
-      val = '@' + val.replace(/^@+/, '');
+    if (!val.startsWith("@")) {
+      val = "@" + val.replace(/^@+/, "");
     }
     setUsername(val);
     setUsernameStatus(null); // reset status while typing
@@ -75,26 +75,26 @@ export default function SignUp() {
     // Adjust to your own rules
     const pattern = /^@[A-Za-z0-9_]+$/;
     if (!pattern.test(username)) {
-      setUsernameStatus('invalid');
+      setUsernameStatus("invalid");
       return;
     }
     // If it passes local validation, check availability from server
     try {
-      setUsernameStatus('checking');
+      setUsernameStatus("checking");
       const encoded = encodeURIComponent(username.slice(1)); // strip the '@'
       // Example GET route: /api/users/username-check?username=someUser
       const data = await fetcher(
         `/api/users/username-check?username=${encoded}`
       );
       if (data.available) {
-        setUsernameStatus('available');
+        setUsernameStatus("available");
       } else {
-        setUsernameStatus('taken');
+        setUsernameStatus("taken");
       }
     } catch (err) {
       // If anything fails, treat as 'taken' or handle error
       console.error(err);
-      setUsernameStatus('taken');
+      setUsernameStatus("taken");
     }
   }, [username]);
 
@@ -119,15 +119,15 @@ export default function SignUp() {
       e.preventDefault();
 
       // If username is invalid or taken, prevent form submission
-      if (usernameStatus === 'invalid' || usernameStatus === 'taken') {
-        toast.error('Please select a valid, available username');
+      if (usernameStatus === "invalid" || usernameStatus === "taken") {
+        toast.error("Please select a valid, available username");
         return;
       }
 
       try {
         setIsLoading(true);
         // Note: strip the "@" before sending to your backend
-        const sanitizedUsername = username.replace(/^@+/, '');
+        const sanitizedUsername = username.replace(/^@+/, "");
 
         const bodyData = {
           userType,
@@ -137,15 +137,15 @@ export default function SignUp() {
           genres: selectedGenres,
         };
 
-        const response = await fetcher('/api/users', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+        const response = await fetcher("/api/users", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(bodyData),
         });
 
         mutate({ user: response.user }, false);
-        toast.success('Your account details have been updated!');
-        router.replace('/settings');
+        toast.success("Your account details have been updated!");
+        router.replace("/settings");
       } catch (err) {
         toast.error(err.message);
       } finally {
@@ -215,21 +215,21 @@ export default function SignUp() {
               placeholder="@yourhandle"
               required
             />
-            {usernameStatus === 'checking' && (
-              <small style={{ color: '#ccc' }}>Checking...</small>
+            {usernameStatus === "checking" && (
+              <small style={{ color: "#ccc" }}>Checking...</small>
             )}
-            {usernameStatus === 'available' && (
-              <small style={{ color: 'lightgreen' }}>
+            {usernameStatus === "available" && (
+              <small style={{ color: "lightgreen" }}>
                 Great! That username is available.
               </small>
             )}
-            {usernameStatus === 'taken' && (
-              <small style={{ color: 'tomato' }}>
+            {usernameStatus === "taken" && (
+              <small style={{ color: "tomato" }}>
                 Sorry, that username is already taken.
               </small>
             )}
-            {usernameStatus === 'invalid' && (
-              <small style={{ color: 'tomato' }}>
+            {usernameStatus === "invalid" && (
+              <small style={{ color: "tomato" }}>
                 Only letters, numbers & underscores are allowed.
               </small>
             )}
@@ -245,7 +245,7 @@ export default function SignUp() {
                 <div
                   key={genre}
                   className={`${styles.genrePill} ${
-                    isSelected ? styles.selected : ''
+                    isSelected ? styles.selected : ""
                   }`}
                   onClick={() => handleGenreToggle(genre)}
                   role="button"

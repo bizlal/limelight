@@ -1,6 +1,6 @@
-/* Settings.module.css */
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap");
 
-/* Root container for your entire page: gradient background */
+/* Main background with an amazing gradient */
 .root {
   display: flex;
   flex-direction: column;
@@ -18,66 +18,57 @@
     #727ea6 78.72%,
     #4893b7 97.5%
   );
+  /* Darken the gradient overall for a sleek, dark look */
+  filter: brightness(0.75);
   padding: 2rem;
+  font-family: "Poppins", sans-serif;
 }
 
-/* Centers the glass card */
+/* Centers the glass card within the container */
 .main {
-  max-width: 480px;
+  max-width: 600px;
   width: 100%;
   align-self: center;
   position: relative;
 }
 
-/* The glass-like card wrapper */
+/* Glass card styling (used for many inner cards) */
+.card,
 .formCard {
   background: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 12px;
   padding: 2rem;
+  margin-bottom: 2rem;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
   transition: transform 0.3s ease;
 }
+.card:hover,
 .formCard:hover {
   transform: translateY(-2px);
 }
 
-/* 2-column grid inside the .formCard */
-.formGrid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2rem; /* space between columns */
-}
-
-.columnLeft,
-.columnRight {
-  display: flex;
-  flex-direction: column;
-}
-
-/* Big title */
+/* Titles and section headings */
 .title {
-  font-size: 2rem;
+  font-size: 1.8rem;
   font-weight: 800;
-  text-align: center;
-  margin-bottom: 1rem;
+  text-align: left;
+  margin-bottom: 1.5rem;
   color: #fff;
 }
 
-/* Subtitle for “About you”, etc. */
-.subtitle {
-  font-size: 0.75rem;
-  letter-spacing: 0.2rem;
-  color: #e1e1e1;
+.sectionTitle {
+  font-size: 1.1rem;
   font-weight: 700;
-  text-transform: uppercase;
-  margin: 0;
-  opacity: 0.85;
+  color: #fff;
+  margin-top: 1.5rem;
   margin-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  padding-bottom: 0.25rem;
 }
 
-/* Label styling */
+/* Form labels */
 .label {
   display: flex;
   flex-direction: column;
@@ -87,37 +78,10 @@
   gap: 0.25rem;
 }
 
-/* Avatars or images container */
-.avatarContainer {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 1rem;
-  margin-bottom: 1rem;
-}
-.avatarPreview {
-  width: 96px;
-  height: 96px;
-  border-radius: 50%;
-  object-fit: cover;
-  background: #eee;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-}
-
-/* If you want a bigger header preview */
-.headerPreview {
-  width: 100%;
-  max-width: 300px;
-  border-radius: 8px;
-  object-fit: cover;
-  background: #eee;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  margin-top: 0.5rem;
-}
-
-/* Base styles for inputs & selects (local classes only!) */
+/* Base styles for inputs, textareas & selects */
 .input,
-.select {
+.select,
+.textarea {
   margin-top: 0.25rem;
   padding: 0.75rem 1rem;
   border-radius: 6px;
@@ -130,48 +94,84 @@
   transition: background-color 0.2s, border-color 0.2s;
 }
 .input:focus,
-.select:focus {
+.select:focus,
+.textarea:focus {
   background: rgba(255, 255, 255, 0.25);
   border-color: rgba(255, 255, 255, 0.5);
 }
 
-/* If you want to style textareas similarly, just add className={styles.input} */
-
-/* Pill container for genres */
-.genresGrid {
+/* Image previews for profile and header */
+.imagePreviewContainer {
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 1rem;
+}
+.avatarPreview,
+.profilePic {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #eee;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+.headerPreview,
+.headerImage {
+  width: 100%;
+  max-width: 320px;
+  border-radius: 8px;
+  object-fit: cover;
+  background: #eee;
+  border: 2px solid rgba(255, 255, 255, 0.3);
   margin-top: 0.5rem;
-  margin-bottom: 1.25rem;
 }
 
-/* Genre pill styling */
-.genrePill {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.6rem 1.2rem;
-  border-radius: 9999px;
-  font-size: 0.9rem;
+/* Container for form groups */
+.formGroup {
+  margin-bottom: 1rem;
+}
+
+/* Buttons */
+.btn {
+  display: inline-block;
   font-weight: 600;
-  color: #fff;
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  background-color: rgba(255, 255, 255, 0.08);
+  border: none;
+  border-radius: 6px;
+  padding: 0.75rem 1.5rem;
   cursor: pointer;
-  transition: all 0.25s;
-}
-.genrePill:hover {
-  background-color: rgba(255, 255, 255, 0.2);
-  border-color: rgba(255, 255, 255, 0.6);
-}
-.genrePillSelected {
-  background-color: #cf4c87; /* Or any accent color */
-  border-color: #cf4c87;
-  color: #fff;
+  transition: background 0.2s, opacity 0.2s;
 }
 
-/* Full-width submit button */
+.btnPrimary {
+  background: linear-gradient(
+    116.94deg,
+    #8d52cc -39.29%,
+    #a650b2 -26%,
+    #bc4e9b -15.53%,
+    #cf4c87 1.54%,
+    #db4b7b 11.57%,
+    #a9638f 37.88%,
+    #8c719b 49.86%,
+    #727ea6 64.46%,
+    #4893b7 89.21%
+  );
+  color: #fff;
+}
+.btnPrimary:hover {
+  opacity: 0.9;
+}
+
+.btnSecondary {
+  background: none;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  color: #fff;
+}
+.btnSecondary:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Full-width submit button (if needed) */
 .submit {
   width: 100%;
   font-weight: 600;
@@ -189,24 +189,27 @@
   opacity: 0.9;
 }
 
-/* Gradient for the main Sign Up / Save button */
-.gradientBtn {
-  background: linear-gradient(
-      116.94deg,
-      #8d52cc -39.29%,
-      #a650b2 -26%,
-      #bc4e9b -15.53%,
-      #cf4c87 1.54%,
-      #db4b7b 11.57%,
-      #a9638f 37.88%,
-      #8c719b 49.86%,
-      #727ea6 64.46%,
-      #4893b7 89.21%
-    ),
-    linear-gradient(0deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2));
+/* Genre pill styling */
+.genreItem {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 9999px;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.25s;
+  margin: 0.25rem;
+}
+.genreItem:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.6);
+}
+.genreItemSelected {
+  background-color: #cf4c87;
+  border-color: #cf4c87;
 }
 
-/* Note/warning area (e.g. unverified email) */
+/* Note or error areas */
 .note {
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.2);
@@ -224,39 +227,41 @@
   margin: 0 4px;
 }
 
-/* Social links container & row */
-.socialLinks {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  margin-top: 1.25rem;
+/* Header area for the settings page */
+.settingsContainer {
+  padding: 2rem;
 }
-.socialRow {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+.header {
+  margin-bottom: 2rem;
 }
-.socialIcon {
-  width: 24px;
-  height: 24px;
-  object-fit: contain;
-  filter: drop-shadow(0 0 1px rgba(255, 255, 255, 0.3));
+.heading {
+  font-size: 2rem;
+  color: #fff;
+  margin-bottom: 0.5rem;
+}
+.subheading {
+  font-size: 1rem;
+  color: #ddd;
 }
 
-/* Make it responsive */
+/* Actions container for buttons at the bottom of forms */
+.actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  margin-top: 1.5rem;
+}
+
+/* Responsive adjustments */
 @media (max-width: 600px) {
   .main {
     padding: 0 1rem;
   }
-  .formCard {
+  .formCard,
+  .card {
     padding: 1.5rem;
   }
   .title {
-    font-size: 1.85rem;
-  }
-
-  /* For mobile, you can collapse columns into 1 */
-  .formGrid {
-    grid-template-columns: 1fr; /* single column on smaller screens */
+    font-size: 1.6rem;
   }
 }
