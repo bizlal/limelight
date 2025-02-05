@@ -5,7 +5,7 @@ import { findSpotifyTokens, saveSpotifyTokens } from "@/api-lib/db/connections";
 import {
   createOrGetDiscoveredPlaylist,
   addTracksToDiscoveredPlaylist,
-} from "@/api-lib/db/spotifyPlaylist";
+} from "@/api-lib/db";
 import axios from "axios";
 
 /**
