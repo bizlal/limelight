@@ -1,38 +1,52 @@
-// pages/spotify-callback.js
 import { useRouter } from 'next/router';
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useCurrentUserData } from '@/lib/user'; // adjust the path as needed
+import { useCurrentUser } from '@/lib/user';
 
 export default function SpotifyCallback() {
   const router = useRouter();
+  const [didExchange, setDidExchange] = useState(false);
+  const { data } = useCurrentUser();
+  const uid = data?.user?.uid;
+
   const { code, error } = router.query;
-  const { user } = useCurrentUserData();
 
   useEffect(() => {
-    // Ensure both the code and user (with uid) are available
-    if (code && user && user.uid) {
-      axios
-        .post('/api/spotify/exchange-token', { code, uid: user.uid })
-        .then((response) => {
-          const { access_token, refresh_token, expires_in } = response.data;
-          // (For UI purposes) Save tokens in localStorage
-          localStorage.setItem('spotify_access_token', access_token);
-          localStorage.setItem('spotify_refresh_token', refresh_token);
-          localStorage.setItem('spotify_expires_in', expires_in);
-          console.log('Spotify tokens stored in local storage:', response.data);
-          // Redirect after successful token exchange
-          router.replace('/settings');
-        })
-        .catch((err) => {
-          console.error('Token exchange error:', err);
-        });
+    // 1) If there's an error in the query, show or handle it
+    if (error) {
+      console.error('Spotify error:', error);
+      return;
     }
-  }, [code, user, router]);
 
-  if (error) {
-    return <div>Error from Spotify: {error}</div>;
-  }
+    if (!uid) {
+      console.error('No user ID found');
+      return;
+    }else{
+      console.log('User ID found:', uid);
+    }
 
-  return <div>Processing Spotify code...</div>;
+    // 2) If we don't have a code or we already did the exchange, skip
+    if (!code || didExchange) return;
+
+    // 3) Mark we started
+    setDidExchange(true);
+
+    // 4) Call your exchange API
+    axios
+      .post('/api/spotify/exchange-token', { code, uid })
+      .then(() => {
+        // Successfully exchanged; redirect away
+        router.replace('/settings');
+      })
+      .catch((err) => {
+        console.error('Exchange error:', err?.response?.data || err);
+      });
+  }, [code, error, didExchange, router]);
+
+  // Provide some UI feedback
+  if (error) return <div>Error from Spotify: {error}</div>;
+  if (!code) return <div>No code found in URL. Waiting...</div>;
+  if (didExchange) return <div>Exchanging token with Spotify...</div>;
+
+  return <div>Preparing to exchange token...</div>;
 }

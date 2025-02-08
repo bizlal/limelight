@@ -1,3 +1,32 @@
-.root {
-  min-height: calc(100vh);
+/* pages/discover.module.css */
+.discoverContainer {
+  padding: 1rem;
+  background-color: #121212;
+  min-height: 100vh;
+}
+
+.title {
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  color: #fff;
+}
+
+.trackGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.trackItem {
+  flex: 1 1 300px;
+  max-width: 320px;
+}
+
+.message {
+  padding: 1rem;
+  font-size: 1.2rem;
+  text-align: center;
+  color: #fff;
 }

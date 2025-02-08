@@ -1,35 +1,27 @@
-// connections.js
+// api-lib/db/connections.js
 import { ObjectId } from 'mongodb';
 
-// Define collection names as constants for maintainability.
-export const COLLECTION_SPOTIFY_TOKENS = 'spotifyTokens';
-export const COLLECTION_RECENTLY_PLAYED = 'recentlyPlayed';
+const COLLECTION_SPOTIFY_TOKENS = 'user_connections'; // changed to unify
 
 /**
- * Saves (or updates) Spotify tokens in the `COLLECTION_SPOTIFY_TOKENS` collection.
- *
- * @param {import('mongodb').Db} db - The connected database instance.
- * @param {Object} tokens
- * @param {string} tokens.uid - The user's id.
- * @param {string} tokens.access_token - The access token from Spotify.
- * @param {string} tokens.refresh_token - The refresh token from Spotify.
- * @param {number} tokens.expires_in - The lifetime of the access token in seconds.
- * @returns {Promise<import('mongodb').UpdateResult>}
+ * Saves (or updates) Spotify tokens in the `spotify_tokens` collection.
  */
-export async function saveSpotifyTokens(
-  db,
-  { uid, access_token, refresh_token, expires_in }
-) {
+export async function saveSpotifyTokens(db, { uid, access_token, refresh_token, expires_in }) {
   const tokensCollection = db.collection(COLLECTION_SPOTIFY_TOKENS);
 
-  // Filter by service and uid so each user can have their own token.
+  // Convert `expires_in` (seconds) into a precise future timestamp
+  // Store it in a field named expires_at for clarity.
+  const expires_at = Date.now() + expires_in * 1000;
+
   const filter = { service: 'spotify', uid };
   const update = {
     $set: {
+      service: 'spotify',
       uid,
       access_token,
       refresh_token,
       expires_in,
+      expires_at,
       updatedAt: new Date(),
     },
   };
@@ -40,30 +32,20 @@ export async function saveSpotifyTokens(
 
 /**
  * Retrieves the stored Spotify tokens for a given user.
- *
- * @param {import('mongodb').Db} db - The connected database instance.
- * @param {string} uid - The user's id.
- * @returns {Promise<Object|null>} The stored tokens document or null if not found.
  */
 export async function findSpotifyTokens(db, uid) {
+  console.log('finding tokens for', uid);
   const tokensCollection = db.collection(COLLECTION_SPOTIFY_TOKENS);
-  return tokensCollection.findOne({ service: 'spotify', uid });
+  return await tokensCollection.findOne({ service: 'spotify', uid });
 }
 
 /**
- * Saves (or updates) recently played tracks in the `COLLECTION_RECENTLY_PLAYED` collection.
- * Each track is upserted based on the user's id and the track's played_at timestamp.
- *
- * @param {import('mongodb').Db} db - The connected database instance.
- * @param {string} uid - The user's id.
- * @param {Array} tracks - An array of track items from Spotify. Each item should have
- *                           a `played_at` timestamp and a `track` object.
- * @returns {Promise<import('mongodb').BulkWriteResult|null>}
+ * (Optional) If you need to store recently played, for reference:
  */
 export async function saveRecentlyPlayedTracks(db, uid, tracks) {
+  const COLLECTION_RECENTLY_PLAYED = 'recentlyPlayed';
   const recentlyPlayedCollection = db.collection(COLLECTION_RECENTLY_PLAYED);
 
-  // Prepare bulk operations for each track entry.
   const operations = tracks.map((item) => {
     const { played_at, track } = item;
     return {

@@ -1,0 +1,40 @@
+{
+  "name": "protocol",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "npx hardhat test --logs",
+    "prettier": "npx prettier --write .",
+    "compile": "npx hardhat compile",
+    "deploy-test": "npx hardhat run scripts/deploy1.js --network local",
+    "deploy-sepolia": "npx hardhat run scripts/deploy1.js --network baseSepolia"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.1.0",
+    "@openzeppelin/contracts-upgradeable": "^5.1.0",
+    "@openzeppelin/merkle-tree": "^1.0.7",
+    "prettier": "^2.8.8",
+    "solc": "^0.8.28",
+    "solidity-coverage": "^0.7.22",
+    "solidity-docgen": "^0.5.17"
+  },
+  "devDependencies": {
+    "@nomiclabs/hardhat-ethers": "^2.2.3",
+    "@nomiclabs/hardhat-etherscan": "^3.1.7",
+    "@nomiclabs/hardhat-solhint": "^2.0.0",
+    "@nomiclabs/hardhat-waffle": "^2.0.1",
+    "chai": "^4.3.4",
+    "ethereum-waffle": "^3.3.0",
+    "ethers": "^5.7.2",
+    "hardhat": "^2.3.0",
+    "hardhat-abi-exporter": "^2.2.1",
+    "hardhat-docgen": "^1.1.1",
+    "hardhat-gas-reporter": "^1.0.4",
+    "hardhat-preprocessor": "^0.1.5",
+    "hardhat-tracer": "^1.0.0-alpha.6",
+    "@openzeppelin/hardhat-upgrades": "^1.20.0"
+  }
+}

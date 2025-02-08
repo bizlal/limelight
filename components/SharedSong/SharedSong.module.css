@@ -1,0 +1,86 @@
+/* components/SharedSong.module.css */
+.sharedSongContainer {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    background-color: #1b1b1b;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    margin: 1rem 0;
+    color: #fff;
+  }
+  
+  .coverWrapper {
+    flex-shrink: 0;
+    width: 80px;
+    height: 80px;
+    margin-right: 1rem;
+  }
+  
+  .coverImage {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 4px;
+  }
+  
+  .trackInfo {
+    flex: 1;
+  }
+  
+  .trackTitle {
+    font-size: 1.25rem;
+    margin: 0 0 0.5rem 0;
+  }
+  
+  .trackArtists {
+    font-size: 1rem;
+    color: #ccc;
+    margin: 0;
+  }
+  
+  .playerControls {
+    margin-left: 1rem;
+  }
+  
+  .playButton {
+    background-color: transparent;
+    border: none;
+    color: #1db954; /* Spotify green */
+    font-size: 1.5rem;
+    cursor: pointer;
+  }
+  
+  .playButton:hover {
+    color: #1ed760;
+  }
+  
+  /* Responsive adjustments for smaller screens */
+  @media (max-width: 600px) {
+    .sharedSongContainer {
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 0.75rem;
+    }
+  
+    .coverWrapper {
+      width: 60px;
+      height: 60px;
+      margin-right: 0;
+      margin-bottom: 0.5rem;
+    }
+  
+    .trackTitle {
+      font-size: 1.1rem;
+    }
+  
+    .trackArtists {
+      font-size: 0.9rem;
+    }
+  
+    .playerControls {
+      margin-left: 0;
+      margin-top: 0.5rem;
+    }
+  }
+  

@@ -1,0 +1,225 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.20;
+
+import "@openzeppelin/contracts/token/FERC20/IERC20.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721EnumerableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721URIStorageUpgradeable.sol";
+import "@openzeppelin/contracts/access/AccessControl.sol";
+import "@openzeppelin/contracts/interfaces/IERC5805.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import "./IContributionNft.sol";
+import "../limelightPersona/IArtistNft.sol";
+
+/**
+ * @title ContributionNft
+ * @notice Represents individual promotional contributions from fans that help the artist grow.
+ * Each Contribution NFT records a fan's action: for example, sharing music on a platform,
+ * adding it to a playlist, or another engagement that boosts the artist's exposure.
+ *
+ * The `coreId` can indicate the type of promotional channel or strategy used by the fan.
+ * Model contributions represent particularly significant or reference actions (isModel_ = true).
+ */
+contract ContributionNft is
+    IContributionNft,
+    Initializable,
+    ERC721Upgradeable,
+    ERC721EnumerableUpgradeable,
+    ERC721URIStorageUpgradeable
+{
+    address public personaNft;
+
+    // Maps a Contribution NFT to the limelight ID of the artist persona it supports.
+    mapping(uint256 => uint256) private _contributionLimelightId;
+
+    // Parent-child relationship among contributions (e.g., subsequent promotional steps building on previous ones)
+    mapping(uint256 => uint256) private _parents;
+    mapping(uint256 => uint256[]) private _children;
+
+    // The core ID could represent the type of promotional action/channel (e.g., social share, playlist add, etc.)
+    mapping(uint256 => uint8) private _cores;
+
+    // Model contributions (key promotional actions) and associated dataset IDs if any
+    mapping(uint256 => bool) public modelContributions;
+    mapping(uint256 => uint256) public modelDatasets;
+
+    event NewContribution(
+        uint256 tokenId,
+        uint256 limelightId,
+        uint256 parentId,
+        uint256 datasetId
+    );
+
+    address private _admin; 
+    address private _eloCalculator;
+
+    /// @custom:oz-upgrades-unsafe-allow constructor
+    constructor() {
+        _disableInitializers();
+    }
+
+    function initialize(address thePersonaAddress) public initializer {
+        __ERC721_init("Contribution", "VC");
+        __ERC721Enumerable_init();
+        __ERC721URIStorage_init();
+        
+        personaNft = thePersonaAddress;
+        _admin = _msgSender();
+    }
+
+    function tokenLimelightId(uint256 tokenId) public view returns (uint256) {
+        return _contributionLimelightId[tokenId];
+    }
+
+    function getArtistDAO(uint256 limelightId) public view returns (IGovernor) {
+        return IGovernor(IArtistNft(personaNft).limelightInfo(limelightId).dao);
+    }
+
+    function isAccepted(uint256 tokenId) public view returns (bool) {
+        uint256 limelightId = _contributionLimelightId[tokenId];
+        IGovernor personaDAO = getArtistDAO(limelightId);
+        return personaDAO.state(tokenId) == IGovernor.ProposalState.Succeeded;
+    }
+
+    /**
+     * @notice Mint a new Contribution NFT representing a fan's promotional action.
+     * @param to Recipient of the NFT (e.g., the TBA or persona)
+     * @param limelightId The limelight persona this contribution supports
+     * @param coreId Type of promotional action/channel
+     * @param newTokenURI Metadata URI describing the contribution
+     * @param proposalId ID of the related proposal
+     * @param parentId ID of a parent contribution this builds on, if any
+     * @param isModel_ Indicates if this is a key/model contribution
+     * @param datasetId Associated dataset ID if this contribution references or updates a dataset
+     */
+    function mint(
+        address to,
+        uint256 limelightId,
+        uint8 coreId,
+        string memory newTokenURI,
+        uint256 proposalId,
+        uint256 parentId,
+        bool isModel_,
+        uint256 datasetId
+    ) external returns (uint256) {
+        IGovernor personaDAO = getArtistDAO(limelightId);
+        require(
+            msg.sender == personaDAO.proposalProposer(proposalId),
+            "Only proposal proposer can mint Contribution NFT"
+        );
+        require(parentId != proposalId, "Cannot be parent of itself");
+
+        _mint(to, proposalId);
+        _setTokenURI(proposalId, newTokenURI);
+        _contributionLimelightId[proposalId] = limelightId;
+        _parents[proposalId] = parentId;
+        _children[parentId].push(proposalId);
+        _cores[proposalId] = coreId;
+
+        if (isModel_) {
+            modelContributions[proposalId] = true;
+            modelDatasets[proposalId] = datasetId;
+        }
+
+        emit NewContribution(proposalId, limelightId, parentId, datasetId);
+
+        return proposalId;
+    }
+
+    function getAdmin() public view override returns (address) {
+        return _admin;
+    }
+
+    function setAdmin(address newAdmin) public {
+        require(_msgSender() == _admin, "Only admin can set admin");
+        _admin = newAdmin;
+    }
+
+    // The following functions are overrides required by Solidity.
+
+    function tokenURI(
+        uint256 tokenId
+    )
+        public
+        view
+        override(
+            IContributionNft,
+            ERC721Upgradeable,
+            ERC721URIStorageUpgradeable
+        )
+        returns (string memory)
+    {
+        return super.tokenURI(tokenId);
+    }
+
+    function getChildren(
+        uint256 tokenId
+    ) public view returns (uint256[] memory) {
+        return _children[tokenId];
+    }
+
+    function getParentId(uint256 tokenId) public view returns (uint256) {
+        return _parents[tokenId];
+    }
+
+    function getCore(uint256 tokenId) public view returns (uint8) {
+        return _cores[tokenId];
+    }
+
+    function supportsInterface(
+        bytes4 interfaceId
+    )
+        public
+        view
+        override(
+            ERC721Upgradeable,
+            ERC721URIStorageUpgradeable,
+            ERC721EnumerableUpgradeable
+        )
+        returns (bool)
+    {
+        return super.supportsInterface(interfaceId);
+    }
+
+    function _increaseBalance(
+        address account,
+        uint128 amount
+    ) internal override(ERC721Upgradeable, ERC721EnumerableUpgradeable) {
+        return super._increaseBalance(account, amount);
+    }
+
+    function _update(
+        address to,
+        uint256 tokenId,
+        address auth
+    )
+        internal
+        override(ERC721Upgradeable, ERC721EnumerableUpgradeable)
+        returns (address)
+    {
+        return super._update(to, tokenId, auth);
+    }
+
+    function isModel(uint256 tokenId) public view returns (bool) {
+        return modelContributions[tokenId];
+    }
+
+    function ownerOf(
+        uint256 tokenId
+    ) public view override(IERC721, ERC721Upgradeable) returns (address) {
+        return _ownerOf(tokenId);
+    }
+
+    function getDatasetId(uint256 tokenId) external view returns (uint256) {
+        return modelDatasets[tokenId];
+    }
+
+    function getEloCalculator() external view returns (address) {
+        return _eloCalculator;
+    }
+
+    function setEloCalculator(address eloCalculator_) public {
+        require(_msgSender() == _admin, "Only admin can set elo calculator");
+        _eloCalculator = eloCalculator_;
+    }
+}

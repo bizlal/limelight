@@ -41,7 +41,5 @@ export async function verifyPrivyAndGetUser(req) {
 
   req.user = dbUser; // Attach user to the request
 
-  console.log('User found:', dbUser);
-  console.log('Privy claims:', claims);
   return { dbUser, claims };
 }

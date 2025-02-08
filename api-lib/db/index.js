@@ -5,3 +5,4 @@ export * from './track';
 export * from './notifications';
 export * from './connections';
 export * from './spotify';
+export * from './discover';
