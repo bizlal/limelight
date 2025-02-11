@@ -65,7 +65,7 @@ const ShareTrackInner = ({ user }) => {
 const ShareTrack = () => {
   const { data, error } = useCurrentUser();
   const loading = !data && !error;
-const user = data?.user;
+  const user = data?.user;
   return (
     <Wrapper>
       <div className={styles.root}>

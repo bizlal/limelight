@@ -40,7 +40,7 @@ const baseProvider = new ethers.providers.JsonRpcProvider(
   'https://mainnet.base.org'
 );
 const ethProvider = new ethers.providers.JsonRpcProvider(
-  'https://8453.rpc.thirdweb.com/a34344b907a4dd3c2811807c82a1b4bd'
+  'https://84532.rpc.thirdweb.com/a34344b907a4dd3c2811807c82a1b4bd'
 );
 
 // Helper for large-number formatting (“K”, “M”, “B”)

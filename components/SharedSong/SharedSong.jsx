@@ -65,5 +65,3 @@ export const SharedSong = ({ track }) => {
     </div>
   );
 };
-
- 

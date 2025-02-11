@@ -23,7 +23,7 @@ handler.get(async (req, res) => {
     res.status(200).json({ tracks });
   } catch (error) {
     console.error('GET /api/discover error:', error);
-  
+
     res.status(500).json({ error: error.message });
   }
 });

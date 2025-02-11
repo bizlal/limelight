@@ -12,4 +12,7 @@ async function handleTrackUrl(url, uid) {
 }
 
 // Example usage:
-handleTrackUrl('https://open.spotify.com/track/4uLU6hMCjMI75M1A2tKUQC', 'someUserId');
+handleTrackUrl(
+  'https://open.spotify.com/track/4uLU6hMCjMI75M1A2tKUQC',
+  'someUserId'
+);

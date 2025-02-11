@@ -39,7 +39,6 @@ const DiscoverPage = () => {
 
 export default DiscoverPage;
 
-
 export const Discover = () => {
   return (
     <div className={styles.root}>

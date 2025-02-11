@@ -1,10 +1,7 @@
 // pages/api/share-track.js
 import nc from 'next-connect';
 import { getMongoDb } from '@/api-lib/mongodb';
-import {
-  getSpotifyTrackByUrl,
-  getToken,
-} from '@/api-lib/db'; // rename to match your actual file
+import { getSpotifyTrackByUrl, getToken } from '@/api-lib/db'; // rename to match your actual file
 import { addTracksToDiscoveredPlaylist } from '@/api-lib/db/spotifyPlaylist';
 
 const handler = nc();
@@ -31,7 +28,7 @@ handler.post(async (req, res) => {
         .status(400)
         .json({ error: 'Could not determine Spotify track ID.' });
     }
-    console.log(db, uid, spotifyTrackId);   
+    console.log(db, uid, spotifyTrackId);
     // 3) Get the current (or refreshed) Spotify access token for the user
     const { accessToken } = await getToken(db, uid);
     if (!accessToken) {
@@ -50,12 +47,14 @@ handler.post(async (req, res) => {
     // 5) Add the track URI to the user's "Discovered on Limelight" playlist
     await addTracksToDiscoveredPlaylist(db, uid, accessToken, [trackUri]);
 
-    return res.status(200).json({ message: 'Track shared successfully.', track });
+    return res
+      .status(200)
+      .json({ message: 'Track shared successfully.', track });
   } catch (error) {
     console.error(
       'Error in share-track API:',
-      uid, error.response?.data || error.message || error
-
+      uid,
+      error.response?.data || error.message || error
     );
     return res
       .status(500)

@@ -31,7 +31,10 @@ function createTrackObject(spotifyTrack, uid) {
       artist: spotifyTrack.artists?.[0]?.name || '',
       featured_artists:
         spotifyTrack.artists && spotifyTrack.artists.length > 1
-          ? spotifyTrack.artists.slice(1).map((artist) => artist.name).join(', ')
+          ? spotifyTrack.artists
+              .slice(1)
+              .map((artist) => artist.name)
+              .join(', ')
           : '',
       album_title: spotifyTrack.album?.name || '',
       track_title: spotifyTrack.name || '',
@@ -115,9 +118,12 @@ async function addSpotifyTrackToDb(db, uid, spotifyTrack) {
 export async function getSpotifyTrackAndAddToDb(db, uid, trackId) {
   try {
     const { accessToken } = await getToken(db, uid);
-    const response = await axios.get(`https://api.spotify.com/v1/tracks/${trackId}`, {
-      headers: { Authorization: `Bearer ${accessToken}` },
-    });
+    const response = await axios.get(
+      `https://api.spotify.com/v1/tracks/${trackId}`,
+      {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      }
+    );
     const trackData = response.data;
     if (!trackData) {
       throw new Error(`No track found for trackId: ${trackId}`);
@@ -162,8 +168,11 @@ export async function getToken(db, uid) {
       );
     }
 
-    let { access_token: accessToken, refresh_token: refreshToken, expires_at: expiresAt } =
-      tokenDoc;
+    let {
+      access_token: accessToken,
+      refresh_token: refreshToken,
+      expires_at: expiresAt,
+    } = tokenDoc;
 
     // If access token is missing or expired, attempt refresh:
     if (!accessToken || !refreshToken || isAccessTokenExpired(expiresAt)) {
@@ -214,9 +223,9 @@ export async function refreshAccessToken(refreshToken) {
     const response = await axios.post(tokenUrl, params.toString(), {
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
-        Authorization: `Basic ${Buffer.from(`${clientId}:${clientSecret}`).toString(
-          'base64'
-        )}`,
+        Authorization: `Basic ${Buffer.from(
+          `${clientId}:${clientSecret}`
+        ).toString('base64')}`,
       },
     });
     const {

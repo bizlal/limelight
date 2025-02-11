@@ -1,0 +1,274 @@
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  background: linear-gradient(
+      116.94deg,
+      #8d52cc -39.29%,
+      #a650b2 -26%,
+      #bc4e9b -15.53%,
+      #cf4c87 1.54%,
+      #db4b7b 11.57%,
+      #a9638f 37.88%,
+      #8c719b 49.86%,
+      #727ea6 64.46%,
+      #4893b7 89.21%
+    ),
+    linear-gradient(0deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2));
+}
+
+/* HEADER */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  color: #ffffff;
+}
+
+.tokenInfo h1 {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  color: #ffffff;
+}
+
+.contractAddress {
+  color: #8d52cc;
+  font-size: 0.9rem;
+}
+
+.priceChange {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 0.5rem;
+  color: #ffffff;
+}
+
+.changeNegative {
+  color: #cf4c87;
+}
+.changePositive {
+  color: #4dff4d;
+}
+
+/* TIME FILTER */
+.timeFilters {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.timeFilter {
+  padding: 0.5rem 1rem;
+  border: 1px solid #8d52cc;
+  border-radius: 8px;
+  background: #333333;
+  cursor: pointer;
+  color: #ffffff;
+}
+
+.timeFilter.active {
+  background: #8d52cc;
+  border-color: #8d52cc;
+}
+
+/* MAIN CONTENT */
+.mainContent {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 2rem;
+}
+
+/* LEFT COLUMN */
+.chartContainer,
+.tokenMetrics .metric {
+  background: #262626;
+  padding: 1.5rem;
+  border-radius: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  color: #ffffff;
+}
+
+.tokenMetrics {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.metric {
+  background: #262626;
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+/* RIGHT COLUMN */
+.rightColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.swapContainer,
+.tokenDetails {
+  background: #262626;
+  padding: 1.5rem;
+  border-radius: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  color: #ffffff;
+}
+
+/* SWAP TABS */
+.swapTabs {
+  display: flex;
+  margin-bottom: 1.5rem;
+}
+
+.swapTab {
+  flex: 1;
+  padding: 1rem;
+  border: none;
+  background: #8d52cc;
+  cursor: pointer;
+  color: #1a1a1a;
+  transition: background 0.2s;
+}
+
+.swapTab:not(.active):hover {
+  background: #7c46b8;
+}
+
+.swapTab.active {
+  background: #a650b2;
+}
+
+/* SWAP FORM */
+.swapForm {
+  margin-top: 1rem;
+}
+
+.inputGroup {
+  margin-bottom: 1.5rem;
+  position: relative;
+}
+
+.inputGroup input {
+  width: 100%;
+  padding: 1rem;
+  border: 1px solid #8d52cc;
+  border-radius: 8px;
+  font-size: 1.25rem;
+  background: #333333;
+  color: #ffffff;
+}
+
+.inputLabels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.5rem;
+  color: #8d52cc;
+  font-size: 0.85rem;
+}
+
+.swapButton {
+  width: 100%;
+  padding: 1rem;
+  background: #8d52cc;
+  color: #1a1a1a;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  font-size: 1rem;
+}
+
+.swapButton:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* STATUS MESSAGES */
+.statusSuccess {
+  margin-top: 1rem;
+  color: #4dff4d;
+}
+.statusError {
+  margin-top: 1rem;
+  color: #ff4d4d;
+}
+
+/* TOKEN DETAILS */
+.tokenDetails {
+  margin-top: 1rem;
+}
+
+.tokenDetails h3 {
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+}
+
+.detailItem {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #8d52cc;
+}
+
+/* FOOTER */
+.footer {
+  margin-top: 2rem;
+  text-align: center;
+  color: #8d52cc;
+  font-size: 0.9rem;
+}
+
+/* ASCENSION PROGRESS */
+.ascensionWrapper {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.ascensionBar {
+  flex: 1;
+  height: 10px;
+  background-color: #444444;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-right: 0.5rem;
+}
+
+.ascensionFill {
+  height: 100%;
+  background-color: #cf4c87;
+  transition: width 0.3s ease;
+}
+
+/* TRANSACTION HISTORY */
+.transactionHistory {
+  margin-top: 2rem;
+  background-color: #262626;
+  padding: 1.5rem;
+  border-radius: 16px;
+  color: #ffffff;
+}
+
+.transactionHistory table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+.transactionHistory th,
+.transactionHistory td {
+  padding: 0.75rem;
+  border-bottom: 1px solid #8d52cc;
+}
+
+.transactionHistory a {
+  color: #8d52cc;
+  text-decoration: none;
+}
+.transactionHistory a:hover {
+  text-decoration: underline;
+}

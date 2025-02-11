@@ -242,7 +242,7 @@ export const getTrackFromSpotifyTrack = (uid, spotifyTrack) => {
 export const getSpotifyTrackAndAddToDb = async (db, uid, trackId) => {
   try {
     const { accessToken } = await getToken(db, uid);
-    console.log(trackId)
+    console.log(trackId);
     const response = await axios.get(
       `https://api.spotify.com/v1/tracks/${trackId}`,
       {
@@ -256,7 +256,6 @@ export const getSpotifyTrackAndAddToDb = async (db, uid, trackId) => {
     }
     return await addSpotifyTrackToDb(db, uid, trackData);
   } catch (error) {
-  
     console.error('Error while fetching and adding track:', error);
     throw error;
   }
@@ -297,7 +296,9 @@ export const getToken = async (db, uid) => {
 
     if (!tokenDoc) {
       console.log('No Spotify tokens found for uid:', uid);
-      throw new Error('No valid Spotify tokens available. Please connect your Spotify account.');
+      throw new Error(
+        'No valid Spotify tokens available. Please connect your Spotify account.'
+      );
     }
     let { accessToken, refreshToken, expiresAt, updatedAt } = tokenDoc;
     console.log('Access token:', accessToken);
@@ -311,13 +312,17 @@ export const getToken = async (db, uid) => {
         const refreshedTokens = await refreshAccessToken(refreshToken);
         accessToken = refreshedTokens.accessToken;
         refreshToken = refreshedTokens.refreshToken;
-        expiresAt = calculateAccessTokenExpirationTime(refreshedTokens.expiresIn);
+        expiresAt = calculateAccessTokenExpirationTime(
+          refreshedTokens.expiresIn
+        );
         updatedAt = new Date();
         console.log('Refreshed access token:', accessToken);
         console.log('New refresh token:', refreshToken);
         console.log('New expires at:', expiresAt);
       } else {
-        throw new Error('No valid Spotify tokens available. Please connect your Spotify account.');
+        throw new Error(
+          'No valid Spotify tokens available. Please connect your Spotify account.'
+        );
       }
 
       await collection.updateOne(
@@ -334,7 +339,6 @@ export const getToken = async (db, uid) => {
     throw error;
   }
 };
-
 
 // Refresh the Spotify access token using axios.
 export const refreshAccessToken = async (refreshToken) => {

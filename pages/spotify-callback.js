@@ -21,7 +21,7 @@ export default function SpotifyCallback() {
     if (!uid) {
       console.error('No user ID found');
       return;
-    }else{
+    } else {
       console.log('User ID found:', uid);
     }
 

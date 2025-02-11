@@ -6,7 +6,10 @@ const COLLECTION_SPOTIFY_TOKENS = 'user_connections'; // changed to unify
 /**
  * Saves (or updates) Spotify tokens in the `spotify_tokens` collection.
  */
-export async function saveSpotifyTokens(db, { uid, access_token, refresh_token, expires_in }) {
+export async function saveSpotifyTokens(
+  db,
+  { uid, access_token, refresh_token, expires_in }
+) {
   const tokensCollection = db.collection(COLLECTION_SPOTIFY_TOKENS);
 
   // Convert `expires_in` (seconds) into a precise future timestamp

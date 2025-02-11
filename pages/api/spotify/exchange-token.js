@@ -46,12 +46,17 @@ export default async function handler(req, res) {
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
         Authorization:
-          'Basic ' + Buffer.from(`${clientId}:${clientSecret}`).toString('base64'),
+          'Basic ' +
+          Buffer.from(`${clientId}:${clientSecret}`).toString('base64'),
       },
     });
 
     const { access_token, refresh_token, expires_in } = response.data || {};
-    console.log('Spotify responded with tokens:', { access_token, refresh_token, expires_in });
+    console.log('Spotify responded with tokens:', {
+      access_token,
+      refresh_token,
+      expires_in,
+    });
 
     // Connect to the database and save tokens by uid
     const db = await getMongoDb();
@@ -64,10 +69,18 @@ export default async function handler(req, res) {
 
     return res.status(200).json({ access_token, refresh_token, expires_in });
   } catch (err) {
-    console.error('Error exchanging Spotify token:', err?.response?.data || err);
+    console.error(
+      'Error exchanging Spotify token:',
+      err?.response?.data || err
+    );
 
     // Return the actual Spotify error if present
-    const errorDesc = err?.response?.data?.error_description || err?.message || 'Token exchange failed';
-    return res.status(500).json({ error: `Token exchange failed: ${errorDesc}` });
+    const errorDesc =
+      err?.response?.data?.error_description ||
+      err?.message ||
+      'Token exchange failed';
+    return res
+      .status(500)
+      .json({ error: `Token exchange failed: ${errorDesc}` });
   }
 }
