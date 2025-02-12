@@ -272,3 +272,96 @@
 .transactionHistory a:hover {
   text-decoration: underline;
 }
+.container {
+  background: #121212;
+  color: white;
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.buttonGradient {
+  background: linear-gradient(
+    116.94deg,
+    #8d52cc -39.29%,
+    #a650b2 -26%,
+    #bc4e9b -15.53%,
+    #cf4c87 1.54%,
+    #db4b7b 11.57%,
+    #a9638f 37.88%,
+    #8c719b 49.86%,
+    #727ea6 64.46%,
+    #4893b7 89.21%
+  );
+  border: none;
+  color: white;
+  padding: 1rem 2rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: opacity 0.3s;
+}
+
+.buttonGradient:hover {
+  opacity: 0.9;
+}
+
+.buttonMax {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.inputActive {
+  background: #18171C;
+  border: 1px solid #43434D;
+  border-radius: 8px;
+  padding: 1rem;
+  color: white;
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.inputActions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.tokenMetrics {
+  background: #18171C;
+  padding: 1.5rem;
+  border-radius: 16px;
+  margin-top: 2rem;
+}
+
+.metric {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #43434D;
+}
+
+.swapTabs {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.badgeDark {
+  background: #18171C;
+  border: 1px solid #43434D;
+  color: white;
+  padding: 1rem 2rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.badgeDark:hover {
+  background: #2C2C34;
+}

@@ -8,7 +8,7 @@ const queryClient = new QueryClient()
 
 export function Web3Providers({ children }) {
   const baseSepolia = {
-    id: 845322,
+    id: 84532,
     name: "Base",
     network: "base",
     nativeCurrency: {
