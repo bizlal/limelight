@@ -25,6 +25,8 @@
     "@lukeed/ms": "^2.0.0",
     "@privy-io/react-auth": "^2.4.2",
     "@privy-io/server-auth": "^1.18.1",
+    "@privy-io/wagmi": "^1.0.3",
+    "@tanstack/react-query": "^5.66.0",
     "@vercel/analytics": "^1.4.1",
     "@vercel/speed-insights": "^1.1.0",
     "@wagmi/chains": "^1.8.0",

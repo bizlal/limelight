@@ -390,11 +390,11 @@ export function Token() {
           <div className={styles.tokenMetrics}>
             <div className={styles.metric}>
               <span>24h Volume</span>
-              <strong>$598.59k</strong>
+              <strong>$59.59k</strong>
             </div>
             <div className={styles.metric}>
               <span>Market Cap</span>
-              <strong>${mcap.toFixed(2)}M</strong>
+              <strong>$200M</strong>
             </div>
             <div className={styles.metric}>
               <span>Holders</span>

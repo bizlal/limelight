@@ -1,5 +1,5 @@
 'use client'
-import { WagmiProvider } from 'wagmi'
+import { WagmiProvider } from '@privy-io/wagmi';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { PrivyProvider } from '@privy-io/react-auth'
 import { config } from './config';
@@ -47,27 +47,27 @@ export function Web3Providers({ children }) {
   };
 
   return (
-    <WagmiProvider config={config}>
+    <PrivyProvider
+      appId={process.env.NEXT_PUBLIC_PRIVY_APP_ID}
+      config={{
+        defaultChain: baseSepolia,
+        supportedChains: [base, baseSepolia],
+        embeddedWallets: {
+          createOnLogin: 'users-without-wallets'
+        },
+        appearance: {
+          theme: 'light',
+          accentColor: '#1E88E5',
+          logo: '/logo.png',
+        }
+      }}
+    >
       <QueryClientProvider client={queryClient}>
-        <PrivyProvider
-          appId={process.env.NEXT_PUBLIC_PRIVY_APP_ID}
-          config={{
-            defaultChain: baseSepolia,
-            supportedChains: [base, baseSepolia],
-            embeddedWallets: {
-              createOnLogin: 'users-without-wallets'
-            },
-            appearance: {
-              theme: 'light',
-              accentColor: '#1E88E5',
-              logo: '/logo.png',
-            }
-          }}
-        >
+        <WagmiProvider config={config}>
           {children}
-        </PrivyProvider>
+        </WagmiProvider>
       </QueryClientProvider>
-    </WagmiProvider>
+    </PrivyProvider>
   )
 }
  
