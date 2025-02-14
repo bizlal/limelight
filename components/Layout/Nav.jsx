@@ -36,10 +36,10 @@ const ERC20_ABI = [
 const LMLT_CONTRACT = '0x041040e0A67150BCaf126456b52751017f1c368E';
 
 // Example providers
-const baseProvider = new ethers.JsonRpcProvider(
+const baseProvider = new ethers.providers.JsonRpcProvider(
   'https://mainnet.base.org'
 );
-const ethProvider = new ethers.JsonRpcProvider(
+const ethProvider = new ethers.providers.JsonRpcProvider(
   'https://84532.rpc.thirdweb.com/a34344b907a4dd3c2811807c82a1b4bd'
 );
 
