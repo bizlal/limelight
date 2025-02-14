@@ -1,7 +1,7 @@
 // pages/api/discover.js
 import nc from 'next-connect';
 import { getMongoDb } from '@/api-lib/mongodb';
-import { getDiscoveredTracks, saveDiscoveredTracks } from '@/api-lib/db';
+import { getDiscoveredTracks } from '@/api-lib/db';
 
 const handler = nc();
 

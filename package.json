@@ -23,6 +23,7 @@
   "dependencies": {
     "@alexvcasillas/react-onboarding": "^1.0.0",
     "@lukeed/ms": "^2.0.0",
+    "@microsoft/clarity": "^1.0.0",
     "@privy-io/react-auth": "^2.4.2",
     "@privy-io/server-auth": "^1.18.1",
     "@privy-io/wagmi": "^1.0.3",

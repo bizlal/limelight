@@ -1,4 +1,4 @@
-import { getSpotifyTrackByUrl } from './spotifyClient';
+import { getSpotifyTrackByUrl } from '@/api-lib/db/spotifyClient';
 import { getMongoDb } from '@/api-lib/mongodb';
 
 async function handleTrackUrl(url, uid) {

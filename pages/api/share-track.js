@@ -53,7 +53,6 @@ handler.post(async (req, res) => {
   } catch (error) {
     console.error(
       'Error in share-track API:',
-      uid,
       error.response?.data || error.message || error
     );
     return res
