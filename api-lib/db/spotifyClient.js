@@ -1,8 +1,7 @@
 // api-lib/db/spotifyClient.js
 import axios from 'axios';
 import crypto from 'crypto';
-import { findSpotifyTokens } from './connections.js';
-import { parseSpotifyTrackUrl } from './spotifyUrlParser.js';
+import { parseSpotifyTrackUrl } from './spotify.js';
 
 const clientId = 'cad0010433854df8a32000b92a73d369';
 const clientSecret = '2a9f8e5dfa984a8fb122b8e542192eaf';
