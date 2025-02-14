@@ -8,7 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "format": "prettier --write . && eslint --fix ."
+    "format": "prettier --write ."
   },
   "repository": {
     "type": "git",

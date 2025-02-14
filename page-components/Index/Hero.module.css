@@ -1,5 +1,5 @@
 /********************************************************
- *  HERO & GENERAL WRAPPER STYLES
+ *  HERO WRAPPER & BACKGROUND
  ********************************************************/
 .heroWrapper {
   background: linear-gradient(
@@ -22,8 +22,7 @@
   content: '';
   position: absolute;
   inset: 0;
-  /* Slightly darker overlay so text is easier to read */
-  background: rgba(0, 0, 0, 0.3);
+  background: rgba(0, 0, 0, 0.3); /* Dark overlay */
   z-index: 2;
 }
 
@@ -35,7 +34,7 @@
 .heroInner {
   text-align: center;
   margin-bottom: 3rem;
-  padding-top: 4rem; /* push content down a bit */
+  padding-top: 4rem;
 }
 
 .mapBackground {
@@ -121,7 +120,7 @@
 }
 
 /********************************************************
- *  FROSTED-GLASS CARD (REUSABLE)
+ *  REUSABLE FROSTED-GLASS CARD
  ********************************************************/
 @keyframes fadeInUp {
   from {
@@ -182,8 +181,9 @@
   margin: 0;
   color: #f0f0f0;
 }
+
 /********************************************************
- *  TOKEN SECTION
+ *  TOKEN & VESTING SECTIONS
  ********************************************************/
 .tokenSection {
   background: rgba(255, 255, 255, 0.12);
@@ -211,35 +211,6 @@
   margin-bottom: 1.25rem;
 }
 
-.tokenBenefits {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  grid-template-columns: repeat(2, minmax(150px, 1fr));
-  gap: 1rem;
-}
-
-.tokenBenefits li {
-  background-color: rgba(255, 255, 255, 0.06);
-  padding: 0.75rem;
-  border-radius: 5px;
-  color: #eee;
-  transition: background 0.2s ease;
-}
-.tokenBenefits li:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-}
-
-@media (max-width: 768px) {
-  .tokenBenefits {
-    grid-template-columns: 1fr;
-  }
-}
-
-/********************************************************
- *  DISTRIBUTION, VESTING, BONDING CURVE SECTIONS
- ********************************************************/
 .distributionSection {
   margin-top: 2rem;
   padding-top: 2rem;
@@ -254,30 +225,18 @@
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
 }
 
-.distributionContent {
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-}
-/* Example snippet of changes for chartWrapper */
 .chartWrapper {
-  width: 100%; /* Allow the wrapper to resize fluidly */
-  max-width: 600px; /* Optional max width for larger screens */
-  margin: 0 auto; /* Center it within the parent */
-  overflow-x: auto; /* Enable horizontal scroll if needed */
-  box-sizing: border-box; /* Ensure padding/border is calculated properly */
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  overflow-x: auto;
+  box-sizing: border-box;
 }
 
 .chartWrapper canvas {
-  display: block; /* Ensure it behaves like a block element */
-  width: 100% !important; /* Force canvas to span full wrapper width */
-  height: auto !important; /* Keep aspect ratio when shrinking */
-}
-
-@media (max-width: 768px) {
-  .chartWrapper {
-    max-width: 100%; /* Remove any fixed sizing on smaller screens */
-  }
+  display: block;
+  width: 100% !important;
+  height: auto !important;
 }
 
 .distributionTable {
@@ -306,16 +265,6 @@
   background-color: rgba(255, 255, 255, 0.07);
 }
 
-@media (max-width: 768px) {
-  .distributionTable th,
-  .distributionTable td {
-    padding: 0.5rem;
-  }
-}
-
-/********************************************************
- *  VESTING SECTION
- ********************************************************/
 .vestingSection {
   margin-top: 3rem;
   padding-top: 2rem;
@@ -337,9 +286,6 @@
   line-height: 1.5;
 }
 
-/********************************************************
- *  ARTIST TOKENS & BONDING CURVE SECTION
- ********************************************************/
 .artistTokensSection {
   background: rgba(255, 255, 255, 0.12);
   backdrop-filter: blur(8px);
@@ -441,28 +387,19 @@
   background-color: rgba(255, 255, 255, 0.07);
 }
 
-@media (max-width: 768px) {
-  .purchaseTable th,
-  .purchaseTable td,
-  .unlocksTable th,
-  .unlocksTable td {
-    padding: 0.5rem;
-  }
-}
-
 /********************************************************
- *  ROADMAP SECTION
+ *  ROADMAP & FAQ (HEADLESS UI DISCLOSURES)
  ********************************************************/
 .roadmapSection {
   background: rgba(255, 255, 255, 0.12);
   backdrop-filter: blur(8px);
   padding: 2.5rem;
   border-radius: 12px;
-  margin-top: 2rem;
   border: 1px solid rgba(255, 255, 255, 0.25);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
   animation: fadeInUp 0.4s ease forwards;
   color: #fff;
+  margin-bottom: 2rem;
 }
 
 .roadmapTitle {
@@ -473,43 +410,58 @@
   text-shadow: 0 2px 3px rgba(0, 0, 0, 0.5);
 }
 
-.roadmapList {
-  list-style: none;
+.roadmapItem {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  overflow: hidden;
+  transition: background 0.3s;
+}
+
+.roadmapItem.expanded {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.roadmapQuestion {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+  transition: background 0.2s ease;
+  color: #fff;
+}
+
+.roadmapQuestion:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.roadmapIcon {
+  font-size: 1.2rem;
+  margin-left: 1rem;
+}
+
+.roadmapAnswer {
+  overflow: hidden;
+  transition: max-height 0.3s ease, padding 0.3s ease;
+  max-height: 0;
+}
+
+.roadmapAnswer p {
   margin: 0;
-  padding: 0;
-  counter-reset: step;
-}
-
-.roadmapList li {
-  margin-bottom: 1.5rem;
-  position: relative;
-  color: #f0f0f0;
-}
-
-.roadmapList li::before {
-  counter-increment: step;
-  content: counter(step) '. ';
-  color: #fff;
-  font-weight: 700;
-  margin-right: 0.5rem;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
-}
-
-.roadmapList strong {
-  color: #fff;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  color: #eee;
+  font-size: 0.95rem;
+  padding: 0 1rem;
+  line-height: 1.5;
 }
 
 .roadmapCurrent {
   margin-top: 1rem;
-  color: #ccc;
   font-style: italic;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+  color: #ccc;
 }
 
-/********************************************************
- *  FAQ SECTION
- ********************************************************/
 .faqSection {
   background-color: rgba(255, 255, 255, 0.12);
   backdrop-filter: blur(8px);
@@ -529,21 +481,18 @@
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
 }
 
-/* Each FAQ item container */
 .faqItem {
   background: rgba(255, 255, 255, 0.08);
   border-radius: 8px;
   margin-bottom: 1rem;
   overflow: hidden;
-  transition: all 0.3s ease;
+  transition: background 0.3s ease;
 }
 
-/* Expand style if you want a visual difference when open */
 .faqItem.expanded {
   background: rgba(255, 255, 255, 0.12);
 }
 
-/* FAQ question row (clickable) */
 .faqQuestion {
   cursor: pointer;
   display: flex;
@@ -559,101 +508,97 @@
   background: rgba(255, 255, 255, 0.1);
 }
 
-/* The icon on the right (+ / -) */
 .faqIcon {
   font-size: 1.4rem;
   margin-left: 1rem;
 }
 
-/* FAQ answer content (collapsible) */
 .faqAnswer {
   overflow: hidden;
   transition: max-height 0.3s ease, padding 0.3s ease;
-  max-height: 0; /* start collapsed */
+  max-height: 0;
 }
 
 .faqAnswer p {
   margin: 0;
   color: #eee;
   font-size: 0.95rem;
-  padding: 0 1rem; /* left/right padding for text */
-  line-height: 1.5;
-}
-/* Roadmap container, reusing some existing card styles */
-.roadmapSection {
-  background: rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(8px);
-  padding: 2.5rem;
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
-  animation: fadeInUp 0.4s ease forwards;
-  color: #fff;
-  margin-bottom: 2rem;
-}
-
-.roadmapTitle {
-  font-size: 1.6rem;
-  font-weight: 700;
-  margin-bottom: 1.5rem;
-  color: #fff;
-  text-shadow: 0 2px 3px rgba(0, 0, 0, 0.5);
-}
-
-/* Each roadmap item container */
-.roadmapItem {
-  background: rgba(255, 255, 255, 0.08);
-  border-radius: 8px;
-  margin-bottom: 1rem;
-  overflow: hidden;
-  transition: background 0.3s;
-}
-
-.roadmapItem.expanded {
-  background: rgba(255, 255, 255, 0.12);
-}
-
-/* The clickable "question" row with phase title */
-.roadmapQuestion {
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.75rem 1rem;
-  font-weight: 600;
-  transition: background 0.2s ease;
-  color: #fff;
-}
-
-.roadmapQuestion:hover {
-  background: rgba(255, 255, 255, 0.1);
-}
-
-/* The + / - icon on the right */
-.roadmapIcon {
-  font-size: 1.2rem;
-  margin-left: 1rem;
-}
-
-/* The content block that collapses/expands */
-.roadmapAnswer {
-  overflow: hidden;
-  transition: max-height 0.3s ease, padding 0.3s ease;
-  max-height: 0; /* collapsed by default */
-}
-
-.roadmapAnswer p {
-  margin: 0;
-  color: #eee;
-  font-size: 0.95rem;
   padding: 0 1rem;
   line-height: 1.5;
-  /* We add top/bottom padding dynamically in the inline style
-     if it's open or closed. */
 }
 
-.roadmapCurrent {
-  margin-top: 1rem;
-  font-style: italic;
-  color: #ccc;
+/********************************************************
+ *  HEADLESS UI MENU (dark style)
+ ********************************************************/
+.menuContainer {
+  position: absolute; /* Or .fixed, etc. */
+  top: 24px;
+  right: 24px;
+  display: inline-block;
+  z-index: 999;
+}
+
+.menuButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: #3a3a3a;
+  color: #f1f1f1;
+  padding: 0.5rem 0.8rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border-radius: 6px;
+  border: 1px solid #555;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.menuButton:hover {
+  background: #454545;
+  border-color: #666;
+}
+
+.menuItems {
+  position: absolute;
+  right: 0;
+  margin-top: 0.35rem;
+  width: 180px;
+  background: #1c1c1c; /* dark background */
+  border: 1px solid #444;
+  border-radius: 8px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
+  padding: 0.25rem 0;
+  opacity: 0;
+  transform: scale(0.95);
+  transform-origin: top right;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.menuItemsOpen {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.menuItemButton {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  padding: 0.5rem 1rem;
+  color: #eee;
+  background: transparent;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.menuItemButton:hover {
+  background: #333;
+}
+
+.menuDivider {
+  height: 1px;
+  background-color: #333;
+  margin: 0.25rem 0;
 }
