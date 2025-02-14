@@ -56,9 +56,9 @@ export function Web3Providers({ children }) {
           createOnLogin: 'users-without-wallets',
         },
         appearance: {
-          theme: 'light',
+          theme: 'dark',
           accentColor: '#1E88E5',
-          logo: '/logo.png',
+          logo: 'images/logo.jpg',
         },
       }}
     >
