@@ -1,3 +1,5 @@
+// File: /pages/api/users/index.js
+
 import nc from 'next-connect';
 import { getMongoDb } from '@/api-lib/mongodb';
 import { ncOpts } from '@/api-lib/nc';
@@ -5,22 +7,45 @@ import { slugUsername } from '@/lib/user';
 import { validateBody } from '@/api-lib/middlewares';
 import { PrivyClient } from '@privy-io/server-auth';
 
-// Make sure you have your Privy credentials
 const PRIVY_APP_ID = process.env.NEXT_PUBLIC_PRIVY_APP_ID;
 const PRIVY_APP_SECRET = process.env.PRIVY_APP_SECRET;
-const privyClient = new PrivyClient(PRIVY_APP_ID, PRIVY_APP_SECRET);
 
-// Reuse or create a helper function
-async function verifyPrivyToken(req) {
-  const headerAuthToken = req.headers.authorization?.replace(/^Bearer\s/, '');
-  const cookieAuthToken = req.cookies['privy-token'];
-  const token = cookieAuthToken || headerAuthToken;
-  if (!token) throw new Error('Missing Privy token');
+// Only create a Privy client if credentials exist
+const privyClient =
+  PRIVY_APP_ID && PRIVY_APP_SECRET
+    ? new PrivyClient(PRIVY_APP_ID, PRIVY_APP_SECRET)
+    : null;
 
-  const claims = await privyClient.verifyAuthToken(token);
-  if (!claims) throw new Error('Invalid Privy token');
-  // claims.sub = "did:privy:XXXXXXXXX"
-  return claims;
+// Optional token verification
+async function getOptionalPrivyUid(req) {
+  if (!privyClient) {
+    // If you have no Privy credentials in environment, skip entirely
+    return null;
+  }
+
+  try {
+    const headerAuthToken = req.headers.authorization?.replace(/^Bearer\s/, '');
+    const cookieAuthToken = req.cookies['privy-token'];
+    const token = cookieAuthToken || headerAuthToken;
+    if (!token) {
+      // No token provided
+      return null;
+    }
+
+    // Attempt to verify
+    const claims = await privyClient.verifyAuthToken(token);
+    if (!claims || !claims.userId?.includes('did:privy:')) {
+      // Token invalid
+      return null;
+    }
+
+    // e.g. "did:privy:XXXXXXXX" -> "XXXXXXXX"
+    return claims.userId.split(':')[2];
+  } catch (err) {
+    // If verification fails, treat as no token
+    console.error('Optional Privy verification failed:', err);
+    return null;
+  }
 }
 
 const handler = nc(ncOpts);
@@ -62,11 +87,21 @@ handler.post(
     try {
       const db = await getMongoDb();
 
-      // 1) Verify Privy token, get uid
-      const claims = await verifyPrivyToken(req);
-      const uid = claims.userId.split(':')[2]; // Extract the third part of "did:privy:{userid}"
+      // 1) Attempt to get uid from an optional Privy token
+      const privyUid = await getOptionalPrivyUid(req);
 
-      // 2) Extract form fields
+      // 2) Fall back to a 'uid' in the request body if no Privy token
+      //    or you can generate a random ID, or throw an error if none is found
+      const fallbackUid = req.body.uid; // e.g. from your auth system / client
+      const uid = privyUid || fallbackUid;
+
+      if (!uid) {
+        return res.status(400).json({
+          error: 'No user ID found (no Privy token + no fallback uid in body).',
+        });
+      }
+
+      // 3) Extract form fields
       let {
         username,
         name,
@@ -80,10 +115,12 @@ handler.post(
         total_followers,
         links,
       } = req.body;
+
       username = slugUsername(username || '');
 
-      // 3) Upsert the user doc by uid
       const now = new Date();
+
+      // 4) Upsert the user doc by uid
       const result = await db.collection('users').findOneAndUpdate(
         { uid },
         {
