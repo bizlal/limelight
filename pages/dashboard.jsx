@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
 import { getAccessToken, usePrivy } from '@privy-io/react-auth';
-
+import Dashboard from '@/page-components/Dashboard/Dashboard';
 export default function DashboardPage() {
-  const { ready, authenticated, user, logout } = usePrivy();
+  const { ready, authenticated, user } = usePrivy();
 
   useEffect(() => {
     async function syncPrivyUser() {
@@ -34,8 +34,7 @@ export default function DashboardPage() {
     <main>
       {ready && authenticated ? (
         <>
-          <h1>Welcome, {user.email?.address || 'Privy User'}</h1>
-          <button onClick={logout}>Logout</button>
+          <Dashboard />
         </>
       ) : (
         <p>Loading or redirecting...</p>

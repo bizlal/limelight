@@ -277,7 +277,7 @@ const Nav = () => {
   } = usePrivy();
 
   const [localUser, setLocalUser] = useState(null);
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const [mobileOpen] = useState(false);
   const [serverLoggedIn, setServerLoggedIn] = useState(false);
 
   // Fetch local user doc from your DB once Privy is ready
@@ -361,7 +361,8 @@ const Nav = () => {
           <Container
             alignItems="center"
             className={styles.leftSection}
-            style={{ fontSize: '1rem' }}>
+            style={{ fontSize: '1rem' }}
+          >
             <Link legacyBehavior href="/">
               <a
                 className={styles.logoLink}
