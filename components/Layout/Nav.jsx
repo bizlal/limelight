@@ -1,12 +1,9 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { useRouter } from 'next/router';
 import toast from 'react-hot-toast';
 import { usePrivy } from '@privy-io/react-auth';
-// Ethers for reading balances
 import { ethers } from 'ethers';
-// 1) Import react-icons
 import {
   FaUser,
   FaCog,
@@ -23,17 +20,14 @@ import Spacer from './Spacer';
 import Container from './Container';
 import Wrapper from './Wrapper';
 
-import styles from './Nav.module.css';
-// Simple ERC-20 ABI for balanceOf, symbol, decimals, etc.
+// ---- Custom Hook to Fetch Balances ----
 const ERC20_ABI = [
   'function balanceOf(address) view returns (uint256)',
   'function symbol() view returns (string)',
   'function decimals() view returns (uint8)',
-  // If your contract actually has a "vestedBalanceOf" method:
   'function vestedBalanceOf(address) view returns (uint256)',
 ];
 
-// Or if you have a separate vesting contract, define that address + ABI here.
 const LMLT_CONTRACT = '0x041040e0A67150BCaf126456b52751017f1c368E';
 
 // Example providers
@@ -44,7 +38,6 @@ const ethProvider = new ethers.providers.JsonRpcProvider(
   'https://84532.rpc.thirdweb.com/a34344b907a4dd3c2811807c82a1b4bd'
 );
 
-// Helper for large-number formatting (“K”, “M”, “B”)
 function formatBalance(balance) {
   if (balance >= 1e9) return (balance / 1e9).toFixed(2) + 'B';
   if (balance >= 1e6) return (balance / 1e6).toFixed(2) + 'M';
@@ -52,55 +45,38 @@ function formatBalance(balance) {
   return balance.toFixed(2);
 }
 
-export function Balances({ address }) {
+function useBalances(address) {
   const [ethBalance, setEthBalance] = useState(null);
   const [lmltBalance, setLmltBalance] = useState(null);
-  // const [vestedBalance, setVestedBalance] = useState(null); // NEW
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (!address) return;
-
     let isMounted = true;
+
     (async () => {
       try {
         setLoading(true);
-
-        // 1) Fetch ETH balance on Ethereum
+        // ---- 1) Fetch ETH balance on Ethereum ----
         const weiBalance = await ethProvider.getBalance(address);
         const ethBal = parseFloat(ethers.utils.formatEther(weiBalance));
 
-        // 2) Fetch LMLT + Vested from Base
-        const lmltContract = new ethers.Contract(
-          LMLT_CONTRACT,
-          ERC20_ABI,
-          baseProvider
-        );
-
-        // Normal LMLT
+        // ---- 2) Fetch LMLT (Base) ----
+        const lmltContract = new ethers.Contract(LMLT_CONTRACT, ERC20_ABI, baseProvider);
         const rawBalance = await lmltContract.balanceOf(address);
         const decimals = await lmltContract.decimals();
-        const lmltFloat = parseFloat(
-          ethers.utils.formatUnits(rawBalance, decimals)
-        );
-
-        // let vestedFloat = 0;
-        // if (lmltContract.vestedBalanceOf) {
-        //   const rawVested = await lmltContract.vestedBalanceOf(address);
-        //   vestedFloat = parseFloat(ethers.utils.formatUnits(rawVested, decimals));
-        // } else {
-        //   // fallback or skip if not applicable
-        // }
+        const lmltFloat = parseFloat(ethers.utils.formatUnits(rawBalance, decimals));
 
         if (isMounted) {
           setEthBalance(ethBal);
           setLmltBalance(lmltFloat);
-          // setVestedBalance(vestedFloat);
         }
       } catch (err) {
         console.error('Error fetching balances:', err);
       } finally {
-        if (isMounted) setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     })();
 
@@ -109,62 +85,58 @@ export function Balances({ address }) {
     };
   }, [address]);
 
+  return { ethBalance, lmltBalance, loading };
+}
+
+// ---- Balances Component ----
+export function Balances({ address }) {
+  const { ethBalance, lmltBalance, loading } = useBalances(address);
+
   if (!address) return null;
 
   return (
-    <div className={styles.balanceContainer}>
+    <div className="balanceContainer">
       {loading ? (
         <span>Loading Balances...</span>
       ) : (
         <>
-          {/* 1) Truncated address */}
-          <div className={styles.addressRow}>
-            <span className={styles.addressLabel}>
+          {/* Truncated address */}
+          <div className="addressRow">
+            <span className="addressLabel">
               {address.slice(0, 6)}...{address.slice(-4)}
             </span>
           </div>
 
-          {/* 2) ETH Balance */}
-          <div className={styles.chainRow}>
-            <span className={styles.chainLabel}>Ethereum</span>
-            <span className={styles.chainBalance}>
-              {ethBalance !== null
-                ? `${formatBalance(ethBalance)} ETH`
-                : '0 ETH'}
+          {/* ETH Balance */}
+          <div className="chainRow">
+            <span className="chainLabel">Ethereum</span>
+            <span className="chainBalance">
+              {ethBalance !== null ? `${formatBalance(ethBalance)} ETH` : '0 ETH'}
             </span>
           </div>
 
-          {/* 3) LMLT Balance */}
-          <div className={styles.chainRow}>
-            <span className={styles.chainLabel}>LMLT (Base)</span>
-            <span className={styles.chainBalance}>
-              {lmltBalance !== null
-                ? `${formatBalance(lmltBalance)} LMLT`
-                : '0 LMLT'}
+          {/* LMLT Balance */}
+          <div className="chainRow">
+            <span className="chainLabel">LMLT (Base)</span>
+            <span className="chainBalance">
+              {lmltBalance !== null ? `${formatBalance(lmltBalance)} LMLT` : '0 LMLT'}
             </span>
           </div>
-
-          {/* 4) Vested LMLT - NEW */}
-          {/* <div className={styles.chainRow}>
-            <span className={styles.chainLabel}>Vested</span>
-            <span className={styles.chainBalance}>
-              {vestedBalance !== null ? `${formatBalance(vestedBalance)} LMLT` : '0 LMLT'}
-            </span>
-          </div> */}
         </>
       )}
     </div>
   );
 }
 
-// The user menu
+// ---- User Menu ----
 const UserMenu = ({ user, onDisconnect }) => {
   const menuRef = useRef(null);
   const avatarRef = useRef(null);
   const [visible, setVisible] = useState(false);
-  const [balancesUpdated, setBalancesUpdated] = useState(false);
   const router = useRouter();
+  const { user: privyUser } = usePrivy();
 
+  // Close if route changes
   useEffect(() => {
     const onRouteChangeComplete = () => setVisible(false);
     router.events.on('routeChangeComplete', onRouteChangeComplete);
@@ -172,7 +144,6 @@ const UserMenu = ({ user, onDisconnect }) => {
       router.events.off('routeChangeComplete', onRouteChangeComplete);
     };
   }, [router.events]);
-  const { user: privyUser } = usePrivy();
 
   // Close if outside click
   useEffect(() => {
@@ -192,27 +163,20 @@ const UserMenu = ({ user, onDisconnect }) => {
     };
   }, []);
 
-  // Fetch balances in the background
-  useEffect(() => {
-    if (!balancesUpdated && privyUser?.wallet?.address) {
-      setBalancesUpdated(true);
-    }
-  }, [privyUser?.wallet?.address, balancesUpdated]);
-
   return (
-    <div className={styles.userMenu}>
+    <div className="userMenu">
       <button
-        className={styles.trigger}
+        className="trigger"
         ref={avatarRef}
         onClick={() => setVisible(!visible)}
       >
-        <div className={styles.avatarContainer}>
+        <div className="avatarContainer">
           <Avatar
             size={32}
             url={user.profileImage || '/default-avatar.png'}
             username={user.username || 'NoUsername'}
           />
-          <span className={styles.userName}>{user.username}</span>
+          <span className="userName">{user.username}</span>
         </div>
       </button>
 
@@ -221,40 +185,37 @@ const UserMenu = ({ user, onDisconnect }) => {
           ref={menuRef}
           role="menu"
           aria-hidden={!visible}
-          className={styles.popover}
+          className="popover"
         >
-          <div className={styles.menu}>
-            {/* Show balances at the top, for example */}
-            <Balances address={privyUser.wallet.address} />
+          <div className="menu">
+            {/* Balances */}
+            <Balances address={privyUser?.wallet?.address} />
 
-            <div className={styles.menuTopRow}>
-              <Link href={`/user/${user.username}`} className={styles.menuItem}>
-                <FaUser className={styles.menuIcon} />
+            <div className="menuTopRow">
+              <Link href={`/user/${user.username}`} className="menuItem">
+                <FaUser className="menuIcon" />
                 Profile
               </Link>
-              <Link href="/settings" className={styles.menuItem}>
-                <FaCog className={styles.menuIcon} />
+              <Link href="/settings" className="menuItem">
+                <FaCog className="menuIcon" />
                 Settings
               </Link>
             </div>
 
-            <Link
-              href="/new-release"
-              className={`${styles.menuItem} ${styles.uploadBtn}`}
-            >
-              <FaUpload className={styles.menuIcon} />
+            <Link href="/new-release" className={`menuItem uploadBtn`}>
+              <FaUpload className="menuIcon" />
               Upload Music
             </Link>
 
-            <div className={`${styles.menuItem} ${styles.themeRow}`}>
-              <FaAdjust className={styles.menuIcon} />
+            <div className={`menuItem themeRow`}>
+              <FaAdjust className="menuIcon" />
               <span>Theme</span>
               <Spacer size={0.5} axis="horizontal" />
               <ThemeSwitcher />
             </div>
 
-            <button onClick={onDisconnect} className={styles.menuItem}>
-              <FaSignOutAlt className={styles.menuIcon} />
+            <button onClick={onDisconnect} className="menuItem">
+              <FaSignOutAlt className="menuIcon" />
               Disconnect
             </button>
           </div>
@@ -266,19 +227,12 @@ const UserMenu = ({ user, onDisconnect }) => {
 
 const Nav = () => {
   const router = useRouter();
-
-  const {
-    ready,
-    authenticated,
-    user: privyUser,
-    login,
-    logout,
-    getAccessToken,
-  } = usePrivy();
+  const { ready, authenticated, user: privyUser, login, logout, getAccessToken } = usePrivy();
 
   const [localUser, setLocalUser] = useState(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [serverLoggedIn, setServerLoggedIn] = useState(false);
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
 
   // Fetch local user doc from your DB once Privy is ready
   useEffect(() => {
@@ -288,16 +242,11 @@ const Nav = () => {
       return;
     }
 
-    if (router.pathname === '/sign-up') {
-      return;
-    }
+    if (router.pathname === '/sign-up') return;
+
     fetcher(`/api/user?uid=${encodeURIComponent(privyUser.id)}`)
       .then((res) => {
-        if (!res.user) {
-          router.push('/sign-up');
-          return;
-        }
-        if (!res.user.username) {
+        if (!res.user || !res.user.username) {
           router.push('/sign-up');
           return;
         }
@@ -351,110 +300,64 @@ const Nav = () => {
   const disableConnect = !ready || (ready && authenticated);
 
   return (
-    <nav className={styles.nav}>
-      <Wrapper className={styles.wrapper}>
+    <nav className="nav">
+      <Wrapper className="wrapper">
         <Container
-          className={styles.content}
+          className="content"
           alignItems="center"
           justifyContent="space-between"
         >
-          <Container
-            alignItems="center"
-            className={styles.leftSection}
-            style={{ fontSize: '1rem' }}
-          >
-            <Link legacyBehavior href="/">
-              <a
-                className={styles.logoLink}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.5rem',
-                  transform: 'translateY(-5px)', // pushed up a bit
-                }}
-              >
-                <Image
-                  src="/images/limelightlogo2.png"
-                  alt="limelight logo"
-                  className={styles.logoImage}
-                  style={{ transform: 'translate(8px, -0.89px)' }}
-                  width={48}
-                  height={48}
-                />
-                <Image
-                  src="/images/limelight.png"
-                  alt="limelight logo"
-                  className={styles.logoImage}
-                  style={{ transform: 'translateY(10px)' }}
-                  width={128}
-                  height={48}
-                />
-              </a>
+          {/* LEFT SECTION */}
+          <Container alignItems="center" className="leftSection">
+            <Link href="/" legacyBehavior>
+              <span className="logoText">
+                limelight <span className="beta">beta</span>
+              </span>
             </Link>
-            {/* 
-            <button
-              className={styles.hamburger}
-              onClick={() => setMobileOpen(!mobileOpen)}
-              style={{
-                fontSize: '1rem',
-                padding: 0,
-                border: 'none',
-                background: 'none',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                gap: '0.1rem',
-              }}
-            >
-              <span
-                className={styles.hamburgerLine}
-                style={{ width: '1em', height: '0.1em', background: 'currentColor' }}
-              />
-              <span
-                className={styles.hamburgerLine}
-                style={{ width: '1em', height: '0.1em', background: 'currentColor' }}
-              />
-              <span
-                className={styles.hamburgerLine}
-                style={{ width: '1em', height: '0.1em', background: 'currentColor' }}
-              />
-            </button> */}
+
+            <button className="hamburger" onClick={() => setMobileOpen(!mobileOpen)}>
+              <span className="hamburgerLine" />
+              <span className="hamburgerLine" />
+              <span className="hamburgerLine" />
+            </button>
           </Container>
 
           {/* MIDDLE SECTION */}
-          <div
-            className={`${styles.navCenter} ${
-              mobileOpen ? styles.navCenterOpen : ''
-            }`}
-          >
-            <div className={styles.navLinks}>
+          <div className={`navCenter ${mobileOpen ? 'navCenterOpen' : ''}`}>
+            <div className="navLinks">
               <Link legacyBehavior href="/feed">
-                <a className={styles.navLink}>Feed</a>
+                <a className="navLink">Feed</a>
               </Link>
               <Link legacyBehavior href="/discover">
-                <a className={styles.navLink}>Discover</a>
+                <a className="navLink">Discover</a>
               </Link>
               <Link legacyBehavior href="/library">
-                <a className={styles.navLink}>Library</a>
+                <a className="navLink">Library</a>
               </Link>
               <Link legacyBehavior href="/top-charts">
-                <a className={styles.navLink}>Top Charts</a>
+                <a className="navLink">Top Charts</a>
               </Link>
               <Link legacyBehavior href="/playlist">
-                <a className={styles.navLink}>Playlist</a>
+                <a className="navLink">Playlist</a>
+              </Link>
+              {/* ---- New Token link ---- */}
+              <Link legacyBehavior href="/token">
+                <a className="navLink">Token</a>
               </Link>
             </div>
-            <div className={styles.searchContainer}>
+            <div className="searchContainer">
               <input
-                className={styles.searchInput}
+                className="searchInput"
                 type="search"
                 placeholder="Search..."
+                onFocus={() => setIsSearchFocused(true)}
+                onBlur={() => setIsSearchFocused(false)}
               />
             </div>
           </div>
 
           {/* RIGHT SECTION */}
-          <div className={styles.rightSection}>
+          <div className="rightSection">
             {authenticated ? (
               localUser?.username ? (
                 <UserMenu user={localUser} onDisconnect={handleDisconnect} />
@@ -464,12 +367,8 @@ const Nav = () => {
                 </Button>
               )
             ) : (
-              <div className={styles.authButtons}>
-                <button
-                  disabled={disableConnect}
-                  onClick={login}
-                  className={styles.loginBtn}
-                >
+              <div className="authButtons">
+                <button disabled={disableConnect} onClick={login} className="loginBtn">
                   Sign In / Sign Up
                 </button>
               </div>
@@ -477,6 +376,9 @@ const Nav = () => {
           </div>
         </Container>
       </Wrapper>
+
+      {/* --- Overlay that blurs the view when search is focused --- */}
+      <div className={`blurOverlay ${isSearchFocused ? 'blurOverlayVisible' : ''}`} />
     </nav>
   );
 };
