@@ -67,7 +67,7 @@ export function Web3Providers({ children }) {
             'okx_wallet',
           ],
         },
-        loginMethods: ['email', 'wallet', 'google', 'sms', 'apple'],
+        loginMethods: ['email', 'wallet', 'sms'],
         fundingMethodConfig: {
           moonpay: {
             useSandbox: true,
