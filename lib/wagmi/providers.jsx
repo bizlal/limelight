@@ -58,7 +58,7 @@ export function Web3Providers({ children }) {
           theme: '#121212',
           showWalletLoginFirst: false,
           logo: 'https://www.lmlt.ai/images/limelight.png',
-          walletChainType: 'ethereum-and-solana',
+          walletChainType: 'ethereum',
           walletList: [
             'detected_wallets',
             'phantom',
@@ -79,17 +79,9 @@ export function Web3Providers({ children }) {
           ethereum: {
             createOnLogin: 'users-without-wallets',
           },
-          solana: {
-            createOnLogin: 'users-without-wallets',
-          },
         },
         mfa: {
           noPromptOnMfaRequired: false,
-        },
-        externalWallets: {
-          solana: {
-            connectors: {},
-          },
         },
       }}
     >

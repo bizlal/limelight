@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/router';
 import toast from 'react-hot-toast';
 import { usePrivy } from '@privy-io/react-auth';
@@ -357,22 +358,67 @@ const Nav = () => {
           alignItems="center"
           justifyContent="space-between"
         >
-          {/* LEFT SECTION */}
-          <Container alignItems="center" className={styles.leftSection}>
+          <Container
+            alignItems="center"
+            className={styles.leftSection}
+            style={{ fontSize: '1rem' }}
+          >
             <Link legacyBehavior href="/">
-              <span className={styles.logoText}>
-                limelight <span className={styles.beta}>beta</span>
-              </span>
+              <a
+                className={styles.logoLink}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  transform: 'translateY(-5px)', // pushed up a bit
+                }}
+              >
+                <Image
+                  src="/images/limelightlogo2.png"
+                  alt="limelight logo"
+                  className={styles.logoImage}
+                  style={{ transform: 'translate(8px, -0.89px)' }}
+                  width={48}
+                  height={48}
+                />
+                <Image
+                  src="/images/limelight.png"
+                  alt="limelight logo"
+                  className={styles.logoImage}
+                  style={{ transform: 'translateY(10px)' }}
+                  width={128}
+                  height={48}
+                />
+              </a>
             </Link>
-
+            {/* 
             <button
               className={styles.hamburger}
               onClick={() => setMobileOpen(!mobileOpen)}
+              style={{
+                fontSize: '1rem',
+                padding: 0,
+                border: 'none',
+                background: 'none',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                gap: '0.1rem',
+              }}
             >
-              <span className={styles.hamburgerLine} />
-              <span className={styles.hamburgerLine} />
-              <span className={styles.hamburgerLine} />
-            </button>
+              <span
+                className={styles.hamburgerLine}
+                style={{ width: '1em', height: '0.1em', background: 'currentColor' }}
+              />
+              <span
+                className={styles.hamburgerLine}
+                style={{ width: '1em', height: '0.1em', background: 'currentColor' }}
+              />
+              <span
+                className={styles.hamburgerLine}
+                style={{ width: '1em', height: '0.1em', background: 'currentColor' }}
+              />
+            </button> */}
           </Container>
 
           {/* MIDDLE SECTION */}
