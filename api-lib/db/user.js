@@ -25,6 +25,13 @@ export async function findUserById(db, userId) {
     .then((user) => user || null);
 }
 
+export async function findUserByUid(db, userId) {
+  return db
+    .collection('users2')
+    .findOne({ uid: userId }, { projection: dbProjectionUsers() })
+    .then((user) => user || null);
+}
+
 export async function findUserByUsername(db, username) {
   const user = await db
     .collection('users')
