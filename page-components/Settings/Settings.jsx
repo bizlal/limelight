@@ -8,6 +8,7 @@ import { useCurrentUser } from '@/lib/user';
 import { ConnectSpotify } from '@/components/ConnectSpotify/ConnectSpotify';
 
 import styles from './Settings.module.css';
+import { ConnectAudius } from '@/components/ConnectAudius/ConnectSpotify/ConnectAudius';
 
 const ALL_GENRES = [
   'Afrobeat',
@@ -494,7 +495,8 @@ function AboutYou({ user, mutate }) {
         <div style={{ marginTop: '1rem' }}>
           <ConnectSpotify />
         </div>
-
+        <div style={{ marginTop: '1rem' }} />
+        <ConnectAudius user={user} />
         {/* Form Actions */}
         <div className={styles.actions}>
           <button

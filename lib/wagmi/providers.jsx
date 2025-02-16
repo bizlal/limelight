@@ -59,13 +59,6 @@ export function Web3Providers({ children }) {
           showWalletLoginFirst: false,
           logo: 'https://www.lmlt.ai/images/limelight.png',
           walletChainType: 'ethereum',
-          walletList: [
-            'detected_wallets',
-            'phantom',
-            'solflare',
-            'backpack',
-            'okx_wallet',
-          ],
         },
         loginMethods: ['email', 'wallet', 'sms'],
         fundingMethodConfig: {
