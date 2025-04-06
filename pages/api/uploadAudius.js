@@ -3,7 +3,7 @@ import nc from 'next-connect';
 import { IncomingForm } from 'formidable';
 import fs from 'fs';
 import { Mood, Genre } from '@audius/sdk';
-import { audiusSdk } from '@/api-lib/AudiusSDK'; // adjust this path as needed
+import { audiusSdk } from '@/components/ConnectAudius/ConnectSpotify/AudiusSDK';
 
 export const config = {
   api: {
