@@ -98,7 +98,11 @@ handler.post(async (req, res) => {
   form.parse(req, async (err, fields, files) => {
     if (err) {
       console.error('Form parse error:', err);
-      return res.status(500).json({ error: 'Failed to parse form data' });
+      const errorMessage =
+        err.code === 1008
+          ? 'Received empty file upload'
+          : 'Failed to parse form data';
+      return res.status(400).json({ error: errorMessage });
     }
 
     let coverArt, track;
