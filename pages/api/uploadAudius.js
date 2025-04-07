@@ -91,56 +91,80 @@ handler.post(async (req, res) => {
     uploadDir: '/tmp',
     keepExtensions: true,
     maxFileSize: MAX_FILE_SIZES.track,
-    allowEmptyFiles: false, // Explicitly disable empty files
-    minFileSize: 1, // Set minimum to 1 byte
+    allowEmptyFiles: true, // Allow empty files but handle them manually
+    minFileSize: 0, // Disable minimum size check
   });
 
   form.parse(req, async (err, fields, files) => {
     if (err) {
       console.error('Form parse error:', err);
-      const errorMessage =
-        err.code === 1008
-          ? 'Received empty file upload'
-          : 'Failed to parse form data';
-      return res.status(400).json({ error: errorMessage });
+      return res.status(500).json({ error: 'Failed to parse form data' });
     }
 
     let coverArt, track;
     try {
+      // Validate track source
+      if (fields.trackUrl?.[0] && files.trackFile?.[0]) {
+        if (files.trackFile[0].size > 0) {
+          return res
+            .status(400)
+            .json({ error: 'Cannot provide both track file and URL' });
+        }
+      }
+
       // Track processing
       let trackFile;
-      if (files.trackFile?.[0]) {
-        track = files.trackFile[0];
-        trackFile = {
-          buffer: await fsPromises.readFile(validateTmpPath(track.filepath)),
-          name: pathModule.basename(track.originalFilename || 'track.mp3'),
-          mimetype: track.mimetype,
-        };
-      } else if (fields.trackUrl?.[0]) {
+      if (fields.trackUrl?.[0]) {
+        // Handle URL-based track
         const { buffer, mimetype, filename } = await fetchRemoteFile(
           fields.trackUrl[0],
           MAX_FILE_SIZES.track
         );
         trackFile = { buffer, name: filename, mimetype };
+      } else if (files.trackFile?.[0]) {
+        // Handle file upload
+        track = files.trackFile[0];
+        if (track.size === 0) {
+          return res.status(400).json({ error: 'Track file is empty' });
+        }
+        trackFile = {
+          buffer: await fsPromises.readFile(validateTmpPath(track.filepath)),
+          name: pathModule.basename(track.originalFilename || 'track.mp3'),
+          mimetype: track.mimetype,
+        };
       } else {
         return res.status(400).json({ error: 'Track file or URL is required' });
       }
 
+      // Validate cover art source
+      if (fields.coverUrl?.[0] && files.coverArtFile?.[0]) {
+        if (files.coverArtFile[0].size > 0) {
+          return res
+            .status(400)
+            .json({ error: 'Cannot provide both cover file and URL' });
+        }
+      }
+
       // Cover art processing
       let coverArtFile;
-      if (files.coverArtFile?.[0]) {
-        coverArt = files.coverArtFile[0];
-        coverArtFile = {
-          buffer: await fsPromises.readFile(validateTmpPath(coverArt.filepath)),
-          name: pathModule.basename(coverArt.originalFilename || 'cover.jpg'),
-          mimetype: coverArt.mimetype,
-        };
-      } else if (fields.coverUrl?.[0]) {
+      if (fields.coverUrl?.[0]) {
+        // Handle URL-based cover
         const { buffer, mimetype, filename } = await fetchRemoteFile(
           fields.coverUrl[0],
           MAX_FILE_SIZES.cover
         );
         coverArtFile = { buffer, name: filename, mimetype };
+      } else if (files.coverArtFile?.[0]) {
+        // Handle file upload
+        coverArt = files.coverArtFile[0];
+        if (coverArt.size === 0) {
+          return res.status(400).json({ error: 'Cover art file is empty' });
+        }
+        coverArtFile = {
+          buffer: await fsPromises.readFile(validateTmpPath(coverArt.filepath)),
+          name: pathModule.basename(coverArt.originalFilename || 'cover.jpg'),
+          mimetype: coverArt.mimetype,
+        };
       }
 
       // Validate MIME types
