@@ -1,79 +1,116 @@
-// pages/api/audius/uploadTrack.js
 import nc from 'next-connect';
 import { IncomingForm } from 'formidable';
 import fs from 'fs';
+import path from 'fs/promises'; // Use promises for better async handling
 import { Mood, Genre } from '@audius/sdk';
 import { audiusSdk } from '@/components/ConnectAudius/ConnectSpotify/AudiusSDK';
 
 export const config = {
   api: {
-    bodyParser: false, // Disable Next.js built-in body parsing so formidable can handle it.
+    bodyParser: false,
   },
 };
 
 const handler = nc();
 
-handler.post(async (req, res) => {
-  try {
-    const coverArtBuffer = fs.readFileSync('path/to/cover-art.png');
-    const trackBuffer = fs.readFileSync('path/to/track.mp3');
-
-    const { trackId } = await audiusSdk.tracks.uploadTrack({
-      userId: '7eP5n',
-      coverArtFile: {
-        buffer: Buffer.from(coverArtBuffer),
-        name: 'coverArt',
-      },
-      metadata: {
-        title: 'Monstera',
-        genre: Genre.METAL,
-        description: 'Dedicated to my favorite plant',
-        mood: Mood.DEVOTIONAL,
-        releaseDate: new Date('2022-09-30'),
-        tags: 'plantlife,love,monstera',
-        remixOf: { tracks: [{ parentTrackId: 'KVx2xpO' }] },
-        aiAttributionUserId: '3aE1p',
-        isStreamGated: true,
-        streamConditions: {
-          tipUserId: '7eP5n',
-        },
-        isDownloadGated: true,
-        downloadConditions: {
-          usdcPurchase: {
-            price: 1,
-            splits: {
-              FwtT6g2tmwbgY6gf4NWBhupJBqJjgkaHRzCJpA1YHrL2: 10000,
-            },
-          },
-        },
-        isUnlisted: true,
-        fieldVisibility: {
-          mood: true,
-          tags: true,
-          genre: true,
-          share: false,
-          playCount: false,
-          remixes: true,
-        },
-        isrc: 'USAT21812345',
-        iswc: 'T-123.456.789-0',
-        license: 'Attribution-NonCommercial-ShareAlike CC BY-NC-SA',
-      },
-      trackFile: {
-        buffer: Buffer.from(trackBuffer),
-        name: 'monsteraAudio',
-      },
-    });
-
-    return res.status(200).json({ trackId });
-  } catch (error) {
-    console.error('Error uploading track:', error);
-    return res
-      .status(500)
-      .json({ error: error.message || 'Failed to upload track' });
-  }
+// Add CORS middleware
+handler.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, GET');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  next();
 });
 
+handler.post(async (req, res) => {
+  // Vercel-compatible temp directory
+  const tmpDir = `${process.cwd()}/tmp`;
+  await fs.promises.mkdir(tmpDir, { recursive: true });
+
+  const form = new IncomingForm({
+    uploadDir: tmpDir,
+    keepExtensions: true,
+    maxFileSize: 50 * 1024 * 1024, // 50MB (Vercel's limit)
+  });
+
+  form.parse(req, async (err, fields, files) => {
+    if (err) {
+      console.error('Form parse error:', err);
+      return res.status(500).json({ error: 'Failed to parse form data' });
+    }
+
+    try {
+      // Validate files
+      if (!files.coverArtFile?.[0] || !files.trackFile?.[0]) {
+        return res
+          .status(400)
+          .json({ error: 'Missing cover art or track file' });
+      }
+
+      const [coverArtFile, trackFile] = [
+        files.coverArtFile[0],
+        files.trackFile[0],
+      ];
+
+      // Read files as streams (memory-efficient)
+      const coverArtBuffer = await path.readFile(coverArtFile.filepath);
+      const trackBuffer = await path.readFile(trackFile.filepath);
+
+      // Build metadata from fields
+      const metadata = {
+        title: fields.title || 'Untitled Track',
+        genre: fields.genre ? fields.genre : Genre.UNKNOWN,
+        description: fields.description || '',
+        mood: fields.mood ? fields.mood : Mood.UNKNOWN,
+        releaseDate: fields.releaseDate
+          ? new Date(fields.releaseDate)
+          : new Date(),
+        tags: fields.tags || '',
+        remixOf: fields.remixOf ? JSON.parse(fields.remixOf) : undefined,
+        aiAttributionUserId: fields.aiAttributionUserId || '',
+        isStreamGated: fields.isStreamGated === 'true',
+        streamConditions: fields.streamConditions
+          ? JSON.parse(fields.streamConditions)
+          : undefined,
+        isDownloadGated: fields.isDownloadGated === 'true',
+        downloadConditions: fields.downloadConditions
+          ? JSON.parse(fields.downloadConditions)
+          : undefined,
+        isUnlisted: fields.isUnlisted === 'true',
+        fieldVisibility: fields.fieldVisibility
+          ? JSON.parse(fields.fieldVisibility)
+          : undefined,
+        isrc: fields.isrc || '',
+        iswc: fields.iswc || '',
+        license: fields.license || '',
+      };
+
+      // Upload to Audius
+      const { trackId } = await audiusSdk.tracks.uploadTrack({
+        userId: fields.userId?.[0] || 'defaultUserId',
+        coverArtFile: {
+          buffer: coverArtBuffer,
+          name: 'coverArt',
+        },
+        trackFile: {
+          buffer: trackBuffer,
+          name: 'trackAudio',
+        },
+        metadata,
+      });
+
+      // Cleanup temp files
+      await Promise.all([
+        path.unlink(coverArtFile.filepath),
+        path.unlink(trackFile.filepath),
+      ]);
+
+      return res.status(200).json({ trackId });
+    } catch (error) {
+      console.error('Upload error:', error);
+      return res.status(500).json({ error: error.message || 'Upload failed' });
+    }
+  });
+});
 // Add GET method to fetch moods
 handler.get(async (req, res) => {
   const { type } = req.query;

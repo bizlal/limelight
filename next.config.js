@@ -1,5 +1,7 @@
 module.exports = {
   reactStrictMode: true,
+
+  // For image optimization (Cloudinary)
   images: {
     remotePatterns: [
       {
@@ -10,18 +12,32 @@ module.exports = {
       },
     ],
   },
+
+  // For API routes handling file uploads
+  api: {
+    bodyParser: false, // Required for `formidable` to work
+    responseLimit: '10mb', // Adjust based on your needs (default: 4mb)
+    externalResolver: true, // Prevents Vercel timeout warnings
+  },
+
+  // Webpack polyfills (for Node.js modules in the browser)
   webpack: (config) => {
     config.resolve.fallback = {
       ...config.resolve.fallback,
+      // Polyfills for browser compatibility
       crypto: require.resolve('crypto-browserify'),
       stream: require.resolve('stream-browserify'),
-      fs: false, // <--- Tells Webpack "fs" is not needed in the browser
-      net: false,
-      // If other modules are missing, add them here:
-      // buffer: require.resolve('buffer/'),
-      // https: require.resolve('https-browserify')
+      // Disable server-only modules in the browser
+      fs: false, // Filesystem (not needed client-side)
+      net: false, // Networking (server-only)
+      tls: false, // TLS (server-only)
     };
-
     return config;
+  },
+
+  // Optional: Increase timeout for Serverless Functions (Pro plan)
+  // (Hobby plan max is 10s, Pro plan allows up to 300s)
+  serverRuntimeConfig: {
+    apiTimeout: 60, // 60 seconds (Pro plan only)
   },
 };
