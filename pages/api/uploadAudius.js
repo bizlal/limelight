@@ -5,6 +5,7 @@ import * as fsPromises from 'fs/promises';
 import { Blob } from 'blob-polyfill';
 import { Mood, Genre } from '@audius/sdk';
 import { audiusSdk } from '@/components/ConnectAudius/ConnectSpotify/AudiusSDK';
+import fetch from 'node-fetch';
 
 // Add Blob polyfill for Node.js
 global.Blob = Blob;
@@ -37,6 +38,36 @@ const ALLOWED_MIME_TYPES = {
   audio: ['audio/mpeg', 'audio/mp3', 'audio/wav'],
 };
 
+const MAX_FILE_SIZES = {
+  track: 50 * 1024 * 1024, // 50MB
+  cover: 5 * 1024 * 1024, // 5MB
+};
+
+async function fetchRemoteFile(url, maxSize) {
+  const response = await fetch(url);
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch ${url}: ${response.statusText}`);
+  }
+
+  const contentLength = response.headers.get('content-length');
+  if (contentLength && parseInt(contentLength) > maxSize) {
+    throw new Error(`File size exceeds ${maxSize} bytes`);
+  }
+
+  const buffer = await response.buffer();
+  if (buffer.length > maxSize) {
+    throw new Error(`File size exceeds ${maxSize} bytes`);
+  }
+
+  return {
+    buffer,
+    mimetype:
+      response.headers.get('content-type') || 'application/octet-stream',
+    filename: pathModule.basename(new URL(url).pathname) || 'file',
+  };
+}
+
 export const config = { api: { bodyParser: false } };
 
 const handler = nc();
@@ -59,7 +90,7 @@ handler.post(async (req, res) => {
   const form = new IncomingForm({
     uploadDir: '/tmp',
     keepExtensions: true,
-    maxFileSize: 50 * 1024 * 1024,
+    maxFileSize: MAX_FILE_SIZES.track,
   });
 
   form.parse(req, async (err, fields, files) => {
@@ -70,47 +101,55 @@ handler.post(async (req, res) => {
 
     let coverArt, track;
     try {
-      // Validate required track file
-      if (!files.trackFile?.[0]) {
-        return res.status(400).json({ error: 'Track file is required' });
+      // Track processing
+      let trackFile;
+      if (files.trackFile?.[0]) {
+        track = files.trackFile[0];
+        trackFile = {
+          buffer: await fsPromises.readFile(validateTmpPath(track.filepath)),
+          name: pathModule.basename(track.originalFilename || 'track.mp3'),
+          mimetype: track.mimetype,
+        };
+      } else if (fields.trackUrl?.[0]) {
+        const { buffer, mimetype, filename } = await fetchRemoteFile(
+          fields.trackUrl[0],
+          MAX_FILE_SIZES.track
+        );
+        trackFile = { buffer, name: filename, mimetype };
+      } else {
+        return res.status(400).json({ error: 'Track file or URL is required' });
       }
 
-      track = files.trackFile[0];
-      coverArt = files.coverArtFile?.[0];
+      // Cover art processing
+      let coverArtFile;
+      if (files.coverArtFile?.[0]) {
+        coverArt = files.coverArtFile[0];
+        coverArtFile = {
+          buffer: await fsPromises.readFile(validateTmpPath(coverArt.filepath)),
+          name: pathModule.basename(coverArt.originalFilename || 'cover.jpg'),
+          mimetype: coverArt.mimetype,
+        };
+      } else if (fields.coverUrl?.[0]) {
+        const { buffer, mimetype, filename } = await fetchRemoteFile(
+          fields.coverUrl[0],
+          MAX_FILE_SIZES.cover
+        );
+        coverArtFile = { buffer, name: filename, mimetype };
+      }
 
       // Validate MIME types
-      if (coverArt && !ALLOWED_MIME_TYPES.image.includes(coverArt.mimetype)) {
-        return res.status(400).json({ error: 'Invalid cover art format' });
-      }
-
-      if (!ALLOWED_MIME_TYPES.audio.includes(track.mimetype)) {
+      if (trackFile && !ALLOWED_MIME_TYPES.audio.includes(trackFile.mimetype)) {
         return res.status(400).json({ error: 'Invalid audio format' });
       }
 
-      // Read files as buffers
-      const [coverArtBuffer, trackBuffer] = await Promise.all([
-        coverArt
-          ? fsPromises.readFile(validateTmpPath(coverArt.filepath))
-          : null,
-        fsPromises.readFile(validateTmpPath(track.filepath)),
-      ]);
+      if (
+        coverArtFile &&
+        !ALLOWED_MIME_TYPES.image.includes(coverArtFile.mimetype)
+      ) {
+        return res.status(400).json({ error: 'Invalid cover art format' });
+      }
 
-      // Prepare files for SDK
-      const trackFile = {
-        buffer: trackBuffer,
-        name: pathModule.basename(track.originalFilename || 'track.mp3'),
-        mimetype: track.mimetype,
-      };
-
-      const coverArtFile = coverArtBuffer
-        ? {
-            buffer: coverArtBuffer,
-            name: pathModule.basename(coverArt.originalFilename || 'cover.jpg'),
-            mimetype: coverArt.mimetype,
-          }
-        : undefined;
-
-      // Build metadata with validation
+      // Build metadata
       const metadata = {
         title:
           fields.title?.toString().trim().substring(0, 100) || 'Untitled Track',
@@ -155,7 +194,7 @@ handler.post(async (req, res) => {
       await Promise.all([
         coverArt?.filepath &&
           fsPromises.unlink(coverArt.filepath).catch(() => {}),
-        fsPromises.unlink(track.filepath).catch(() => {}),
+        track?.filepath && fsPromises.unlink(track.filepath).catch(() => {}),
       ]);
 
       return res.status(200).json({ trackId });
@@ -178,6 +217,7 @@ handler.post(async (req, res) => {
   });
 });
 
+// GET method remains the same
 // GET method to fetch moods and genres
 handler.get(async (req, res) => {
   const { type } = req.query;
