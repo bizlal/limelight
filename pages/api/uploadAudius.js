@@ -91,7 +91,8 @@ handler.post(async (req, res) => {
     uploadDir: '/tmp',
     keepExtensions: true,
     maxFileSize: MAX_FILE_SIZES.track,
-    allowEmptyFiles: true,
+    allowEmptyFiles: false, // Explicitly disable empty files
+    minFileSize: 1, // Set minimum to 1 byte
   });
 
   form.parse(req, async (err, fields, files) => {
