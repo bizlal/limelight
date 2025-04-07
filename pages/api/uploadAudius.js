@@ -1,35 +1,54 @@
 import nc from 'next-connect';
 import { IncomingForm } from 'formidable';
 import fs from 'fs';
-import path from 'fs/promises'; // Use promises for better async handling
+import pathModule from 'path';
+import * as fsPromises from 'fs/promises';
 import { Mood, Genre } from '@audius/sdk';
 import { audiusSdk } from '@/components/ConnectAudius/ConnectSpotify/AudiusSDK';
 
-export const config = {
-  api: {
-    bodyParser: false,
-  },
+// --- Helper functions ---
+const validateTmpPath = (filepath) => {
+  if (!filepath.startsWith('/tmp/')) {
+    throw new Error('Invalid file path');
+  }
+  return filepath;
 };
+
+const validateEnum = (value, EnumType) => {
+  return Object.values(EnumType).includes(value) ? value : EnumType.UNKNOWN;
+};
+
+const safeParse = (str) => {
+  try {
+    return JSON.parse(str);
+  } catch {
+    return undefined;
+  }
+};
+
+export const config = { api: { bodyParser: false } };
 
 const handler = nc();
 
-// Add CORS middleware
 handler.use((req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  const allowedOrigins =
+    process.env.NODE_ENV === 'production' ? ['https://www.lmlt.ai'] : ['*'];
+
+  res.setHeader('Access-Control-Allow-Origin', allowedOrigins.join(','));
   res.setHeader('Access-Control-Allow-Methods', 'POST, GET');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   next();
 });
 
 handler.post(async (req, res) => {
-  // Vercel-compatible temp directory
-  const tmpDir = `${process.cwd()}/tmp`;
-  await fs.promises.mkdir(tmpDir, { recursive: true });
+  if (!req.headers['content-type']?.startsWith('multipart/form-data')) {
+    return res.status(415).json({ error: 'Unsupported media type' });
+  }
 
   const form = new IncomingForm({
-    uploadDir: tmpDir,
+    uploadDir: '/tmp',
     keepExtensions: true,
-    maxFileSize: 50 * 1024 * 1024, // 50MB (Vercel's limit)
+    maxFileSize: 50 * 1024 * 1024,
   });
 
   form.parse(req, async (err, fields, files) => {
@@ -39,75 +58,67 @@ handler.post(async (req, res) => {
     }
 
     try {
-      // Validate files
       if (!files.coverArtFile?.[0] || !files.trackFile?.[0]) {
-        return res
-          .status(400)
-          .json({ error: 'Missing cover art or track file' });
+        return res.status(400).json({ error: 'Missing required files' });
       }
 
-      const [coverArtFile, trackFile] = [
-        files.coverArtFile[0],
-        files.trackFile[0],
-      ];
+      const [coverArt, track] = [files.coverArtFile[0], files.trackFile[0]];
 
-      // Read files as streams (memory-efficient)
-      const coverArtBuffer = await path.readFile(coverArtFile.filepath);
-      const trackBuffer = await path.readFile(trackFile.filepath);
-
-      // Build metadata from fields
-      const metadata = {
-        title: fields.title || 'Untitled Track',
-        genre: fields.genre ? fields.genre : Genre.UNKNOWN,
-        description: fields.description || '',
-        mood: fields.mood ? fields.mood : Mood.UNKNOWN,
-        releaseDate: fields.releaseDate
-          ? new Date(fields.releaseDate)
-          : new Date(),
-        tags: fields.tags || '',
-        remixOf: fields.remixOf ? JSON.parse(fields.remixOf) : undefined,
-        aiAttributionUserId: fields.aiAttributionUserId || '',
-        isStreamGated: fields.isStreamGated === 'true',
-        streamConditions: fields.streamConditions
-          ? JSON.parse(fields.streamConditions)
-          : undefined,
-        isDownloadGated: fields.isDownloadGated === 'true',
-        downloadConditions: fields.downloadConditions
-          ? JSON.parse(fields.downloadConditions)
-          : undefined,
-        isUnlisted: fields.isUnlisted === 'true',
-        fieldVisibility: fields.fieldVisibility
-          ? JSON.parse(fields.fieldVisibility)
-          : undefined,
-        isrc: fields.isrc || '',
-        iswc: fields.iswc || '',
-        license: fields.license || '',
-      };
-
-      // Upload to Audius
       const { trackId } = await audiusSdk.tracks.uploadTrack({
-        userId: fields.userId?.[0] || 'defaultUserId',
+        userId: fields.userId?.[0]?.toString(),
         coverArtFile: {
-          buffer: coverArtBuffer,
-          name: 'coverArt',
+          stream: fs.createReadStream(validateTmpPath(coverArt.filepath)),
+          name: pathModule.basename(coverArt.originalFilename || 'cover.jpg'),
+          mimetype: coverArt.mimetype,
         },
         trackFile: {
-          buffer: trackBuffer,
-          name: 'trackAudio',
+          stream: fs.createReadStream(validateTmpPath(track.filepath)),
+          name: pathModule.basename(track.originalFilename || 'track.mp3'),
+          mimetype: track.mimetype,
         },
-        metadata,
+        metadata: {
+          title: fields.title?.toString().substring(0, 100) || 'Untitled Track',
+          genre: validateEnum(fields.genre, Genre),
+          description: fields.description?.toString().substring(0, 500) || '',
+          mood: validateEnum(fields.mood, Mood),
+          releaseDate: fields.releaseDate
+            ? new Date(fields.releaseDate)
+            : new Date(),
+          tags: fields.tags?.toString().substring(0, 200) || '',
+          remixOf: fields.remixOf ? safeParse(fields.remixOf) : undefined,
+          aiAttributionUserId: fields.aiAttributionUserId?.toString(),
+          isStreamGated: fields.isStreamGated === 'true',
+          streamConditions: fields.streamConditions
+            ? safeParse(fields.streamConditions)
+            : undefined,
+          isDownloadGated: fields.isDownloadGated === 'true',
+          downloadConditions: fields.downloadConditions
+            ? safeParse(fields.downloadConditions)
+            : undefined,
+          isUnlisted: fields.isUnlisted === 'true',
+          fieldVisibility: fields.fieldVisibility
+            ? safeParse(fields.fieldVisibility)
+            : undefined,
+          isrc: fields.isrc?.toString(),
+          iswc: fields.iswc?.toString(),
+          license: fields.license?.toString(),
+        },
       });
 
-      // Cleanup temp files
       await Promise.all([
-        path.unlink(coverArtFile.filepath),
-        path.unlink(trackFile.filepath),
+        fsPromises.unlink(coverArt.filepath).catch(console.warn),
+        fsPromises.unlink(track.filepath).catch(console.warn),
       ]);
 
       return res.status(200).json({ trackId });
     } catch (error) {
       console.error('Upload error:', error);
-      return res.status(500).json({ error: error.message || 'Upload failed' });
+      return res.status(500).json({
+        error:
+          process.env.NODE_ENV === 'development'
+            ? error.message
+            : 'Upload failed. Please try again.',
+      });
     }
   });
 });
