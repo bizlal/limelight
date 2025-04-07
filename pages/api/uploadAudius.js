@@ -14,81 +14,64 @@ export const config = {
 const handler = nc();
 
 handler.post(async (req, res) => {
-  const form = new IncomingForm({ keepExtensions: true });
-  form.on('fileBegin', (name, file) => {
-    file.filepath = `${process.cwd()}/tmp/${file.originalFilename}`;
-  });
-  form.parse(req, async (err, fields, files) => {
-    if (err) {
-      console.error('Form parse error:', err);
-      return res.status(500).json({ error: 'Failed to parse form data' });
-    }
+  try {
+    const coverArtBuffer = fs.readFileSync('path/to/cover-art.png');
+    const trackBuffer = fs.readFileSync('path/to/track.mp3');
 
-    try {
-      const userId = fields.userId || 'defaultUserId';
-
-      // Ensure both coverArtFile and trackFile are provided
-      if (!files.coverArtFile || !files.trackFile) {
-        return res
-          .status(400)
-          .json({ error: 'Missing cover art or track file' });
-      }
-
-      // Read files from their temporary paths
-      const coverArtBuffer = fs.readFileSync(files.coverArtFile.filepath);
-      const trackBuffer = fs.readFileSync(files.trackFile.filepath);
-
-      // Build metadata from fields
-      const metadata = {
-        title: fields.title || 'Untitled Track',
-        genre: fields.genre ? fields.genre : Genre.UNKNOWN,
-        description: fields.description || '',
-        mood: fields.mood ? fields.mood : Mood.UNKNOWN,
-        releaseDate: fields.releaseDate
-          ? new Date(fields.releaseDate)
-          : new Date(),
-        tags: fields.tags || '',
-        remixOf: fields.remixOf ? JSON.parse(fields.remixOf) : undefined,
-        aiAttributionUserId: fields.aiAttributionUserId || '',
-        isStreamGated: fields.isStreamGated === 'true',
-        streamConditions: fields.streamConditions
-          ? JSON.parse(fields.streamConditions)
-          : undefined,
-        isDownloadGated: fields.isDownloadGated === 'true',
-        downloadConditions: fields.downloadConditions
-          ? JSON.parse(fields.downloadConditions)
-          : undefined,
-        isUnlisted: fields.isUnlisted === 'true',
-        fieldVisibility: fields.fieldVisibility
-          ? JSON.parse(fields.fieldVisibility)
-          : undefined,
-        isrc: fields.isrc || '',
-        iswc: fields.iswc || '',
-        license: fields.license || '',
-      };
-
-      // Call Audius SDK's uploadTrack method
-      const { trackId } = await audiusSdk.tracks.uploadTrack({
-        userId,
-        coverArtFile: {
-          buffer: Buffer.from(coverArtBuffer),
-          name: 'coverArt',
+    const { trackId } = await audiusSdk.tracks.uploadTrack({
+      userId: '7eP5n',
+      coverArtFile: {
+        buffer: Buffer.from(coverArtBuffer),
+        name: 'coverArt',
+      },
+      metadata: {
+        title: 'Monstera',
+        genre: Genre.METAL,
+        description: 'Dedicated to my favorite plant',
+        mood: Mood.DEVOTIONAL,
+        releaseDate: new Date('2022-09-30'),
+        tags: 'plantlife,love,monstera',
+        remixOf: { tracks: [{ parentTrackId: 'KVx2xpO' }] },
+        aiAttributionUserId: '3aE1p',
+        isStreamGated: true,
+        streamConditions: {
+          tipUserId: '7eP5n',
         },
-        metadata,
-        trackFile: {
-          buffer: Buffer.from(trackBuffer),
-          name: 'trackAudio',
+        isDownloadGated: true,
+        downloadConditions: {
+          usdcPurchase: {
+            price: 1,
+            splits: {
+              FwtT6g2tmwbgY6gf4NWBhupJBqJjgkaHRzCJpA1YHrL2: 10000,
+            },
+          },
         },
-      });
+        isUnlisted: true,
+        fieldVisibility: {
+          mood: true,
+          tags: true,
+          genre: true,
+          share: false,
+          playCount: false,
+          remixes: true,
+        },
+        isrc: 'USAT21812345',
+        iswc: 'T-123.456.789-0',
+        license: 'Attribution-NonCommercial-ShareAlike CC BY-NC-SA',
+      },
+      trackFile: {
+        buffer: Buffer.from(trackBuffer),
+        name: 'monsteraAudio',
+      },
+    });
 
-      return res.status(200).json({ trackId });
-    } catch (uploadError) {
-      console.error('Error uploading track:', uploadError);
-      return res
-        .status(500)
-        .json({ error: uploadError.message || 'Failed to upload track' });
-    }
-  });
+    return res.status(200).json({ trackId });
+  } catch (error) {
+    console.error('Error uploading track:', error);
+    return res
+      .status(500)
+      .json({ error: error.message || 'Failed to upload track' });
+  }
 });
 
 // Add GET method to fetch moods
