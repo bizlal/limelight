@@ -34,7 +34,7 @@ const safeParse = (str) => {
 };
 
 const ALLOWED_MIME_TYPES = {
-  image: ['image/jpeg', 'image/png'],
+  image: ['image/jpeg', 'image/png', 'image/webp'],
   audio: ['audio/mpeg', 'audio/mp3', 'audio/wav'],
 };
 
