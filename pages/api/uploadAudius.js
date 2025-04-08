@@ -2,13 +2,9 @@ import nc from 'next-connect';
 import { IncomingForm } from 'formidable';
 import pathModule from 'path';
 import * as fsPromises from 'fs/promises';
-import { Blob } from 'blob-polyfill';
 import { Mood, Genre } from '@audius/sdk';
 import { audiusSdk } from '@/components/ConnectAudius/ConnectSpotify/AudiusSDK';
 import fetch from 'node-fetch';
-
-// Add Blob polyfill for Node.js
-global.Blob = Blob;
 
 // --- Helper functions ---
 const validateTmpPath = (filepath) => {
@@ -103,7 +99,7 @@ handler.post(async (req, res) => {
 
     let coverArt, track;
     try {
-      // Validate track source
+      // Validate track source: don't allow both URL and file
       if (fields.trackUrl?.[0] && files.trackFile?.[0]) {
         if (files.trackFile[0].size > 0) {
           return res
@@ -136,7 +132,7 @@ handler.post(async (req, res) => {
         return res.status(400).json({ error: 'Track file or URL is required' });
       }
 
-      // Validate cover art source
+      // Validate cover art source: don't allow both URL and file
       if (fields.coverUrl?.[0] && files.coverArtFile?.[0]) {
         if (files.coverArtFile[0].size > 0) {
           return res
@@ -213,10 +209,9 @@ handler.post(async (req, res) => {
       // Upload to Audius
       const { trackId } = await audiusSdk.tracks.uploadTrack({
         userId: fields.userId[0].toString(),
-        trackFile: new Blob([trackFile.buffer], { type: trackFile.mimetype }),
-        coverArtFile: coverArtFile
-          ? new Blob([coverArtFile.buffer], { type: coverArtFile.mimetype })
-          : undefined,
+        // Pass file objects directly according to the SDK examples:
+        trackFile: trackFile,
+        coverArtFile: coverArtFile ? coverArtFile : undefined,
         metadata,
       });
 
@@ -247,8 +242,7 @@ handler.post(async (req, res) => {
   });
 });
 
-// GET method remains the same
-// GET method to fetch moods and genres
+// GET method: moods and genres retrieval
 handler.get(async (req, res) => {
   const { type } = req.query;
 
