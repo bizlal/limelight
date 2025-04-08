@@ -18,7 +18,7 @@ const validateEnum = (value, EnumType) => {
   const values = Object.values(EnumType);
   return typeof value === 'string' && values.includes(value)
     ? value
-    : EnumType.UNKNOWN;
+    : undefined;
 };
 
 const safeParse = (str) => {
@@ -87,8 +87,8 @@ handler.post(async (req, res) => {
     uploadDir: '/tmp',
     keepExtensions: true,
     maxFileSize: MAX_FILE_SIZES.track,
-    allowEmptyFiles: true, // Allow empty files but handle them manually
-    minFileSize: 0, // Disable minimum size check
+    allowEmptyFiles: true,
+    minFileSize: 0,
   });
 
   form.parse(req, async (err, fields, files) => {
@@ -99,7 +99,7 @@ handler.post(async (req, res) => {
 
     let coverArt, track;
     try {
-      // Validate track source: don't allow both URL and file
+      // Validate track source: do not allow both track URL and file simultaneously
       if (fields.trackUrl?.[0] && files.trackFile?.[0]) {
         if (files.trackFile[0].size > 0) {
           return res
@@ -108,17 +108,17 @@ handler.post(async (req, res) => {
         }
       }
 
-      // Track processing
+      // Process track file
       let trackFile;
       if (fields.trackUrl?.[0]) {
-        // Handle URL-based track
+        // Use remote URL to fetch file
         const { buffer, mimetype, filename } = await fetchRemoteFile(
           fields.trackUrl[0],
           MAX_FILE_SIZES.track
         );
         trackFile = { buffer, name: filename, mimetype };
       } else if (files.trackFile?.[0]) {
-        // Handle file upload
+        // Use uploaded file
         track = files.trackFile[0];
         if (track.size === 0) {
           return res.status(400).json({ error: 'Track file is empty' });
@@ -132,7 +132,7 @@ handler.post(async (req, res) => {
         return res.status(400).json({ error: 'Track file or URL is required' });
       }
 
-      // Validate cover art source: don't allow both URL and file
+      // Validate cover art source: do not allow both cover URL and file simultaneously
       if (fields.coverUrl?.[0] && files.coverArtFile?.[0]) {
         if (files.coverArtFile[0].size > 0) {
           return res
@@ -141,17 +141,15 @@ handler.post(async (req, res) => {
         }
       }
 
-      // Cover art processing
+      // Process cover art file
       let coverArtFile;
       if (fields.coverUrl?.[0]) {
-        // Handle URL-based cover
         const { buffer, mimetype, filename } = await fetchRemoteFile(
           fields.coverUrl[0],
           MAX_FILE_SIZES.cover
         );
         coverArtFile = { buffer, name: filename, mimetype };
       } else if (files.coverArtFile?.[0]) {
-        // Handle file upload
         coverArt = files.coverArtFile[0];
         if (coverArt.size === 0) {
           return res.status(400).json({ error: 'Cover art file is empty' });
@@ -163,7 +161,7 @@ handler.post(async (req, res) => {
         };
       }
 
-      // Validate MIME types
+      // Validate MIME types for files
       if (trackFile && !ALLOWED_MIME_TYPES.audio.includes(trackFile.mimetype)) {
         return res.status(400).json({ error: 'Invalid audio format' });
       }
@@ -175,11 +173,14 @@ handler.post(async (req, res) => {
         return res.status(400).json({ error: 'Invalid cover art format' });
       }
 
-      // Build metadata
+      // Build metadata: default to "All Genres" if none is provided
       const metadata = {
         title:
           fields.title?.toString().trim().substring(0, 100) || 'Untitled Track',
-        genre: validateEnum(fields.genre, Genre),
+        genre:
+          typeof fields.genre === 'string' && fields.genre.trim() !== ''
+            ? validateEnum(fields.genre, Genre) || 'All Genres'
+            : 'All Genres',
         mood: validateEnum(fields.mood, Mood),
         description:
           fields.description?.toString().trim().substring(0, 500) || '',
@@ -206,16 +207,23 @@ handler.post(async (req, res) => {
         license: fields.license?.toString().trim(),
       };
 
-      // Upload to Audius
+      // Debug: log inputs before upload
+      console.log('Inputs for uploadTrack:', {
+        userId: fields.userId[0].toString(),
+        trackFile,
+        coverArtFile,
+        metadata,
+      });
+
+      // Upload to Audius using file objects directly (no Blob wrapping)
       const { trackId } = await audiusSdk.tracks.uploadTrack({
         userId: fields.userId[0].toString(),
-        // Pass file objects directly according to the SDK examples:
         trackFile: trackFile,
         coverArtFile: coverArtFile ? coverArtFile : undefined,
         metadata,
       });
 
-      // Cleanup files
+      // Cleanup temporary files
       await Promise.all([
         coverArt?.filepath &&
           fsPromises.unlink(coverArt.filepath).catch(() => {}),
@@ -245,15 +253,12 @@ handler.post(async (req, res) => {
 // GET method: moods and genres retrieval
 handler.get(async (req, res) => {
   const { type } = req.query;
-
   if (type === 'moods') {
     return res.status(200).json({ moods: Object.values(Mood) });
   }
-
   if (type === 'genres') {
     return res.status(200).json({ genres: Object.values(Genre) });
   }
-
   return res
     .status(400)
     .json({ error: 'Invalid type. Use "moods" or "genres".' });
