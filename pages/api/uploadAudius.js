@@ -173,7 +173,7 @@ handler.post(async (req, res) => {
         return res.status(400).json({ error: 'Invalid cover art format' });
       }
 
-      // Build metadata: default to "All Genres" if none is provided
+      // Build metadata, converting genre and mood to enums.
       const metadata = {
         title:
           fields.title?.toString().trim().substring(0, 100) || 'Untitled Track',
@@ -215,13 +215,15 @@ handler.post(async (req, res) => {
         metadata,
       });
 
-      // Upload to Audius using file objects directly (no Blob wrapping)
-      const { trackId } = await audiusSdk.tracks.uploadTrack({
-        userId: fields.userId[0].toString(),
-        trackFile: trackFile,
-        coverArtFile: coverArtFile ? coverArtFile : undefined,
-        metadata,
-      });
+      // Upload to Audius using file objects directly.
+      // Destructure the response to get trackId, blockHash, and blockNumber.
+      const { trackId, blockHash, blockNumber } =
+        await audiusSdk.tracks.uploadTrack({
+          userId: fields.userId[0].toString(),
+          trackFile: trackFile,
+          coverArtFile: coverArtFile ? coverArtFile : undefined,
+          metadata,
+        });
 
       // Cleanup temporary files
       await Promise.all([
@@ -230,7 +232,7 @@ handler.post(async (req, res) => {
         track?.filepath && fsPromises.unlink(track.filepath).catch(() => {}),
       ]);
 
-      return res.status(200).json({ trackId });
+      return res.status(200).json({ trackId, blockHash, blockNumber });
     } catch (error) {
       // Cleanup files on error
       await Promise.all([
