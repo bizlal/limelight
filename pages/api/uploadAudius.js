@@ -14,13 +14,6 @@ const validateTmpPath = (filepath) => {
   return filepath;
 };
 
-const validateEnum = (value, EnumType) => {
-  const values = Object.values(EnumType);
-  return typeof value === 'string' && values.includes(value)
-    ? value
-    : undefined;
-};
-
 const safeParse = (str) => {
   try {
     return JSON.parse(str);
