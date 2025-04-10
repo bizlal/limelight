@@ -177,11 +177,8 @@ handler.post(async (req, res) => {
       const metadata = {
         title:
           fields.title?.toString().trim().substring(0, 100) || 'Untitled Track',
-        genre:
-          typeof fields.genre === 'string' && fields.genre.trim() !== ''
-            ? validateEnum(fields.genre, Genre) || 'All Genres'
-            : 'All Genres',
-        mood: validateEnum(fields.mood, Mood),
+        genre: Genre.HIP_HOP_RAP,
+        mood: Mood.AGGRESSIVE,
         description:
           fields.description?.toString().trim().substring(0, 500) || '',
         releaseDate: fields.releaseDate
