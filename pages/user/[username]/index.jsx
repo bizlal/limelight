@@ -71,36 +71,74 @@ export async function getStaticProps({ params }) {
     return { notFound: true };
   }
 
-  // Clean up fields & ensure no null/undefined
-  user.createdAt = user.createdAt
-    ? new Date(user.createdAt).toISOString()
-    : null;
-  user.updatedAt = user.updatedAt
-    ? new Date(user.updatedAt).toISOString()
-    : null;
-  user.username = user.username || '';
-  user.name = user.name || '';
-  user.userType = user.userType || '';
-  user.hometown = user.hometown || '';
-  user.profileImage = user.profileImage || '';
-  user.headerImage = user.headerImage || '';
-  user.genres = user.genres || [];
-  user.bio = user.bio || '';
-  user.total_following = user.total_following || 0;
-  user.total_followers = user.total_followers || 0;
-  user.links = user.links || {};
-  user.links.website = user.links.website || '';
-  user.links.spotify = user.links.spotify || '';
-  user.links.itunes = user.links.itunes || '';
-  user.links.instagram = user.links.instagram || '';
-  user.links.twitter = user.links.twitter || '';
-  user.links.tiktok = user.links.tiktok || '';
-  user.links.youtube = user.links.youtube || '';
-
-  user._id = String(user._id);
+  // Map the new structure
+  const mappedUser = {
+    _id: String(user._id.$oid || user._id),
+    migrated: user.migrated || false,
+    uid: user.uid || '',
+    fcmToken: user.fcmToken || '',
+    isCreator: user.isCreator || false,
+    createdAt: user.createdAt?.$date
+      ? new Date(user.createdAt.$date).toISOString()
+      : null,
+    updatedAt: user.updatedAt?.$date
+      ? new Date(user.updatedAt.$date).toISOString()
+      : null,
+    profile: {
+      image: user.profile?.image || '',
+      cover: user.profile?.cover || '',
+      name: user.profile?.name || '',
+      username: user.profile?.username || '',
+      bio: user.profile?.bio || '',
+      total_following: user.profile?.total_following || 0,
+      total_followers: user.profile?.total_followers || 0,
+      email_address: user.profile?.email_address || '',
+      links: {
+        website: user.profile?.links?.website || '',
+        spotify: user.profile?.links?.spotify || '',
+        itunes: user.profile?.links?.itunes || '',
+        instagram: user.profile?.links?.instagram || '',
+        twitter: user.profile?.links?.twitter || '',
+      },
+      web3: {
+        public_address: user.profile?.web3?.public_address || '',
+      },
+    },
+    location: {
+      city: user.location?.city || '',
+      state: user.location?.state || '',
+      country: user.location?.country || '',
+      latitude: user.location?.latitude || 0,
+      longitude: user.location?.longitude || 0,
+      geohash: user.location?.geohash || '',
+      country_code: user.location?.country_code || '',
+    },
+    metrics: {
+      loginMetrics: {
+        lastLogin: user.metrics?.loginMetrics?.lastLogin?.$date
+          ? new Date(user.metrics.loginMetrics.lastLogin.$date).toISOString()
+          : null,
+        totalLogins: user.metrics?.loginMetrics?.totalLogins || 0,
+        lastLoginPlatform: user.metrics?.loginMetrics?.lastLoginPlatform || '',
+      },
+      contentEngagement: {
+        totalPostsCreated:
+          user.metrics?.contentEngagement?.totalPostsCreated || 0,
+        totalCommentsMade:
+          user.metrics?.contentEngagement?.totalCommentsMade || 0,
+        totalLikesGiven: user.metrics?.contentEngagement?.totalLikesGiven || 0,
+      },
+      music_web_app: {
+        signInCount: user.metrics?.music_web_app?.signInCount || 0,
+      },
+      music_ios_app: {
+        openCount: user.metrics?.music_ios_app?.openCount || 0,
+      },
+    },
+  };
 
   return {
-    props: { user },
+    props: { user: mappedUser },
     // Revalidate after e.g. 10 minutes
     revalidate: 600,
   };
