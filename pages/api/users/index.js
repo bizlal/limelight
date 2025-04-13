@@ -5,55 +5,41 @@ import { getMongoDb } from '@/api-lib/mongodb';
 import { ncOpts } from '@/api-lib/nc';
 import { slugUsername } from '@/lib/user';
 import { validateBody } from '@/api-lib/middlewares';
-import { PrivyClient } from '@privy-io/server-auth';
+// Import Firebase Admin SDK (ensure that this file is set up to initialize the SDK)
+import admin from '@/lib/firebase-admin';
 
-const PRIVY_APP_ID = process.env.NEXT_PUBLIC_PRIVY_APP_ID;
-const PRIVY_APP_SECRET = process.env.PRIVY_APP_SECRET;
+const handler = nc(ncOpts);
 
-// Only create a Privy client if credentials exist
-const privyClient =
-  PRIVY_APP_ID && PRIVY_APP_SECRET
-    ? new PrivyClient(PRIVY_APP_ID, PRIVY_APP_SECRET)
-    : null;
-
-// Optional token verification
-async function getOptionalPrivyUid(req) {
-  if (!privyClient) {
-    // If you have no Privy credentials in environment, skip entirely
+/**
+ * Verify the Firebase ID token from the request and return the UID.
+ * Looks for the token in the Authorization header (Bearer token) or in cookies.
+ *
+ * @param {Object} req - The Next.js API request object.
+ * @returns {Promise<string|null>} The UID if verified, or null if not authenticated.
+ */
+async function getFirebaseUid(req) {
+  let token = req.headers.authorization?.replace(/^Bearer\s/, '');
+  if (!token && req.cookies && req.cookies['firebaseToken']) {
+    token = req.cookies['firebaseToken'];
+  }
+  if (!token) {
     return null;
   }
-
   try {
-    const headerAuthToken = req.headers.authorization?.replace(/^Bearer\s/, '');
-    const cookieAuthToken = req.cookies['privy-token'];
-    const token = cookieAuthToken || headerAuthToken;
-    if (!token) {
-      // No token provided
-      return null;
-    }
-
-    // Attempt to verify
-    const claims = await privyClient.verifyAuthToken(token);
-    if (!claims || !claims.userId?.includes('did:privy:')) {
-      // Token invalid
-      return null;
-    }
-
-    // e.g. "did:privy:XXXXXXXX" -> "XXXXXXXX"
-    return claims.userId.split(':')[2];
-  } catch (err) {
-    // If verification fails, treat as no token
-    console.error('Optional Privy verification failed:', err);
+    const decodedToken = await admin.auth().verifyIdToken(token);
+    return decodedToken.uid;
+  } catch (error) {
+    console.error('Firebase token verification failed:', error);
     return null;
   }
 }
-
-const handler = nc(ncOpts);
 
 handler.post(
   validateBody({
     type: 'object',
     properties: {
+      // Although the uid field remains for backward compatibility, it won't be used when Firebase Auth is enabled.
+      uid: { type: 'string' },
       username: { type: 'string', minLength: 4, maxLength: 20 },
       name: { type: 'string' },
       userType: { type: 'string' },
@@ -78,6 +64,7 @@ handler.post(
           tiktok: { type: 'string', nullable: true },
           youtube: { type: 'string', nullable: true },
         },
+        additionalProperties: false,
       },
     },
     additionalProperties: false,
@@ -87,21 +74,15 @@ handler.post(
     try {
       const db = await getMongoDb();
 
-      // 1) Attempt to get uid from an optional Privy token
-      const privyUid = await getOptionalPrivyUid(req);
-
-      // 2) Fall back to a 'uid' in the request body if no Privy token
-      //    or you can generate a random ID, or throw an error if none is found
-      const fallbackUid = req.body.uid; // e.g. from your auth system / client
-      const uid = privyUid || fallbackUid;
-
+      // Verify the Firebase ID token from the request.
+      const uid = await getFirebaseUid(req);
       if (!uid) {
-        return res.status(400).json({
-          error: 'No user ID found (no Privy token + no fallback uid in body).',
+        return res.status(401).json({
+          error: 'Not authenticated. Firebase token missing or invalid.',
         });
       }
 
-      // 3) Extract form fields
+      // Extract form fields from the request body
       let {
         username,
         name,
@@ -116,12 +97,13 @@ handler.post(
         links,
       } = req.body;
 
+      // Sanitize the username (e.g. convert to a slug format)
       username = slugUsername(username || '');
 
       const now = new Date();
 
-      // 4) Upsert the user doc by uid
-      const result = await db.collection('users').findOneAndUpdate(
+      // Upsert the user document in MongoDB using the Firebase UID as the key.
+      const result = await db.collection('users2').findOneAndUpdate(
         { uid },
         {
           $setOnInsert: {
