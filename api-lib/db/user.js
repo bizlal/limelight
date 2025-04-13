@@ -4,7 +4,7 @@ import normalizeEmail from 'validator/lib/normalizeEmail';
 
 export async function findUserWithEmailAndPassword(db, email, password) {
   email = normalizeEmail(email);
-  const user = await db.collection('users').findOne({ email });
+  const user = await db.collection('users2').findOne({ email });
   if (user && (await bcrypt.compare(password, user.password))) {
     return { ...user, password: undefined }; // filtered out password
   }
@@ -13,14 +13,14 @@ export async function findUserWithEmailAndPassword(db, email, password) {
 
 export async function findUserForAuth(db, userId) {
   return db
-    .collection('users')
+    .collection('users2')
     .findOne({ _id: new ObjectId(userId) }, { projection: { password: 0 } })
     .then((user) => user || null);
 }
 
 export async function findUserById(db, userId) {
   return db
-    .collection('users')
+    .collection('users2')
     .findOne({ _id: new ObjectId(userId) }, { projection: dbProjectionUsers() })
     .then((user) => user || null);
 }
@@ -35,7 +35,10 @@ export async function findUserByUid(db, userId) {
 export async function findUserByUsername(db, username) {
   const user = await db
     .collection('users2')
-    .findOne({ username }, { projection: dbProjectionUsers() });
+    .findOne(
+      { 'profile.username': username },
+      { projection: dbProjectionUsers() }
+    );
   return user || null;
 }
 
