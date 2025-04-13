@@ -1,52 +1,46 @@
-import { Button } from '@/components/Button';
-import { ButtonLink } from '@/components/Button/Button';
-import { Input } from '@/components/Input';
-import { Spacer, Wrapper } from '@/components/Layout';
-import { TextLink } from '@/components/Text';
-import { fetcher } from '@/lib/fetch';
-import { useCurrentUser } from '@/lib/user';
-import Link from 'next/link';
+import { useRef, useState, useEffect } from 'react';
+import firebase from '@/lib/firebaseClient';
 import { useRouter } from 'next/router';
-import { useCallback, useEffect, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
+import { Button } from '@/components/Button';
+import { Input } from '@/components/Input';
+import { Wrapper, Spacer } from '@/components/Layout';
 import styles from './Auth.module.css';
 
 const Login = () => {
   const emailRef = useRef();
   const passwordRef = useRef();
-
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
-  const { data: { user } = {}, mutate, isValidating } = useCurrentUser();
-  const router = useRouter();
   useEffect(() => {
-    if (isValidating) return;
-    if (user) router.replace('/feed');
-  }, [user, router, isValidating]);
-
-  const onSubmit = useCallback(
-    async (event) => {
-      setIsLoading(true);
-      event.preventDefault();
-      try {
-        const response = await fetcher('/api/auth', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            email: emailRef.current.value,
-            password: passwordRef.current.value,
-          }),
-        });
-        mutate({ user: response.user }, false);
-        toast.success('You have been logged in.');
-      } catch (e) {
-        toast.error('Incorrect email or password.');
-      } finally {
-        setIsLoading(false);
+    const unsubscribe = firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        router.replace('/feed');
       }
-    },
-    [mutate]
-  );
+    });
+    return () => unsubscribe();
+  }, [router]);
+
+  const onSubmit = async (event) => {
+    event.preventDefault();
+    setIsLoading(true);
+    try {
+      await firebase
+        .auth()
+        .signInWithEmailAndPassword(
+          emailRef.current.value,
+          passwordRef.current.value
+        );
+      toast.success('You have been logged in.');
+      router.push('/feed');
+    } catch (error) {
+      console.error(error);
+      toast.error('Incorrect email or password.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <Wrapper className={styles.root}>
@@ -82,20 +76,10 @@ const Login = () => {
           >
             Log in
           </Button>
-          <Spacer size={0.25} axis="vertical" />
-          <Link legacyBehavior href="/forget-password" passHref>
-            <ButtonLink type="success" size="large" variant="ghost">
-              Forget password
-            </ButtonLink>
-          </Link>
         </form>
       </div>
       <div className={styles.footer}>
-        <Link legacyBehavior href="/sign-up" passHref>
-          <TextLink color="link" variant="highlight">
-            Don&apos;t have an account? Sign Up
-          </TextLink>
-        </Link>
+        {/* You can add additional links (e.g. "Forget Password") here */}
       </div>
     </Wrapper>
   );

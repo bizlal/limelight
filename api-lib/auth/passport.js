@@ -1,16 +1,15 @@
-// File: /api-lib/auth/passport.js
 import passport from 'passport';
 import { Strategy as CustomStrategy } from 'passport-custom';
 import { getMongoDb } from '@/api-lib/mongodb';
 import admin from '@/lib/firebase-admin';
 import { findUserForAuth } from '@/api-lib/db';
 
-// Session-based authentication: serialize the user ID to store in session
+// Session-based authentication: store the MongoDB user _id in the session.
 passport.serializeUser((user, done) => {
   done(null, user._id);
 });
 
-// Deserialize the user from the session by fetching from the database
+// Deserialize the user from the session by fetching from the database.
 passport.deserializeUser((req, id, done) => {
   getMongoDb().then((db) => {
     findUserForAuth(db, id).then(
@@ -20,7 +19,7 @@ passport.deserializeUser((req, id, done) => {
   });
 });
 
-// Custom Firebase strategy
+// Custom Firebase strategy: verify the Firebase token and then fetch the user from the DB.
 passport.use(
   'firebase',
   new CustomStrategy(async (req, done) => {
@@ -35,14 +34,14 @@ passport.use(
         });
       }
 
-      // Verify the token using Firebase Admin SDK.
+      // Verify the token using the Firebase Admin SDK.
       const decodedToken = await admin.auth().verifyIdToken(token);
       const uid = decodedToken.uid;
       if (!uid) {
         return done(null, false, { message: 'Invalid Firebase token' });
       }
 
-      // Retrieve the user document from your database based on Firebase UID.
+      // Retrieve the user document from your database based on the Firebase UID.
       const db = await getMongoDb();
       const user = await findUserForAuth(db, uid);
       if (!user) {
