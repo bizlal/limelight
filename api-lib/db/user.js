@@ -34,7 +34,7 @@ export async function findUserByUid(db, userId) {
 
 export async function findUserByUsername(db, username) {
   const user = await db
-    .collection('users')
+    .collection('users2')
     .findOne({ username }, { projection: dbProjectionUsers() });
   return user || null;
 }

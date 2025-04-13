@@ -1,6 +1,7 @@
 // pages/api/audius.js
 import nc from 'next-connect';
 import { getMongoDb } from '@/api-lib/mongodb';
+import { audiusSdk } from '@/components/ConnectAudius/ConnectSpotify/AudiusSDK';
 
 const handler = nc();
 
@@ -21,6 +22,28 @@ handler.get(async (req, res) => {
     return res.status(200).json({ profile: result.profile });
   } catch (error) {
     console.error('Error in GET audius API:', error);
+    return res
+      .status(500)
+      .json({ error: error.message || 'Internal server error.' });
+  }
+});
+
+// GET: fetch Audius profile by handle
+handler.get('/handle', async (req, res) => {
+  try {
+    const { handle } = req.query;
+    if (!handle) {
+      return res.status(400).json({ error: 'Missing handle in query.' });
+    }
+
+    const profile = await audiusSdk.getProfileByHandle(handle);
+    if (!profile) {
+      return res.status(404).json({ error: 'Audius profile not found.' });
+    }
+
+    return res.status(200).json({ profile });
+  } catch (error) {
+    console.error('Error in GET audius API by handle:', error);
     return res
       .status(500)
       .json({ error: error.message || 'Internal server error.' });
