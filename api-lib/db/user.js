@@ -42,14 +42,14 @@ export async function findUserByUsername(db, username) {
 export async function findUserByEmail(db, email) {
   email = normalizeEmail(email);
   return db
-    .collection('users')
+    .collection('users2')
     .findOne({ email }, { projection: dbProjectionUsers() })
     .then((user) => user || null);
 }
 
 export async function updateUserById(db, id, data) {
   return db
-    .collection('users')
+    .collection('users2')
     .findOneAndUpdate(
       { _id: new ObjectId(id) },
       { $set: data },
@@ -60,7 +60,7 @@ export async function updateUserById(db, id, data) {
 
 export async function insertUser(
   db,
-  { username, name, userType, hometown, genres, originalPassword }
+  { username, name, userType, hometown, genres }
 ) {
   const user = {
     username,
