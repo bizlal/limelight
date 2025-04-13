@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback } from 'react';
 import { useRouter } from 'next/router';
-import * as firebase from '@/lib/firebase-admin.js';
+import firebase from '@/lib/firebaseClient';
 import toast from 'react-hot-toast';
 import { Button } from '@/components/Button';
 import { Input } from '@/components/Input';
