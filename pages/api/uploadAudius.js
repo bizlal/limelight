@@ -1,5 +1,5 @@
 // Import MongoDB client and ObjectId
-import { MongoClient, ObjectId } from 'mongodb';
+import { ObjectId } from 'mongodb';
 // Assuming you have a utility function to connect to MongoDB
 // e.g., in '@/lib/mongodb' or similar
 import { connectToDatabase } from '@/lib/mongodb'; // Adjust path as needed
@@ -19,15 +19,6 @@ const validateTmpPath = (filepath) => {
     throw new Error('Invalid file path');
   }
   return filepath;
-};
-
-const safeParse = (str) => {
-  // ... (implementation unchanged)
-  try {
-    return JSON.parse(str);
-  } catch {
-    return undefined;
-  }
 };
 
 const ALLOWED_MIME_TYPES = {
@@ -72,7 +63,7 @@ async function fetchRemoteFile(url, maxSize) {
 export const config = { api: { bodyParser: false } };
 
 const handler = nc({
-  onError: (err, req, res, next) => {
+  onError: (err, req, res) => {
     console.error('Handler Error:', err.stack);
     res.status(500).json({ error: `Something broke! ${err.message}` });
   },

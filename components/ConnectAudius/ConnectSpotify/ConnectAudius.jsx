@@ -46,9 +46,10 @@ export function ConnectAudius({ user }) {
       // We do this in a separate function to keep useEffect neat
       loadOAuth();
     }
-  }, [isLoading, audiusProfile]);
+  }, [isLoading, audiusProfile, loadOAuth]);
 
   // The function that sets up the Audius OAuth flow
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   async function loadOAuth() {
     // 1) Initialize
     audiusSdk.oauth.init({

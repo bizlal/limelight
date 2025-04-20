@@ -41,7 +41,7 @@ export default function SpotifyCallback() {
       .catch((err) => {
         console.error('Exchange error:', err?.response?.data || err);
       });
-  }, [code, error, didExchange, router]);
+  }, [code, error, didExchange, router, uid]);
 
   // Provide some UI feedback
   if (error) return <div>Error from Spotify: {error}</div>;
