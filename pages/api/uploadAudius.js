@@ -106,7 +106,6 @@ handler.use((req, res, next) => {
   next();
 });
 
-
 handler.post(async (req, res) => {
   if (!req.headers['content-type']?.startsWith('multipart/form-data')) {
     return res.status(415).json({ error: 'Unsupported media type' });
@@ -114,8 +113,10 @@ handler.post(async (req, res) => {
 
   // Ensure db connection exists from middleware
   if (!req.db) {
-      console.error('Database connection not found in request object');
-      return res.status(500).json({ error: 'Internal Server Error: DB connection missing' });
+    console.error('Database connection not found in request object');
+    return res
+      .status(500)
+      .json({ error: 'Internal Server Error: DB connection missing' });
   }
   const db = req.db; // Get db instance from request
 
@@ -155,7 +156,11 @@ handler.post(async (req, res) => {
           originalTrackUrl,
           MAX_FILE_SIZES.track
         );
-        trackFile = { buffer: fetchedFile.buffer, name: fetchedFile.filename, mimetype: fetchedFile.mimetype };
+        trackFile = {
+          buffer: fetchedFile.buffer,
+          name: fetchedFile.filename,
+          mimetype: fetchedFile.mimetype,
+        };
         trackFileSize = fetchedFile.buffer.length;
       } else if (files.trackFile?.[0]) {
         track = files.trackFile[0];
@@ -187,19 +192,26 @@ handler.post(async (req, res) => {
           originalCoverUrl,
           MAX_FILE_SIZES.cover
         );
-        coverArtFile = { buffer: fetchedCover.buffer, name: fetchedCover.filename, mimetype: fetchedCover.mimetype };
+        coverArtFile = {
+          buffer: fetchedCover.buffer,
+          name: fetchedCover.filename,
+          mimetype: fetchedCover.mimetype,
+        };
       } else if (files.coverArtFile?.[0]) {
         coverArt = files.coverArtFile[0];
         if (coverArt.size === 0) {
-           // Allow empty cover art file if coverUrl is not provided either
-           if (!originalCoverUrl) coverArtFile = undefined;
-           else return res.status(400).json({ error: 'Cover art file is empty' });
+          // Allow empty cover art file if coverUrl is not provided either
+          if (!originalCoverUrl) coverArtFile = undefined;
+          else
+            return res.status(400).json({ error: 'Cover art file is empty' });
         } else {
-           coverArtFile = {
-                buffer: await fsPromises.readFile(validateTmpPath(coverArt.filepath)),
-                name: pathModule.basename(coverArt.originalFilename || 'cover.jpg'),
-                mimetype: coverArt.mimetype,
-           };
+          coverArtFile = {
+            buffer: await fsPromises.readFile(
+              validateTmpPath(coverArt.filepath)
+            ),
+            name: pathModule.basename(coverArt.originalFilename || 'cover.jpg'),
+            mimetype: coverArt.mimetype,
+          };
         }
       }
       // else coverArtFile remains undefined - no cover art provided
@@ -208,22 +220,34 @@ handler.post(async (req, res) => {
       if (trackFile && !ALLOWED_MIME_TYPES.audio.includes(trackFile.mimetype)) {
         return res.status(400).json({ error: 'Invalid audio format' });
       }
-      if (coverArtFile && !ALLOWED_MIME_TYPES.image.includes(coverArtFile.mimetype)) {
+      if (
+        coverArtFile &&
+        !ALLOWED_MIME_TYPES.image.includes(coverArtFile.mimetype)
+      ) {
         return res.status(400).json({ error: 'Invalid cover art format' });
       }
 
       // --- Audius Upload ---
 
       // Build Audius metadata (ensure Genre/Mood are mapped correctly if needed later for DB)
-      const audiusGenre = fields.genre?.[0] ? Genre[fields.genre[0].toUpperCase().replace(/ /g, '_')] || Genre.ALL : Genre.ALL; // Example mapping
-      const audiusMood = fields.mood?.[0] ? Mood[fields.mood[0].toUpperCase()] || Mood.UPBEAT : Mood.UPBEAT; // Example mapping
-      const releaseDate = fields.releaseDate?.[0] ? new Date(fields.releaseDate[0]) : new Date();
+      const audiusGenre = fields.genre?.[0]
+        ? Genre[fields.genre[0].toUpperCase().replace(/ /g, '_')] || Genre.ALL
+        : Genre.ALL; // Example mapping
+      const audiusMood = fields.mood?.[0]
+        ? Mood[fields.mood[0].toUpperCase()] || Mood.UPBEAT
+        : Mood.UPBEAT; // Example mapping
+      const releaseDate = fields.releaseDate?.[0]
+        ? new Date(fields.releaseDate[0])
+        : new Date();
 
       const metadata = {
-        title: fields.title?.[0]?.toString().trim().substring(0, 100) || 'Untitled Track',
+        title:
+          fields.title?.[0]?.toString().trim().substring(0, 100) ||
+          'Untitled Track',
         genre: audiusGenre, // Use Audius SDK Enum
-        mood: audiusMood,   // Use Audius SDK Enum
-        description: fields.description?.[0]?.toString().trim().substring(0, 500) || '',
+        mood: audiusMood, // Use Audius SDK Enum
+        description:
+          fields.description?.[0]?.toString().trim().substring(0, 500) || '',
         releaseDate: releaseDate,
         tags: fields.tags?.[0]?.toString().trim().substring(0, 200) || '',
         // Add other Audius metadata fields as needed from 'fields'
@@ -232,18 +256,23 @@ handler.post(async (req, res) => {
 
       const userId = fields.userId?.[0]?.toString();
       if (!userId) {
-          return res.status(400).json({ error: 'User ID is required' });
+        return res.status(400).json({ error: 'User ID is required' });
       }
 
       console.log('Preparing to upload to Audius...');
-      const { trackId: audiusTrackId, blockHash, blockNumber } =
-        await audiusSdk.tracks.uploadTrack({
-          userId: userId,
-          trackFile: trackFile,
-          coverArtFile: coverArtFile, // Pass undefined if no cover art
-          metadata,
-        });
-      console.log(`Successfully uploaded to Audius. Track ID: ${audiusTrackId}`);
+      const {
+        trackId: audiusTrackId,
+        blockHash,
+        blockNumber,
+      } = await audiusSdk.tracks.uploadTrack({
+        userId: userId,
+        trackFile: trackFile,
+        coverArtFile: coverArtFile, // Pass undefined if no cover art
+        metadata,
+      });
+      console.log(
+        `Successfully uploaded to Audius. Track ID: ${audiusTrackId}`
+      );
 
       // --- MongoDB Insertion ---
 
@@ -283,20 +312,33 @@ handler.post(async (req, res) => {
           iswc: fields.iswc?.[0] || '',
         },
         is_active: true, // Default
-        release_metrics: { // Initialize metrics
-          total_likes: 0, total_dislikes: 0, total_streams: 0, total_skips: 0,
-          total_replays: 0, total_unique_listeners: 0, total_impressions: 0,
-          dsp_clicks: { spotify: 0, apple_music: 0 }, total_outreach: 0,
-          total_shares: 0, total_comments: 0, total_reposts: 0, total_saves: 0,
+        release_metrics: {
+          // Initialize metrics
+          total_likes: 0,
+          total_dislikes: 0,
+          total_streams: 0,
+          total_skips: 0,
+          total_replays: 0,
+          total_unique_listeners: 0,
+          total_impressions: 0,
+          dsp_clicks: { spotify: 0, apple_music: 0 },
+          total_outreach: 0,
+          total_shares: 0,
+          total_comments: 0,
+          total_reposts: 0,
+          total_saves: 0,
         },
-        tags: metadata.tags ? metadata.tags.split(',').map(tag => tag.trim()) : [],
+        tags: metadata.tags
+          ? metadata.tags.split(',').map((tag) => tag.trim())
+          : [],
         is_instrumental: fields.isInstrumental?.[0] === 'true' || false,
         is_explicit: fields.isExplicit?.[0] === 'true' || false,
         mood: fields.mood?.[0] || '', // Use string mood from form
         image_url: originalCoverUrl, // Use original URL if provided
         audio_url: originalTrackUrl, // Use original URL if provided
         video_url: fields.videoUrl?.[0] || null, // Add if you have video URL field
-        dsp_links: { // Add if you have these fields
+        dsp_links: {
+          // Add if you have these fields
           spotify: fields.spotifyUrl?.[0] || null,
           apple_music: fields.appleMusicUrl?.[0] || null,
         },
@@ -310,47 +352,75 @@ handler.post(async (req, res) => {
         date_created: new Date(), // Add creation timestamp for the DB record
       };
 
-      const insertResult = await db.collection('test_tracks').insertOne(mongoTrackData);
-      console.log(`Successfully inserted track into MongoDB. Inserted ID: ${insertResult.insertedId}`);
+      const insertResult = await db
+        .collection('test_tracks')
+        .insertOne(mongoTrackData);
+      console.log(
+        `Successfully inserted track into MongoDB. Inserted ID: ${insertResult.insertedId}`
+      );
 
       // --- Cleanup ---
       await Promise.all([
-        coverArt?.filepath && fsPromises.unlink(validateTmpPath(coverArt.filepath)).catch(console.error),
-        track?.filepath && fsPromises.unlink(validateTmpPath(track.filepath)).catch(console.error),
+        coverArt?.filepath &&
+          fsPromises
+            .unlink(validateTmpPath(coverArt.filepath))
+            .catch(console.error),
+        track?.filepath &&
+          fsPromises
+            .unlink(validateTmpPath(track.filepath))
+            .catch(console.error),
       ]);
 
       // --- Success Response ---
       return res.status(200).json({
-          audiusTrackId: audiusTrackId, // Keep Audius ID
-          mongoTrackId: insertResult.insertedId.toString(), // Return the new MongoDB ID
-          blockHash,
-          blockNumber,
-          message: 'Track uploaded to Audius and saved to database successfully.'
+        audiusTrackId: audiusTrackId, // Keep Audius ID
+        mongoTrackId: insertResult.insertedId.toString(), // Return the new MongoDB ID
+        blockHash,
+        blockNumber,
+        message: 'Track uploaded to Audius and saved to database successfully.',
       });
-
     } catch (error) {
       // --- Error Handling & Cleanup ---
       console.error('Upload or DB Insert error:', error);
 
       // Attempt cleanup even on error
       await Promise.all([
-        coverArt?.filepath && fsPromises.unlink(validateTmpPath(coverArt.filepath)).catch(console.error),
-        track?.filepath && fsPromises.unlink(validateTmpPath(track.filepath)).catch(console.error),
+        coverArt?.filepath &&
+          fsPromises
+            .unlink(validateTmpPath(coverArt.filepath))
+            .catch(console.error),
+        track?.filepath &&
+          fsPromises
+            .unlink(validateTmpPath(track.filepath))
+            .catch(console.error),
       ]);
 
       // Determine appropriate status code based on error type if possible
       let statusCode = 500;
-      if (error.message.includes('exceeds') || error.message.includes('Invalid')) {
-          statusCode = 400; // Bad request for size/format errors
-      } else if (error.message.includes('Audius') || error.message.includes('uploadTrack')) {
-          statusCode = 502; // Bad Gateway if Audius upload failed
-      } else if (error.message.includes('MongoDB') || error.message.includes('insertOne')) {
-          statusCode = 500; // Internal error for DB issues
+      if (
+        error.message.includes('exceeds') ||
+        error.message.includes('Invalid')
+      ) {
+        statusCode = 400; // Bad request for size/format errors
+      } else if (
+        error.message.includes('Audius') ||
+        error.message.includes('uploadTrack')
+      ) {
+        statusCode = 502; // Bad Gateway if Audius upload failed
+      } else if (
+        error.message.includes('MongoDB') ||
+        error.message.includes('insertOne')
+      ) {
+        statusCode = 500; // Internal error for DB issues
       }
 
       return res.status(statusCode).json({
-        error: process.env.NODE_ENV === 'development' ? error.message : 'Upload failed. Please check inputs or try again.',
-        details: process.env.NODE_ENV === 'development' ? error.stack : undefined,
+        error:
+          process.env.NODE_ENV === 'development'
+            ? error.message
+            : 'Upload failed. Please check inputs or try again.',
+        details:
+          process.env.NODE_ENV === 'development' ? error.stack : undefined,
       });
     }
   });

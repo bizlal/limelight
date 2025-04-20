@@ -2,9 +2,15 @@
  * HERO WRAPPER & BACKGROUND
  ********************************************************/
 @keyframes subtleGradientShift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 .heroWrapper {
@@ -103,11 +109,10 @@
 /* .button:hover defined via Framer Motion `whileHover` */
 /* Fallback CSS hover */
 .button:hover {
-   background: rgba(255, 255, 255, 0.9);
-   transform: translateY(-2px);
-   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+  background: rgba(255, 255, 255, 0.9);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
 }
-
 
 /********************************************************
  * STATS SECTION
@@ -180,8 +185,8 @@
   background: linear-gradient(
     100deg,
     rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 0.1) 50%, /* More subtle shimmer */
-    rgba(255, 255, 255, 0) 100%
+    rgba(255, 255, 255, 0.1) 50%,
+    /* More subtle shimmer */ rgba(255, 255, 255, 0) 100%
   );
   transform: skewX(-25deg);
   transition: left 0.7s cubic-bezier(0.23, 1, 0.32, 1); /* Slightly slower */
@@ -207,7 +212,6 @@
   transform: translateY(-6px) scale(1.02);
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.35);
 }
-
 
 /********************************************************
  * INFO SECTIONS
@@ -294,7 +298,6 @@
   margin-right: 0.5rem;
 }
 
-
 .distributionSection,
 .vestingSection,
 .examplesSection,
@@ -321,7 +324,7 @@
   margin: 1rem auto; /* Add vertical margin */
   overflow-x: auto;
   box-sizing: border-box;
-  background: rgba(0,0,0,0.1); /* Subtle background for chart area */
+  background: rgba(0, 0, 0, 0.1); /* Subtle background for chart area */
   border-radius: 8px;
   padding: 1rem 0.5rem;
 }
@@ -347,9 +350,12 @@
   font-size: clamp(0.85rem, 2.2vw, 0.95rem); /* Responsive */
 }
 
-.distributionTable th, .distributionTable td,
-.purchaseTable th, .purchaseTable td,
-.unlocksTable th, .unlocksTable td {
+.distributionTable th,
+.distributionTable td,
+.purchaseTable th,
+.purchaseTable td,
+.unlocksTable th,
+.unlocksTable td {
   padding: 0.85rem 1rem; /* Adjusted padding */
   text-align: left;
   border-bottom: 1px solid rgba(255, 255, 255, 0.15);
@@ -379,8 +385,8 @@
 .distributionTable td:nth-child(2), /* Align numbers if needed */
 .purchaseTable td:nth-child(2),
 .unlocksTable td:nth-child(1) {
-   /* text-align: right; */
-   /* font-family: monospace; */
+  /* text-align: right; */
+  /* font-family: monospace; */
 }
 
 .vestingInfo {
@@ -388,21 +394,21 @@
   font-size: clamp(0.9rem, 2.5vw, 1rem); /* Responsive */
   color: #d5d5d5; /* Brighter */
   line-height: 1.6;
-  background: rgba(0,0,0,0.15);
+  background: rgba(0, 0, 0, 0.15);
   padding: 1rem;
   border-radius: 6px;
 }
 
 .examplesSection p,
 .unlocksSection p {
-   margin-bottom: 1rem;
-   color: #e0e0e0;
+  margin-bottom: 1rem;
+  color: #e0e0e0;
 }
 
 .purchaseTable em,
 .distributionTable em {
-   font-size: 0.85em;
-   color: #bbb;
+  font-size: 0.85em;
+  color: #bbb;
 }
 
 /********************************************************
@@ -477,7 +483,6 @@
   transform: rotate(45deg); /* Example: Rotate + to x */
 /* } */
 
-
 .roadmapAnswer,
 .faqAnswer {
   /* Styles handled by Framer Motion animation props */
@@ -502,7 +507,6 @@
   text-align: center;
   font-size: 0.95rem;
 }
-
 
 /********************************************************
  * HEADLESS UI MENU (dark style) - No changes needed
@@ -586,61 +590,68 @@
 /* Responsive Adjustments */
 @media (max-width: 768px) {
   .title {
-     margin-bottom: 0.8rem;
+    margin-bottom: 0.8rem;
   }
   .subtitle {
-     margin-bottom: 2rem;
+    margin-bottom: 2rem;
   }
   .buttons {
-     margin-bottom: 3rem;
+    margin-bottom: 3rem;
   }
   .statsWrapper {
-     padding: 1.5rem;
-     margin: 2rem auto;
+    padding: 1.5rem;
+    margin: 2rem auto;
   }
   .statsContainer {
-     gap: 1rem 1.5rem; /* Adjust gap */
+    gap: 1rem 1.5rem; /* Adjust gap */
   }
   .infoSections {
-     gap: 2rem;
-     margin-top: 2rem;
+    gap: 2rem;
+    margin-top: 2rem;
   }
   .card {
-     padding: 1.5rem;
-     margin-bottom: 2rem;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
   }
-  .tokenTitle, .artistTokensTitle, .roadmapTitle, .faqTitle {
-     margin-bottom: 1rem;
-     padding-bottom: 0.4rem;
+  .tokenTitle,
+  .artistTokensTitle,
+  .roadmapTitle,
+  .faqTitle {
+    margin-bottom: 1rem;
+    padding-bottom: 0.4rem;
   }
-  .distributionTable th, .distributionTable td,
-  .purchaseTable th, .purchaseTable td,
-  .unlocksTable th, .unlocksTable td {
-     padding: 0.6rem 0.8rem;
+  .distributionTable th,
+  .distributionTable td,
+  .purchaseTable th,
+  .purchaseTable td,
+  .unlocksTable th,
+  .unlocksTable td {
+    padding: 0.6rem 0.8rem;
   }
-   .roadmapQuestion, .faqQuestion {
-     padding: 0.8rem 1rem;
-   }
-   .roadmapAnswer p, .faqAnswer p {
-     padding: 0 1rem;
-   }
+  .roadmapQuestion,
+  .faqQuestion {
+    padding: 0.8rem 1rem;
+  }
+  .roadmapAnswer p,
+  .faqAnswer p {
+    padding: 0 1rem;
+  }
 }
 
 @media (max-width: 480px) {
-   .heroInner {
-      padding-top: 4rem;
-   }
-   .statsContainer {
-      justify-content: center; /* Center items on small screens */
-   }
-   .statItem {
-      min-width: 100px;
-   }
-   .tokenBenefits {
-      grid-template-columns: 1fr; /* Stack benefits */
-   }
-   .chartWrapper {
-      padding: 0.5rem 0;
-   }
+  .heroInner {
+    padding-top: 4rem;
+  }
+  .statsContainer {
+    justify-content: center; /* Center items on small screens */
+  }
+  .statItem {
+    min-width: 100px;
+  }
+  .tokenBenefits {
+    grid-template-columns: 1fr; /* Stack benefits */
+  }
+  .chartWrapper {
+    padding: 0.5rem 0;
+  }
 }
-
