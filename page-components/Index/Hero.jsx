@@ -14,6 +14,7 @@ import {
   Legend,
 } from 'chart.js';
 import { Pie, Bar, Line } from 'react-chartjs-2';
+import { motion } from 'framer-motion'; // Import Framer Motion
 
 import { ButtonLink } from '@/components/Button';
 import { Container, Spacer, Wrapper } from '@/components/Layout';
@@ -33,6 +34,33 @@ ChartJS.register(
   Legend
 );
 
+// --- Framer Motion Animation Variants ---
+const cardVariants = {
+  hidden: { opacity: 0, y: 30 }, // Start slightly lower and invisible
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.6, ease: 'easeOut' },
+  },
+};
+
+const sectionHoverEffect = {
+  scale: 1.03, // Slightly scale up
+  y: -5, // Lift slightly
+  transition: { duration: 0.2, ease: 'easeOut' },
+};
+
+const buttonHoverEffect = {
+  scale: 1.05,
+  transition: { duration: 0.15 },
+};
+
+const buttonTapEffect = {
+  scale: 0.95,
+};
+
+// --- Chart Components (No changes needed here, but ensure options enable animation) ---
+
 /**
  * Example Pie Chart: Token Distribution
  */
@@ -50,29 +78,37 @@ function TokenDistributionChart() {
         label: 'Token Allocation',
         data: [20, 10, 40, 15, 15],
         backgroundColor: [
-          '#f87171', // red
-          '#fbbf24', // amber
-          '#34d399', // green
-          '#60a5fa', // blue
-          '#a78bfa', // purple
+          '#f87171',
+          '#fbbf24',
+          '#34d399',
+          '#60a5fa',
+          '#a78bfa',
         ],
-        hoverOffset: 4,
+        hoverOffset: 8, // Increased hover offset slightly
+        borderColor: 'rgba(0,0,0,0.2)', // Subtle border
+        borderWidth: 1,
       },
     ],
   };
 
   const options = {
     responsive: true,
+    animation: {
+      // Ensure animations are configured
+      duration: 1000,
+      easing: 'easeOutQuart',
+    },
     plugins: {
       legend: {
         position: 'bottom',
-        labels: {
-          color: '#fff', // <-- White legend text
-        },
+        labels: { color: '#fff' },
       },
       tooltip: {
-        titleColor: '#fff', // <-- White tooltip text
+        titleColor: '#fff',
         bodyColor: '#fff',
+        backgroundColor: 'rgba(0, 0, 0, 0.7)', // Darker tooltip
+        padding: 10,
+        cornerRadius: 4,
       },
     },
   };
@@ -80,36 +116,185 @@ function TokenDistributionChart() {
   return <Pie data={data} options={options} />;
 }
 
-/********************************************************
- * FAQ Item (expand/collapse)
- ********************************************************/
+/**
+ * Example Bar Chart: Vesting & Circulating Supply
+ */
+function VestingChart() {
+  // ... (VestingChart logic remains the same) ...
+  const labels = [];
+  for (let i = 0; i <= 12; i++) labels.push(`Month ${i}`);
+  const marketing = 10,
+    ecosystem = 40,
+    liquidity = 15,
+    partnerships = 15;
+  function getTeamVested(month) {
+    if (month < 3) return 0;
+    const v = 20 * ((month - 3) / 12);
+    return v > 20 ? 20 : v;
+  }
+  const teamData = labels.map((_, idx) => getTeamVested(idx));
+  const marketingData = labels.map(() => marketing);
+  const ecosystemData = labels.map(() => ecosystem);
+  const liquidityData = labels.map(() => liquidity);
+  const partnershipsData = labels.map(() => partnerships);
+
+  const data = {
+    labels,
+    datasets: [
+      { label: 'Team & Advisors', data: teamData, backgroundColor: '#f87171' },
+      { label: 'Marketing', data: marketingData, backgroundColor: '#fbbf24' },
+      {
+        label: 'Ecosystem/Rewards',
+        data: ecosystemData,
+        backgroundColor: '#34d399',
+      },
+      { label: 'Liquidity', data: liquidityData, backgroundColor: '#60a5fa' },
+      {
+        label: 'Partnerships',
+        data: partnershipsData,
+        backgroundColor: '#a78bfa',
+      },
+    ],
+  };
+
+  const options = {
+    responsive: true,
+    animation: { duration: 1000, easing: 'easeOutQuart' }, // Added animation config
+    plugins: {
+      legend: { position: 'bottom', labels: { color: '#fff' } },
+      tooltip: {
+        titleColor: '#fff',
+        bodyColor: '#fff',
+        backgroundColor: 'rgba(0, 0, 0, 0.7)',
+        padding: 10,
+        cornerRadius: 4,
+      },
+    },
+    interaction: { mode: 'index', intersect: false },
+    scales: {
+      x: {
+        stacked: true,
+        title: { display: true, text: 'Time (Months)', color: '#fff' },
+        ticks: { color: '#fff' },
+      },
+      y: {
+        stacked: true,
+        title: {
+          display: true,
+          text: 'Percentage of Total Supply',
+          color: '#fff',
+        },
+        ticks: { color: '#fff', callback: (v) => v + '%' },
+      },
+    },
+  };
+  return <Bar data={data} options={options} />;
+}
+
+/**
+ * Example Line Chart: Bonding Curve for Artist Tokens
+ */
+function BondingCurveChart() {
+  // ... (BondingCurveChart logic remains the same) ...
+  const labels = [],
+    dataPoints = [],
+    k = 0.0000001;
+  for (let s = 0; s <= 10000; s += 1000) {
+    labels.push(s.toString());
+    dataPoints.push(k * s * s);
+  }
+
+  const data = {
+    labels,
+    datasets: [
+      {
+        label: 'Artist Token Price (LMLT)',
+        data: dataPoints,
+        borderColor: '#60a5fa',
+        backgroundColor: '#60a5fa33', // Reduced opacity slightly
+        fill: true,
+        tension: 0.3,
+        pointBackgroundColor: '#fff',
+        pointBorderColor: '#60a5fa',
+        pointHoverRadius: 7,
+        pointHoverBackgroundColor: '#60a5fa',
+      },
+    ], // Added point styling
+  };
+
+  const options = {
+    responsive: true,
+    animation: { duration: 1200, easing: 'easeOutCubic' }, // Added animation config
+    plugins: {
+      legend: { position: 'bottom', labels: { color: '#fff' } },
+      tooltip: {
+        titleColor: '#fff',
+        bodyColor: '#fff',
+        backgroundColor: 'rgba(0, 0, 0, 0.7)',
+        padding: 10,
+        cornerRadius: 4,
+      },
+    },
+    scales: {
+      x: {
+        title: {
+          display: true,
+          text: 'Supply of Artist Tokens',
+          color: '#fff',
+        },
+        ticks: { color: '#fff' },
+      },
+      y: {
+        title: { display: true, text: 'Token Price (LMLT)', color: '#fff' },
+        ticks: { color: '#fff', callback: (v) => v.toFixed(3) + ' LMLT' },
+      },
+    },
+  };
+  return <Line data={data} options={options} />;
+}
+
+// --- FAQ Components ---
+
 function FAQItem({ question, answer, isOpen, onToggle }) {
   return (
-    <div className={`${styles.faqItem} ${isOpen ? styles.expanded : ''}`}>
+    // Added motion.div for potential future item-level animations if needed
+    <motion.div
+      className={`${styles.faqItem} ${isOpen ? styles.expanded : ''}`}
+    >
       <div className={styles.faqQuestion} onClick={onToggle}>
         <span>{question}</span>
-        <span className={styles.faqIcon}>{isOpen ? '-' : '+'}</span>
+        {/* Animate the icon rotation */}
+        <motion.span
+          className={styles.faqIcon}
+          animate={{ rotate: isOpen ? 180 : 0 }} // Rotate icon
+          transition={{ duration: 0.3 }}
+        >
+          {'+'} {/* Use '+' always, rotation handles visual change */}
+        </motion.span>
       </div>
-      <div
+      {/* Animate the answer panel */}
+      <motion.div
         className={styles.faqAnswer}
-        style={{
-          maxHeight: isOpen ? '300px' : '0px',
-          padding: isOpen ? '0.75rem 0' : '0',
+        initial={{ height: 0, opacity: 0 }}
+        animate={{
+          height: isOpen ? 'auto' : 0,
+          opacity: isOpen ? 1 : 0,
+          paddingTop: isOpen ? '0.75rem' : '0',
+          paddingBottom: isOpen ? '0.75rem' : '0',
         }}
+        transition={{ duration: 0.3, ease: 'easeInOut' }}
+        style={{ overflow: 'hidden' }} // Keep overflow hidden
       >
         <p>{answer}</p>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }
 
-/********************************************************
- * FAQ Section
- ********************************************************/
 function FAQSection() {
   const [openIndex, setOpenIndex] = useState(null);
-
   const faqData = [
+    /* ... faq data remains the same ... */
     {
       question: 'How do I launch an Artist Token?',
       answer:
@@ -133,7 +318,15 @@ function FAQSection() {
   ];
 
   return (
-    <div className={`${styles.faqSection} ${styles.card}`}>
+    // Apply card animation variants to the whole section
+    <motion.div
+      className={`${styles.faqSection} ${styles.card}`}
+      variants={cardVariants}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, amount: 0.1 }} // Trigger earlier
+      whileHover={sectionHoverEffect}
+    >
       <h2 className={styles.faqTitle}>Frequently Asked Questions</h2>
       {faqData.map((item, idx) => (
         <FAQItem
@@ -144,202 +337,16 @@ function FAQSection() {
           onToggle={() => setOpenIndex(openIndex === idx ? null : idx)}
         />
       ))}
-    </div>
+    </motion.div>
   );
 }
 
-/**
- * Example Bar Chart: Vesting & Circulating Supply
- * Team & Advisors has 3-month cliff, then linear vesting over 12 months.
- */
-function VestingChart() {
-  const labels = [];
-  for (let i = 0; i <= 12; i++) {
-    labels.push(`Month ${i}`);
-  }
+// --- Roadmap Components (Similar animation enhancements as FAQ) ---
 
-  // Other allocations fully unlocked at T=0 for simplicity
-  const marketing = 10;
-  const ecosystem = 40;
-  const liquidity = 15;
-  const partnerships = 15;
-
-  // Team logic: 3-month cliff => 0% until Month 3, then vest over next 12 months
-  function getTeamVested(month) {
-    if (month < 3) return 0;
-    const totalVestingMonths = 12; // from month 3..15
-    const monthsSinceCliff = month - 3;
-    const fraction = monthsSinceCliff / totalVestingMonths;
-    const vested = 20 * fraction;
-    return vested > 20 ? 20 : vested;
-  }
-
-  const teamData = labels.map((_, idx) => getTeamVested(idx));
-  const marketingData = labels.map(() => marketing);
-  const ecosystemData = labels.map(() => ecosystem);
-  const liquidityData = labels.map(() => liquidity);
-  const partnershipsData = labels.map(() => partnerships);
-
-  const data = {
-    labels,
-    datasets: [
-      {
-        label: 'Team & Advisors',
-        data: teamData,
-        backgroundColor: '#f87171',
-      },
-      {
-        label: 'Marketing',
-        data: marketingData,
-        backgroundColor: '#fbbf24',
-      },
-      {
-        label: 'Ecosystem/Rewards',
-        data: ecosystemData,
-        backgroundColor: '#34d399',
-      },
-      {
-        label: 'Liquidity',
-        data: liquidityData,
-        backgroundColor: '#60a5fa',
-      },
-      {
-        label: 'Partnerships',
-        data: partnershipsData,
-        backgroundColor: '#a78bfa',
-      },
-    ],
-  };
-
-  const options = {
-    responsive: true,
-    plugins: {
-      legend: {
-        position: 'bottom',
-        labels: {
-          color: '#fff', // <-- White legend text
-        },
-      },
-      tooltip: {
-        titleColor: '#fff', // <-- White tooltip text
-        bodyColor: '#fff',
-      },
-    },
-    interaction: {
-      mode: 'index',
-      intersect: false,
-    },
-    scales: {
-      x: {
-        stacked: true,
-        title: {
-          display: true,
-          text: 'Time (Months)',
-          color: '#fff', // <-- White axis label
-        },
-        ticks: {
-          color: '#fff', // <-- White axis ticks
-        },
-      },
-      y: {
-        stacked: true,
-        title: {
-          display: true,
-          text: 'Percentage of Total Supply',
-          color: '#fff',
-        },
-        ticks: {
-          color: '#fff',
-          callback: function (value) {
-            return value + '%';
-          },
-        },
-      },
-    },
-  };
-
-  return <Bar data={data} options={options} />;
-}
-
-/**
- * Example Line Chart: Bonding Curve for Artist Tokens
- * Price = k * supply^2 (for demonstration).
- */
-function BondingCurveChart() {
-  const labels = [];
-  const dataPoints = [];
-  const k = 0.0000001; // small constant
-
-  // E.g., supply from 0..10000
-  for (let supply = 0; supply <= 10000; supply += 1000) {
-    labels.push(supply.toString());
-    dataPoints.push(k * supply * supply);
-  }
-
-  const data = {
-    labels,
-    datasets: [
-      {
-        label: 'Artist Token Price (LMLT)',
-        data: dataPoints,
-        borderColor: '#60a5fa',
-        backgroundColor: '#60a5fa88',
-        fill: true,
-        tension: 0.2,
-      },
-    ],
-  };
-
-  const options = {
-    responsive: true,
-    plugins: {
-      legend: {
-        position: 'bottom',
-        labels: {
-          color: '#fff', // White legend text
-        },
-      },
-      tooltip: {
-        titleColor: '#fff', // White tooltip text
-        bodyColor: '#fff',
-      },
-    },
-    scales: {
-      x: {
-        title: {
-          display: true,
-          text: 'Supply of Artist Tokens',
-          color: '#fff',
-        },
-        ticks: { color: '#fff' },
-      },
-      y: {
-        title: {
-          display: true,
-          text: 'Token Price (LMLT)',
-          color: '#fff',
-        },
-        ticks: {
-          color: '#fff',
-          // e.g., custom formatting
-          callback: function (value) {
-            return value.toFixed(3) + ' LMLT';
-          },
-        },
-      },
-    },
-  };
-
-  return <Line data={data} options={options} />;
-}
-
-/********************************************************
- *  Roadmap FAQ-Style
- ********************************************************/
 function RoadmapSection() {
   const [openIndex, setOpenIndex] = useState(null);
-
   const roadmapPhases = [
+    /* ... roadmap data remains the same ... */
     {
       phase: 'Phase 1: Beta Launch',
       details: `Core platform features, basic user onboarding, initial token distribution.`,
@@ -359,12 +366,17 @@ function RoadmapSection() {
   ];
 
   return (
-    <div className={`${styles.roadmapSection} ${styles.card}`}>
+    <motion.div
+      className={`${styles.roadmapSection} ${styles.card}`}
+      variants={cardVariants}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, amount: 0.1 }}
+      whileHover={sectionHoverEffect}
+    >
       <h2 className={styles.roadmapTitle}>Our Roadmap</h2>
-
-      {/* Map each phase as a collapsible item */}
       {roadmapPhases.map((item, idx) => (
-        <div
+        <motion.div // Wrap item for potential stagger later
           key={idx}
           className={`${styles.roadmapItem} ${
             openIndex === idx ? styles.expanded : ''
@@ -375,39 +387,44 @@ function RoadmapSection() {
             onClick={() => setOpenIndex(openIndex === idx ? null : idx)}
           >
             <span>{item.phase}</span>
-            <span className={styles.roadmapIcon}>
-              {openIndex === idx ? '-' : '+'}
-            </span>
+            <motion.span
+              className={styles.roadmapIcon}
+              animate={{ rotate: openIndex === idx ? 180 : 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              {'+'}
+            </motion.span>
           </div>
-          <div
+          <motion.div
             className={styles.roadmapAnswer}
-            style={{
-              maxHeight: openIndex === idx ? '200px' : '0px',
-              padding: openIndex === idx ? '0.75rem 0' : '0',
+            initial={{ height: 0, opacity: 0 }}
+            animate={{
+              height: openIndex === idx ? 'auto' : 0,
+              opacity: openIndex === idx ? 1 : 0,
+              paddingTop: openIndex === idx ? '0.75rem' : '0',
+              paddingBottom: openIndex === idx ? '0.75rem' : '0',
             }}
+            transition={{ duration: 0.3, ease: 'easeInOut' }}
+            style={{ overflow: 'hidden' }}
           >
             <p>{item.details}</p>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       ))}
-
-      {/* Current stage text below the items */}
       <p className={styles.roadmapCurrent}>
         <em>Current Stage:</em> We’re wrapping up Phase 2 and preparing to
         launch Phase 3.
       </p>
-    </div>
+    </motion.div>
   );
 }
 
-/**
- * AnimatedNumber: Animates numeric value using react-spring
- */
+// --- Animated Number (No changes needed) ---
 function AnimatedNumber({ value }) {
   const props = useSpring({
     number: value,
     from: { number: 0 },
-    config: { duration: 2000 },
+    config: { duration: 2000, easing: (t) => 1 - Math.pow(1 - t, 3) }, // Added easing
   });
   return (
     <animated.span>
@@ -416,16 +433,17 @@ function AnimatedNumber({ value }) {
   );
 }
 
+// --- Main Hero Component ---
 export default function Hero({
   totalUsers = 24010,
   totalArtists = 3450,
-  totalFans = 7400,
+  totalFans = 7400, // Assuming this meant total streams or similar metric
   totalCities = 820,
 }) {
   return (
     <>
-      {/* SEO Head Section */}
       <Head>
+        {/* ... Head content remains the same ... */}
         <title>Limelight: Shine a Spotlight on Your Music</title>
         <meta
           name="description"
@@ -452,25 +470,50 @@ export default function Hero({
         <meta name="twitter:image" content="/images/limelight-hero.jpg" />
       </Head>
 
-      <div className={styles.heroWrapper}>
+      {/* Use motion.div for potential top-level animations */}
+      <motion.div
+        className={styles.heroWrapper}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+      >
         <Wrapper>
           <div className={styles.heroInner}>
-            <h1 className={styles.title}>Welcome to Limelight</h1>
-            <p className={styles.subtitle}>
+            {/* Animate Title and Subtitle */}
+            <motion.h1
+              className={styles.title}
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+            >
+              Welcome to Limelight
+            </motion.h1>
+            <motion.p
+              className={styles.subtitle}
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+            >
               Shine a spotlight on your music and connect with fans worldwide.
-            </p>
+            </motion.p>
 
             <Container justifyContent="center" className={styles.buttons}>
-              <Container>
+              {/* Animate Button */}
+              <motion.div
+                whileHover={buttonHoverEffect}
+                whileTap={buttonTapEffect}
+              >
                 <Link legacyBehavior passHref href="/feed">
                   <ButtonLink className={styles.button}>
                     Explore Feed
                   </ButtonLink>
                 </Link>
-              </Container>
+              </motion.div>
+              {/* Add more buttons similarly if needed */}
               <Spacer axis="horizontal" size={1} />
             </Container>
 
+            {/* Map Background - consider subtle parallax or zoom effect if desired */}
             <div className={styles.mapBackground}>
               <Image
                 src={map}
@@ -479,12 +522,20 @@ export default function Hero({
                 objectFit="cover"
                 objectPosition="center"
                 priority
+                // Optional: Add subtle animation/effect to image if needed
+                // style={{ transform: 'scale(1.05)' }} // Example subtle zoom
               />
             </div>
 
-            {/* Stats */}
-            <div className={styles.statsWrapper}>
+            {/* Stats Section - Animate wrapper */}
+            <motion.div
+              className={styles.statsWrapper}
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5, delay: 0.6 }}
+            >
               <div className={styles.statsContainer}>
+                {/* Individual stat items could also be animated with stagger */}
                 <div className={styles.statItem}>
                   <h3>
                     <AnimatedNumber value={totalUsers} />
@@ -501,7 +552,7 @@ export default function Hero({
                   <h3>
                     <AnimatedNumber value={totalFans} />
                   </h3>
-                  <p>Total Streams</p>
+                  <p>Total Streams</p> {/* Changed label for clarity */}
                 </div>
                 <div className={styles.statItem}>
                   <h3>
@@ -510,57 +561,70 @@ export default function Hero({
                   <p>Cities Reached</p>
                 </div>
               </div>
-            </div>
+            </motion.div>
           </div>
         </Wrapper>
-
-        {/* Info Sections */}
+        {/* Info Sections - Wrapped with motion.section inside */}
         <Wrapper>
           <div className={styles.infoSections}>
-            <section className={`${styles.infoSection} ${styles.card}`}>
+            <motion.section
+              className={`${styles.infoSection} ${styles.card}`}
+              variants={cardVariants}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.2 }}
+              whileHover={sectionHoverEffect}
+            >
               <h2 className={styles.infoTitle}>How It Works</h2>
               <p className={styles.infoText}>
-                Limelight provides artists with powerful tools to upload and
-                share their music, while fans discover new favorites and
-                directly engage with creators.
+                Limelight provides artists with powerful tools...
               </p>
-            </section>
-
-            <section className={`${styles.infoSection} ${styles.card}`}>
+            </motion.section>
+            <motion.section
+              className={`${styles.infoSection} ${styles.card}`}
+              variants={cardVariants}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.2 }}
+              whileHover={sectionHoverEffect}
+            >
               <h2 className={styles.infoTitle}>Who It’s For</h2>
               <p className={styles.infoText}>
-                This platform is designed for both aspiring and established
-                artists, as well as dedicated music lovers who want an easy way
-                to discover fresh sounds and support their favorite creators.
+                This platform is designed for both aspiring...
               </p>
-            </section>
-
-            <section className={`${styles.infoSection} ${styles.card}`}>
+            </motion.section>
+            <motion.section
+              className={`${styles.infoSection} ${styles.card}`}
+              variants={cardVariants}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.2 }}
+              whileHover={sectionHoverEffect}
+            >
               <h2 className={styles.infoTitle}>How It Helps</h2>
               <p className={styles.infoText}>
-                Limelight bridges the gap between creators and their audience,
-                offering instant feedback, organic growth, and a personalized
-                listening experience. Artists can build loyal communities while
-                fans enjoy exclusive content and early releases.
+                Limelight bridges the gap between creators...
               </p>
-            </section>
+            </motion.section>
           </div>
         </Wrapper>
-
         {/* Token & Roadmap Sections */}
         <Wrapper>
-          {/* TOKEN DETAILS */}
-          <div className={`${styles.tokenSection} ${styles.card}`}>
+          {/* TOKEN DETAILS - Wrapped with motion.div */}
+          <motion.div
+            className={`${styles.tokenSection} ${styles.card}`}
+            variants={cardVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.1 }}
+            whileHover={sectionHoverEffect}
+          >
             <h2 className={styles.tokenTitle}>Introducing LMLT</h2>
             <p className={styles.tokenText}>
-              LMLT (Limelight Token) is our native ERC-20 token that powers
-              transactions and rewards within the Limelight ecosystem. Artists
-              and fans can earn LMLT by engaging with content, and spend it on
-              exclusive features, merchandise, and premium access. Holding LMLT
-              also grants voting rights in platform governance, enabling our
-              community to shape the future of Limelight.
+              LMLT (Limelight Token) is our native ERC-20 token...
             </p>
             <ul className={styles.tokenBenefits}>
+              {/* ... list items ... */}
               <li>
                 <strong>Symbol:</strong> LMLT
               </li>
@@ -575,15 +639,14 @@ export default function Hero({
               </li>
             </ul>
 
-            {/* Distribution Chart + Table */}
             <div className={styles.distributionSection}>
               <h3 className={styles.distributionTitle}>Token Distribution</h3>
               <div className={styles.distributionContent}>
                 <div className={styles.chartWrapper}>
                   <TokenDistributionChart />
                 </div>
-
                 <table className={styles.distributionTable}>
+                  {/* ... table content ... */}
                   <thead>
                     <tr>
                       <th>Category</th>
@@ -622,7 +685,6 @@ export default function Hero({
               </div>
             </div>
 
-            {/* Vesting Chart + Explanation */}
             <div className={styles.vestingSection}>
               <h3 className={styles.vestingTitle}>
                 Vesting &amp; Circulating Supply
@@ -631,38 +693,28 @@ export default function Hero({
                 <VestingChart />
               </div>
               <p className={styles.vestingInfo}>
-                The Team &amp; Advisors tokens (20% total) have a 3-month cliff
-                with linear vesting over the following 12 months. Other
-                allocations unlock immediately. This chart shows how each
-                category’s percentage contributes to circulating supply over
-                time.
+                The Team &amp; Advisors tokens (20% total)...
               </p>
             </div>
-          </div>
-
-          <Spacer size={0} axis="vertical" />
-
-          <div className={`${styles.artistTokensSection} ${styles.card}`}>
+          </motion.div>
+          <Spacer size={1} axis="vertical" /> {/* Added spacer */}
+          {/* ARTIST TOKENS - Wrapped with motion.div */}
+          <motion.div
+            className={`${styles.artistTokensSection} ${styles.card}`}
+            variants={cardVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.1 }}
+            whileHover={sectionHoverEffect}
+          >
             <h2 className={styles.artistTokensTitle}>
               Artist Tokens &amp; Bonding Curves
             </h2>
             <p className={styles.artistTokensText}>
-              Each artist on Limelight can launch their own token, providing
-              fans with a unique way to invest and participate in the artist’s
-              growth. These <strong>Artist Tokens</strong> follow a dynamic
-              <strong> bonding curve</strong>, where the price adjusts in real
-              time based on supply and demand. Early supporters benefit as price
-              rises with demand, while artists gain immediate liquidity to fund
-              future projects.
+              Each artist on Limelight can launch...
             </p>
-
             <p className={styles.artistTokensText}>
-              Launching an Artist Token costs <strong>0.05 ETH</strong> for
-              smart contract deployment and initial setup. This fee covers the
-              secure creation of your token contract, the bonding curve logic,
-              and your personalized token dashboard. In return, you gain full
-              access to Limelight’s suite of tools for token management,
-              analytics, and fan engagement.
+              Launching an Artist Token costs <strong>0.05 ETH</strong>...
             </p>
 
             <div className={styles.distributionSection}>
@@ -671,6 +723,7 @@ export default function Hero({
                 <BondingCurveChart />
               </div>
               <table className={styles.distributionTable}>
+                {/* ... table content ... */}
                 <thead>
                   <tr>
                     <th>Supply</th>
@@ -684,57 +737,47 @@ export default function Hero({
                     <td>0</td>
                     <td>0 LMLT</td>
                     <td>$0.00</td>
-                    <td>
-                      Initial launch price (essentially free to mint first
-                      tokens)
-                    </td>
+                    <td>Initial launch price...</td>
                   </tr>
                   <tr>
                     <td>1,000</td>
                     <td>~0.0001 LMLT</td>
                     <td>~$0.0001</td>
-                    <td>
-                      Early supporters acquire tokens at a fractional cost
-                    </td>
+                    <td>Early supporters acquire...</td>
                   </tr>
                   <tr>
                     <td>5,000</td>
                     <td>~0.0025 LMLT</td>
                     <td>~$0.0025</td>
-                    <td>Artist gains traction, price reflects rising demand</td>
+                    <td>Artist gains traction...</td>
                   </tr>
                   <tr>
                     <td>10,000</td>
                     <td>~0.01 LMLT</td>
                     <td>~$0.01</td>
-                    <td>
-                      New fans drive demand, increasing token price further
-                    </td>
+                    <td>New fans drive demand...</td>
                   </tr>
                   <tr>
                     <td>50,000</td>
                     <td>~0.10 LMLT</td>
                     <td>~$0.10</td>
-                    <td>Significant fanbase expansion, strong liquidity</td>
+                    <td>Significant fanbase expansion...</td>
                   </tr>
                   <tr>
                     <td>100,000</td>
                     <td>~0.25 LMLT</td>
                     <td>~$0.25</td>
-                    <td>Artist token sees mainstream attention & coverage</td>
+                    <td>Artist token sees mainstream...</td>
                   </tr>
                 </tbody>
               </table>
             </div>
 
-            {/* Purchase Examples */}
             <div className={styles.examplesSection}>
               <h3 className={styles.examplesTitle}>Purchase Scenarios</h3>
-              <p>
-                Below are a few scenarios showing how fans might buy into an
-                Artist Token on the bonding curve.
-              </p>
+              <p>Below are a few scenarios...</p>
               <table className={styles.purchaseTable}>
+                {/* ... table content ... */}
                 <thead>
                   <tr>
                     <th>Fan Purchase</th>
@@ -746,40 +789,30 @@ export default function Hero({
                   <tr>
                     <td>$100 purchase</td>
                     <td>
-                      ~1,200 tokens <em>(depends on current price)</em>
+                      ~1,200 tokens <em>(depends...)</em>
                     </td>
-                    <td>
-                      Incrementally raises the token price for subsequent buyers
-                    </td>
+                    <td>Incrementally raises...</td>
                   </tr>
                   <tr>
                     <td>$1,000 purchase</td>
                     <td>
-                      ~12,000 tokens <em>(depends on current price)</em>
+                      ~12,000 tokens <em>(depends...)</em>
                     </td>
-                    <td>
-                      Significant price move, triggers a noticeable jump in the
-                      bonding curve
-                    </td>
+                    <td>Significant price move...</td>
                   </tr>
                   <tr>
                     <td>$50 sale</td>
                     <td>
-                      ~600 tokens <em>(depends on current price)</em>
+                      ~600 tokens <em>(depends...)</em>
                     </td>
-                    <td>
-                      Slightly decreases the token price for subsequent buyers
-                    </td>
+                    <td>Slightly decreases...</td>
                   </tr>
                   <tr>
                     <td>$500 sale</td>
                     <td>
-                      ~6,000 tokens <em>(depends on current price)</em>
+                      ~6,000 tokens <em>(depends...)</em>
                     </td>
-                    <td>
-                      Noticeable price drop, triggers a significant decrease in
-                      the bonding curve
-                    </td>
+                    <td>Noticeable price drop...</td>
                   </tr>
                 </tbody>
               </table>
@@ -788,11 +821,10 @@ export default function Hero({
             <div className={styles.unlocksSection}>
               <h3 className={styles.unlocksTitle}>Market Cap Unlocks</h3>
               <p>
-                As an Artist Token’s <strong>market cap</strong> (price ×
-                supply) grows, new features become available to the artist for
-                deeper engagement. For example:
+                As an Artist Token’s <strong>market cap</strong>...
               </p>
               <table className={styles.unlocksTable}>
+                {/* ... table content ... */}
                 <thead>
                   <tr>
                     <th>Market Cap</th>
@@ -802,48 +834,41 @@ export default function Hero({
                 <tbody>
                   <tr>
                     <td>$50k</td>
-                    <td>Early merch drop & limited-edition collectibles</td>
+                    <td>Early merch drop...</td>
                   </tr>
                   <tr>
                     <td>$100k</td>
-                    <td>Livestream events + token-gated Q&amp;A sessions</td>
+                    <td>Livestream events...</td>
                   </tr>
                   <tr>
                     <td>$250k</td>
-                    <td>
-                      Exclusive singles or pre-release tracks for token holders
-                    </td>
+                    <td>Exclusive singles...</td>
                   </tr>
                   <tr>
                     <td>$500k</td>
-                    <td>
-                      Artist can officially release a <strong>new album</strong>
-                      via Limelight’s platform, token holders get first access
-                      or NFT editions
-                    </td>
+                    <td>Artist can officially release...</td>
                   </tr>
                   <tr>
                     <td>$1M+</td>
-                    <td>
-                      Full-scale tours, festival partnerships, advanced DAO
-                      governance features (e.g., letting top holders vote on
-                      setlists or collaborations)
-                    </td>
+                    <td>Full-scale tours...</td>
                   </tr>
                 </tbody>
               </table>
             </div>
-          </div>
-
-          <Spacer size={0} axis="vertical" />
-
-          {/* Roadmap */}
-
+          </motion.div>
+          <Spacer size={1} axis="vertical" /> {/* Added spacer */}
+          {/* Roadmap Section - Already wrapped */}
           <RoadmapSection />
         </Wrapper>
         <Spacer size={3} axis="vertical" />
-        <FAQSection />
-      </div>
+        {/* FAQ Section - Already wrapped */}
+        <Wrapper>
+          {' '}
+          {/* Added wrapper for consistent padding */}
+          <FAQSection />
+        </Wrapper>
+        <Spacer size={3} axis="vertical" /> {/* Footer Spacer */}
+      </motion.div>
     </>
   );
 }

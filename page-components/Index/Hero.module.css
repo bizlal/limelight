@@ -1,6 +1,12 @@
 /********************************************************
- *  HERO WRAPPER & BACKGROUND
+ * HERO WRAPPER & BACKGROUND
  ********************************************************/
+@keyframes subtleGradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
 .heroWrapper {
   background: linear-gradient(
     161deg,
@@ -16,221 +22,308 @@
   );
   position: relative;
   min-height: 100vh;
+  overflow-x: hidden; /* Prevent horizontal scrollbars from animations */
+  /* Subtle background animation - optional */
+  background-size: 250% 250%; /* Larger size for movement */
+  animation: subtleGradientShift 45s ease infinite; /* Slow animation */
 }
 
 .heroWrapper::before {
   content: '';
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.3); /* Dark overlay */
-  z-index: 2;
+  background: rgba(0, 0, 0, 0.35); /* Slightly darker overlay */
+  z-index: 1; /* Lower z-index */
 }
 
+/* Ensure direct children of heroWrapper are above the overlay */
 .heroWrapper > * {
   position: relative;
-  z-index: 2;
+  z-index: 2; /* Above overlay */
 }
 
 .heroInner {
   text-align: center;
-  margin-bottom: 3rem;
-  padding-top: 4rem;
+  margin-bottom: 4rem; /* Increased spacing */
+  padding-top: 5rem; /* Increased padding */
 }
 
 .mapBackground {
   position: absolute;
   inset: 0;
-  z-index: -1;
+  z-index: 0; /* Behind overlay and content */
   min-height: 40vh;
+  opacity: 0.6; /* Make map slightly less prominent */
+  /* Consider a subtle parallax effect here if desired */
 }
 
 .title {
-  font-size: 3.4rem;
+  font-size: clamp(2.5rem, 6vw, 3.8rem); /* Responsive font size */
   font-weight: 800;
   margin: 0 0 1rem;
   color: #fff;
-  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.7);
+  text-shadow: 0 3px 8px rgba(0, 0, 0, 0.7);
+  /* Optional subtle text gradient */
+  /* background: linear-gradient(to right, #ffffff, #e8e8e8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-fill-color: transparent; */
 }
 
 .subtitle {
-  font-size: 1.4rem;
+  font-size: clamp(1.1rem, 3vw, 1.4rem); /* Responsive font size */
   font-weight: 400;
-  max-width: 650px;
-  margin: 0 auto 2rem;
-  color: #fefefe;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+  max-width: 700px; /* Slightly wider */
+  margin: 0 auto 2.5rem; /* Increased bottom margin */
+  color: #f5f5f5; /* Slightly brighter */
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+  line-height: 1.5;
 }
 
 .buttons {
-  margin-bottom: 3rem;
+  margin-bottom: 4rem; /* Increased spacing */
 }
 
 .button {
   font-size: 1rem;
   font-weight: 600;
-  padding: 0.75rem 1.5rem;
+  padding: 0.85rem 1.8rem; /* Slightly larger padding */
   background: #fff;
-  color: #000;
-  border-radius: 4px;
+  color: #333; /* Darker text for better contrast */
+  border-radius: 6px; /* Slightly more rounded */
   text-decoration: none;
-  transition: background 0.2s ease;
+  border: none; /* Remove default border */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  /* Keep transition for non-Framer Motion hover fallback */
+  transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
 }
 
+/* Remove default Framer Motion hover/tap if using CSS :hover */
+/* .button:hover defined via Framer Motion `whileHover` */
+/* Fallback CSS hover */
 .button:hover {
-  background: rgba(255, 255, 255, 0.85);
+   background: rgba(255, 255, 255, 0.9);
+   transform: translateY(-2px);
+   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
 }
+
 
 /********************************************************
- *  STATS SECTION
+ * STATS SECTION
  ********************************************************/
 .statsWrapper {
-  margin: 2rem auto;
-  padding: 2rem;
-  background-color: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(8px);
-  border-radius: 12px;
-  max-width: 900px;
+  margin: 3rem auto; /* Increased margin */
+  padding: 2.5rem; /* Increased padding */
+  background-color: rgba(0, 0, 0, 0.45); /* Slightly darker */
+  backdrop-filter: blur(10px); /* Increased blur */
+  border-radius: 16px; /* More rounded */
+  max-width: 950px; /* Slightly wider */
   border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35); /* Stronger shadow */
 }
 
 .statsContainer {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
-  gap: 2rem;
+  justify-content: space-around; /* Better distribution */
+  gap: 1.5rem; /* Adjusted gap */
 }
 
 .statItem {
   text-align: center;
+  min-width: 120px; /* Ensure items don't get too squished */
 }
 
 .statItem h3 {
-  font-size: 2.2rem;
+  font-size: clamp(1.8rem, 4vw, 2.4rem); /* Responsive font size */
   font-weight: 700;
   margin: 0;
   color: #fff;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.6);
 }
 
 .statItem p {
-  margin: 0.25rem 0 0;
-  font-size: 1.05rem;
-  color: #f0f0f0;
+  margin: 0.3rem 0 0;
+  font-size: clamp(0.9rem, 2.5vw, 1.05rem); /* Responsive font size */
+  color: #e0e0e0; /* Slightly brighter */
 }
 
 /********************************************************
- *  REUSABLE FROSTED-GLASS CARD
+ * REUSABLE FROSTED-GLASS CARD
  ********************************************************/
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
+/* fadeInUp animation removed - handled by Framer Motion */
 
 .card {
-  background-color: rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(8px);
-  border-radius: 12px;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  padding: 2.5rem;
-  margin-bottom: 2rem;
+  background-color: rgba(255, 255, 255, 0.1); /* Slightly less opaque */
+  backdrop-filter: blur(12px); /* Increased blur */
+  border-radius: 16px; /* More rounded */
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3); /* Enhanced shadow */
+  border: 1px solid rgba(255, 255, 255, 0.2); /* Slightly less visible border */
+  padding: clamp(1.5rem, 5vw, 2.5rem); /* Responsive padding */
+  margin-bottom: 2.5rem; /* Increased spacing */
   color: #fff;
-  animation: fadeInUp 0.4s ease forwards;
+  position: relative; /* For shimmer */
+  overflow: hidden; /* For shimmer */
+  /* Keep transition for CSS hover fallback */
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
+/* Shimmer Effect */
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -120%; /* Start further off-screen */
+  width: 80%;
+  height: 100%;
+  background: linear-gradient(
+    100deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.1) 50%, /* More subtle shimmer */
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: skewX(-25deg);
+  transition: left 0.7s cubic-bezier(0.23, 1, 0.32, 1); /* Slightly slower */
+  z-index: 1;
+  opacity: 0;
+  pointer-events: none; /* Allow clicks through shimmer */
+}
+
+/* Apply shimmer on hover (works alongside Framer Motion hover) */
+.card:hover::before {
+  left: 120%;
+  opacity: 1;
+}
+
+/* Ensure content is above shimmer */
+.card > * {
+  position: relative;
+  z-index: 2;
+}
+
+/* CSS Hover fallback (Framer Motion `whileHover` is primary) */
+.card:hover {
+  transform: translateY(-6px) scale(1.02);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.35);
+}
+
+
 /********************************************************
- *  INFO SECTIONS
+ * INFO SECTIONS
  ********************************************************/
 .infoSections {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 3rem;
-  margin-top: 2rem;
+  /* Change to multiple columns on larger screens */
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2.5rem; /* Adjusted gap */
+  margin-top: 3rem; /* Increased spacing */
 }
 
+/* .infoSection now uses .card styles, specific animation removed */
 .infoSection {
-  background-color: rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(8px);
-  border-radius: 12px;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  padding: 2.5rem;
-  margin-bottom: 2rem;
-  color: #fff;
-  animation: fadeInUp 0.4s ease forwards;
+  /* Inherits .card styles */
 }
 
 .infoTitle {
-  font-size: 1.8rem;
+  font-size: clamp(1.5rem, 4vw, 1.8rem); /* Responsive */
   font-weight: 700;
   margin-bottom: 1rem;
   color: #fff;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+  /* Optional gradient */
+  /* background: linear-gradient(to right, #ffffff, #dddddd);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text; text-fill-color: transparent; */
 }
 
 .infoText {
-  font-size: 1.15rem;
-  line-height: 1.6;
+  font-size: clamp(1rem, 2.5vw, 1.1rem); /* Responsive */
+  line-height: 1.65; /* Improved readability */
   margin: 0;
   color: #f0f0f0;
 }
 
 /********************************************************
- *  TOKEN & VESTING SECTIONS
+ * TOKEN & VESTING SECTIONS
  ********************************************************/
-.tokenSection {
-  background: rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(8px);
-  padding: 2.5rem;
-  border-radius: 12px;
-  margin-top: 2rem;
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
-  animation: fadeInUp 0.4s ease forwards;
-  color: #fff;
+/* .tokenSection & .artistTokensSection use .card styles */
+.tokenSection,
+.artistTokensSection {
+  /* Inherits .card styles */
+  margin-top: 3rem; /* Ensure consistent spacing */
 }
 
-.tokenTitle {
-  font-size: 1.6rem;
+.tokenTitle,
+.artistTokensTitle {
+  font-size: clamp(1.4rem, 4vw, 1.7rem); /* Responsive */
   font-weight: 700;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem; /* Increased spacing */
   color: #fff;
-  text-shadow: 0 2px 3px rgba(0, 0, 0, 0.5);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2); /* Add subtle separator */
+  padding-bottom: 0.5rem;
 }
 
-.tokenText {
+.tokenText,
+.artistTokensText {
   color: #f0f0f0;
-  line-height: 1.6;
-  margin-bottom: 1.25rem;
+  line-height: 1.7; /* Improved readability */
+  margin-bottom: 1.5rem;
+  font-size: clamp(1rem, 2.5vw, 1.05rem); /* Responsive */
 }
 
-.distributionSection {
-  margin-top: 2rem;
-  padding-top: 2rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.3);
+.tokenBenefits {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 1.5rem;
+  display: grid; /* Use grid for alignment */
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 0.75rem;
 }
 
-.distributionTitle {
-  font-size: 1.4rem;
+.tokenBenefits li {
+  background: rgba(0, 0, 0, 0.2);
+  padding: 0.5rem 0.75rem;
+  border-radius: 4px;
+  font-size: 0.95rem;
+}
+
+.tokenBenefits li strong {
+  color: #bdbdbd; /* Slightly dimmer label */
+  margin-right: 0.5rem;
+}
+
+
+.distributionSection,
+.vestingSection,
+.examplesSection,
+.unlocksSection {
+  margin-top: 2.5rem; /* Consistent spacing */
+  padding-top: 1.5rem; /* Consistent spacing */
+  border-top: 1px solid rgba(255, 255, 255, 0.2); /* Lighter border */
+}
+
+.distributionTitle,
+.vestingTitle,
+.examplesTitle,
+.unlocksTitle {
+  font-size: clamp(1.2rem, 3.5vw, 1.4rem); /* Responsive */
   font-weight: 700;
-  margin-bottom: 1rem;
+  margin-bottom: 1.25rem;
   color: #fff;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
 }
 
 .chartWrapper {
   width: 100%;
-  max-width: 600px;
-  margin: 0 auto;
+  max-width: 650px; /* Slightly larger */
+  margin: 1rem auto; /* Add vertical margin */
   overflow-x: auto;
   box-sizing: border-box;
+  background: rgba(0,0,0,0.1); /* Subtle background for chart area */
+  border-radius: 8px;
+  padding: 1rem 0.5rem;
 }
 
 .chartWrapper canvas {
@@ -239,296 +332,180 @@
   height: auto !important;
 }
 
-.distributionTable {
-  width: 100%;
-  border-collapse: collapse;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background-color: rgba(0, 0, 0, 0.2);
-  margin: 0 auto;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-}
-
-.distributionTable th,
-.distributionTable td {
-  padding: 0.75rem 1rem;
-  text-align: left;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-  color: #fefefe;
-}
-
-.distributionTable thead tr {
-  background-color: rgba(255, 255, 255, 0.1);
-  font-weight: 700;
-}
-
-.distributionTable tbody tr:hover {
-  background-color: rgba(255, 255, 255, 0.07);
-}
-
-.vestingSection {
-  margin-top: 3rem;
-  padding-top: 2rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.3);
-}
-
-.vestingTitle {
-  font-size: 1.4rem;
-  font-weight: 700;
-  color: #fff;
-  margin-bottom: 1rem;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
-}
-
-.vestingInfo {
-  margin-top: 1rem;
-  font-size: 1rem;
-  color: #ddd;
-  line-height: 1.5;
-}
-
-.artistTokensSection {
-  background: rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(8px);
-  padding: 2.5rem;
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
-  animation: fadeInUp 0.4s ease forwards;
-  color: #fff;
-}
-
-.artistTokensTitle {
-  font-size: 1.6rem;
-  font-weight: 700;
-  margin-bottom: 1rem;
-  color: #fff;
-  text-shadow: 0 2px 3px rgba(0, 0, 0, 0.5);
-}
-
-.artistTokensText {
-  color: #f0f0f0;
-  line-height: 1.6;
-  margin-bottom: 1.25rem;
-}
-
-.examplesSection {
-  margin-top: 2rem;
-}
-
-.examplesTitle {
-  font-size: 1.3rem;
-  font-weight: 700;
-  margin-bottom: 1rem;
-  color: #fff;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
-}
-
-.purchaseTable {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 0 auto;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background-color: rgba(0, 0, 0, 0.2);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-}
-
-.purchaseTable th,
-.purchaseTable td {
-  padding: 0.75rem 1rem;
-  text-align: left;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-  color: #fefefe;
-}
-
-.purchaseTable thead tr {
-  background-color: rgba(255, 255, 255, 0.1);
-  font-weight: 700;
-}
-
-.purchaseTable tbody tr:hover {
-  background-color: rgba(255, 255, 255, 0.07);
-}
-
-.unlocksSection {
-  margin-top: 2rem;
-}
-
-.unlocksTitle {
-  font-size: 1.3rem;
-  font-weight: 700;
-  margin-bottom: 1rem;
-  color: #fff;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
-}
-
+/* Common Table Styles */
+.distributionTable,
+.purchaseTable,
 .unlocksTable {
   width: 100%;
   border-collapse: collapse;
-  margin: 0 auto;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background-color: rgba(0, 0, 0, 0.2);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.15); /* Lighter border */
+  background-color: rgba(0, 0, 0, 0.25); /* Slightly darker */
+  margin: 1rem auto 0; /* Add top margin */
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+  border-radius: 8px; /* Rounded corners for table */
+  overflow: hidden; /* Clip corners */
+  font-size: clamp(0.85rem, 2.2vw, 0.95rem); /* Responsive */
 }
 
-.unlocksTable th,
-.unlocksTable td {
-  padding: 0.75rem 1rem;
+.distributionTable th, .distributionTable td,
+.purchaseTable th, .purchaseTable td,
+.unlocksTable th, .unlocksTable td {
+  padding: 0.85rem 1rem; /* Adjusted padding */
   text-align: left;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-  color: #fefefe;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  color: #f0f0f0; /* Brighter text */
 }
 
+.distributionTable thead tr,
+.purchaseTable thead tr,
 .unlocksTable thead tr {
-  background-color: rgba(255, 255, 255, 0.1);
-  font-weight: 700;
+  background-color: rgba(255, 255, 255, 0.08); /* Lighter header */
+  font-weight: 600; /* Slightly less bold */
+  color: #fff;
 }
 
+.distributionTable tbody tr:last-child td,
+.purchaseTable tbody tr:last-child td,
+.unlocksTable tbody tr:last-child td {
+  border-bottom: none; /* Remove last border */
+}
+
+.distributionTable tbody tr:hover,
+.purchaseTable tbody tr:hover,
 .unlocksTable tbody tr:hover {
-  background-color: rgba(255, 255, 255, 0.07);
+  background-color: rgba(255, 255, 255, 0.05); /* More subtle hover */
+}
+
+.distributionTable td:nth-child(2), /* Align numbers if needed */
+.purchaseTable td:nth-child(2),
+.unlocksTable td:nth-child(1) {
+   /* text-align: right; */
+   /* font-family: monospace; */
+}
+
+.vestingInfo {
+  margin-top: 1.5rem;
+  font-size: clamp(0.9rem, 2.5vw, 1rem); /* Responsive */
+  color: #d5d5d5; /* Brighter */
+  line-height: 1.6;
+  background: rgba(0,0,0,0.15);
+  padding: 1rem;
+  border-radius: 6px;
+}
+
+.examplesSection p,
+.unlocksSection p {
+   margin-bottom: 1rem;
+   color: #e0e0e0;
+}
+
+.purchaseTable em,
+.distributionTable em {
+   font-size: 0.85em;
+   color: #bbb;
 }
 
 /********************************************************
- *  ROADMAP & FAQ (HEADLESS UI DISCLOSURES)
+ * ROADMAP & FAQ
  ********************************************************/
-.roadmapSection {
-  background: rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(8px);
-  padding: 2.5rem;
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
-  animation: fadeInUp 0.4s ease forwards;
-  color: #fff;
-  margin-bottom: 2rem;
-}
-
-.roadmapTitle {
-  font-size: 1.6rem;
-  font-weight: 700;
-  margin-bottom: 1rem;
-  color: #fff;
-  text-shadow: 0 2px 3px rgba(0, 0, 0, 0.5);
-}
-
-.roadmapItem {
-  background: rgba(255, 255, 255, 0.08);
-  border-radius: 8px;
-  margin-bottom: 1rem;
-  overflow: hidden;
-  transition: background 0.3s;
-}
-
-.roadmapItem.expanded {
-  background: rgba(255, 255, 255, 0.12);
-}
-
-.roadmapQuestion {
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.75rem 1rem;
-  font-weight: 600;
-  transition: background 0.2s ease;
-  color: #fff;
-}
-
-.roadmapQuestion:hover {
-  background: rgba(255, 255, 255, 0.1);
-}
-
-.roadmapIcon {
-  font-size: 1.2rem;
-  margin-left: 1rem;
-}
-
-.roadmapAnswer {
-  overflow: hidden;
-  transition: max-height 0.3s ease, padding 0.3s ease;
-  max-height: 0;
-}
-
-.roadmapAnswer p {
-  margin: 0;
-  color: #eee;
-  font-size: 0.95rem;
-  padding: 0 1rem;
-  line-height: 1.5;
-}
-
-.roadmapCurrent {
-  margin-top: 1rem;
-  font-style: italic;
-  color: #ccc;
-}
-
+/* .roadmapSection & .faqSection use .card styles */
+.roadmapSection,
 .faqSection {
-  background-color: rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(8px);
-  border-radius: 12px;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  animation: fadeInUp 0.4s ease forwards;
-  color: #fff;
-  padding: 2.5rem;
-  margin-bottom: 2rem;
+  /* Inherits .card styles */
+  padding: clamp(1.5rem, 5vw, 2.5rem); /* Responsive padding */
 }
 
+.roadmapTitle,
 .faqTitle {
-  font-size: 1.6rem;
+  font-size: clamp(1.4rem, 4vw, 1.7rem); /* Responsive */
   font-weight: 700;
   margin-bottom: 1.5rem;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  padding-bottom: 0.5rem;
 }
 
+.roadmapItem,
 .faqItem {
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.06); /* More subtle */
   border-radius: 8px;
-  margin-bottom: 1rem;
-  overflow: hidden;
+  margin-bottom: 0.75rem; /* Reduced spacing */
+  overflow: hidden; /* Keep for animation */
+  border: 1px solid rgba(255, 255, 255, 0.1); /* Add subtle border */
   transition: background 0.3s ease;
 }
 
+.roadmapItem.expanded,
 .faqItem.expanded {
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.1); /* Slightly lighter when open */
 }
 
+.roadmapQuestion,
 .faqQuestion {
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.75rem 1rem;
+  padding: 1rem 1.25rem; /* Increased padding */
   color: #fff;
   font-weight: 600;
   transition: background 0.2s ease;
+  font-size: clamp(1rem, 3vw, 1.1rem); /* Responsive */
 }
 
+.roadmapQuestion:hover,
 .faqQuestion:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.08);
 }
 
+.roadmapIcon,
 .faqIcon {
-  font-size: 1.4rem;
+  font-size: 1.2rem; /* Adjusted size */
   margin-left: 1rem;
+  /* Rotation handled by Framer Motion */
+  /* transition: transform 0.3s ease; */
+  flex-shrink: 0; /* Prevent icon shrinking */
+  display: inline-flex; /* Needed for rotation */
+  align-items: center;
+  justify-content: center;
+  width: 20px; /* Ensure consistent size */
+  height: 20px;
 }
 
+/* .roadmapItem.expanded .roadmapIcon,
+.faqItem.expanded .faqIcon {
+  transform: rotate(45deg); /* Example: Rotate + to x */
+/* } */
+
+
+.roadmapAnswer,
 .faqAnswer {
-  overflow: hidden;
-  transition: max-height 0.3s ease, padding 0.3s ease;
-  max-height: 0;
+  /* Styles handled by Framer Motion animation props */
+  /* overflow: hidden; */
+  /* transition: max-height 0.3s ease, padding 0.3s ease; */
+  /* max-height: 0; */
 }
 
+.roadmapAnswer p,
 .faqAnswer p {
   margin: 0;
-  color: #eee;
-  font-size: 0.95rem;
-  padding: 0 1rem;
-  line-height: 1.5;
+  color: #e0e0e0; /* Brighter text */
+  font-size: clamp(0.9rem, 2.5vw, 1rem); /* Responsive */
+  padding: 0 1.25rem; /* Match question padding */
+  line-height: 1.6;
 }
 
+.roadmapCurrent {
+  margin-top: 1.5rem;
+  font-style: italic;
+  color: #c5c5c5; /* Brighter */
+  text-align: center;
+  font-size: 0.95rem;
+}
+
+
 /********************************************************
- *  HEADLESS UI MENU (dark style)
+ * HEADLESS UI MENU (dark style) - No changes needed
  ********************************************************/
 .menuContainer {
   position: absolute; /* Or .fixed, etc. */
@@ -542,20 +519,21 @@
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  background: #3a3a3a;
+  background: rgba(58, 58, 58, 0.8); /* Semi-transparent */
+  backdrop-filter: blur(5px);
   color: #f1f1f1;
   padding: 0.5rem 0.8rem;
   font-size: 0.9rem;
   font-weight: 600;
   border-radius: 6px;
-  border: 1px solid #555;
+  border: 1px solid rgba(255, 255, 255, 0.2); /* Lighter border */
   cursor: pointer;
   transition: background 0.2s ease, border-color 0.2s ease;
 }
 
 .menuButton:hover {
-  background: #454545;
-  border-color: #666;
+  background: rgba(70, 70, 70, 0.9);
+  border-color: rgba(255, 255, 255, 0.3);
 }
 
 .menuItems {
@@ -563,10 +541,11 @@
   right: 0;
   margin-top: 0.35rem;
   width: 180px;
-  background: #1c1c1c; /* dark background */
-  border: 1px solid #444;
+  background: rgba(28, 28, 28, 0.9); /* Semi-transparent */
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 8px;
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5); /* Enhanced shadow */
   padding: 0.25rem 0;
   opacity: 0;
   transform: scale(0.95);
@@ -584,21 +563,84 @@
   align-items: center;
   gap: 0.6rem;
   width: 100%;
-  padding: 0.5rem 1rem;
+  padding: 0.6rem 1rem; /* Slightly more padding */
   color: #eee;
   background: transparent;
   border: none;
   text-align: left;
   cursor: pointer;
   font-size: 0.9rem;
+  transition: background 0.15s ease; /* Add transition */
 }
 
 .menuItemButton:hover {
-  background: #333;
+  background: rgba(255, 255, 255, 0.1); /* Lighter hover */
 }
 
 .menuDivider {
   height: 1px;
-  background-color: #333;
-  margin: 0.25rem 0;
+  background-color: rgba(255, 255, 255, 0.15); /* Lighter divider */
+  margin: 0.35rem 0; /* Increased margin */
 }
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .title {
+     margin-bottom: 0.8rem;
+  }
+  .subtitle {
+     margin-bottom: 2rem;
+  }
+  .buttons {
+     margin-bottom: 3rem;
+  }
+  .statsWrapper {
+     padding: 1.5rem;
+     margin: 2rem auto;
+  }
+  .statsContainer {
+     gap: 1rem 1.5rem; /* Adjust gap */
+  }
+  .infoSections {
+     gap: 2rem;
+     margin-top: 2rem;
+  }
+  .card {
+     padding: 1.5rem;
+     margin-bottom: 2rem;
+  }
+  .tokenTitle, .artistTokensTitle, .roadmapTitle, .faqTitle {
+     margin-bottom: 1rem;
+     padding-bottom: 0.4rem;
+  }
+  .distributionTable th, .distributionTable td,
+  .purchaseTable th, .purchaseTable td,
+  .unlocksTable th, .unlocksTable td {
+     padding: 0.6rem 0.8rem;
+  }
+   .roadmapQuestion, .faqQuestion {
+     padding: 0.8rem 1rem;
+   }
+   .roadmapAnswer p, .faqAnswer p {
+     padding: 0 1rem;
+   }
+}
+
+@media (max-width: 480px) {
+   .heroInner {
+      padding-top: 4rem;
+   }
+   .statsContainer {
+      justify-content: center; /* Center items on small screens */
+   }
+   .statItem {
+      min-width: 100px;
+   }
+   .tokenBenefits {
+      grid-template-columns: 1fr; /* Stack benefits */
+   }
+   .chartWrapper {
+      padding: 0.5rem 0;
+   }
+}
+
