@@ -16,11 +16,14 @@ import {
 import { Pie, Bar, Line } from 'react-chartjs-2';
 import { motion } from 'framer-motion'; // Import Framer Motion
 
-import { ButtonLink } from '@/components/Button';
-import { Container, Spacer, Wrapper } from '@/components/Layout';
+// Assuming ButtonLink, Wrapper, Container, Spacer might be replaced or adapted
+// For this example, we'll replace them with standard divs and Tailwind
+// import { ButtonLink } from '@/components/Button';
+// import { Container, Spacer, Wrapper } from '@/components/Layout';
+
 import { useState } from 'react';
 import map from '@/assets/images/map.png';
-import styles from './Hero.module.css';
+// Removed: import styles from './Hero.module.css';
 
 // Register all necessary Chart.js components
 ChartJS.register(
@@ -34,9 +37,9 @@ ChartJS.register(
   Legend
 );
 
-// --- Framer Motion Animation Variants ---
+// --- Framer Motion Animation Variants (Retained) ---
 const cardVariants = {
-  hidden: { opacity: 0, y: 30 }, // Start slightly lower and invisible
+  hidden: { opacity: 0, y: 30 },
   visible: {
     opacity: 1,
     y: 0,
@@ -45,13 +48,14 @@ const cardVariants = {
 };
 
 const sectionHoverEffect = {
-  scale: 1.03, // Slightly scale up
-  y: -5, // Lift slightly
+  scale: 1.03,
+  y: -5,
   transition: { duration: 0.2, ease: 'easeOut' },
 };
 
 const buttonHoverEffect = {
   scale: 1.05,
+  opacity: 0.9, // Match hover:opacity-90
   transition: { duration: 0.15 },
 };
 
@@ -59,13 +63,11 @@ const buttonTapEffect = {
   scale: 0.95,
 };
 
-// --- Chart Components (No changes needed here, but ensure options enable animation) ---
+// --- Chart Components (Styling updated for Tailwind context if needed) ---
 
-/**
- * Example Pie Chart: Token Distribution
- */
 function TokenDistributionChart() {
   const data = {
+    /* ... data ... */
     labels: [
       'Team & Advisors',
       'Marketing',
@@ -84,43 +86,31 @@ function TokenDistributionChart() {
           '#60a5fa',
           '#a78bfa',
         ],
-        hoverOffset: 8, // Increased hover offset slightly
-        borderColor: 'rgba(0,0,0,0.2)', // Subtle border
+        hoverOffset: 8,
+        borderColor: 'rgba(0,0,0,0.2)',
         borderWidth: 1,
       },
     ],
   };
-
   const options = {
-    responsive: true,
-    animation: {
-      // Ensure animations are configured
-      duration: 1000,
-      easing: 'easeOutQuart',
-    },
+    /* ... options ... */ responsive: true,
+    animation: { duration: 1000, easing: 'easeOutQuart' },
     plugins: {
-      legend: {
-        position: 'bottom',
-        labels: { color: '#fff' },
-      },
+      legend: { position: 'bottom', labels: { color: '#fff' } }, // White text matches dark theme
       tooltip: {
         titleColor: '#fff',
         bodyColor: '#fff',
-        backgroundColor: 'rgba(0, 0, 0, 0.7)', // Darker tooltip
+        backgroundColor: 'rgba(0, 0, 0, 0.7)',
         padding: 10,
         cornerRadius: 4,
       },
     },
   };
-
   return <Pie data={data} options={options} />;
 }
 
-/**
- * Example Bar Chart: Vesting & Circulating Supply
- */
 function VestingChart() {
-  // ... (VestingChart logic remains the same) ...
+  /* ... logic ... */
   const labels = [];
   for (let i = 0; i <= 12; i++) labels.push(`Month ${i}`);
   const marketing = 10,
@@ -137,7 +127,6 @@ function VestingChart() {
   const ecosystemData = labels.map(() => ecosystem);
   const liquidityData = labels.map(() => liquidity);
   const partnershipsData = labels.map(() => partnerships);
-
   const data = {
     labels,
     datasets: [
@@ -156,10 +145,9 @@ function VestingChart() {
       },
     ],
   };
-
   const options = {
-    responsive: true,
-    animation: { duration: 1000, easing: 'easeOutQuart' }, // Added animation config
+    /* ... options ... */ responsive: true,
+    animation: { duration: 1000, easing: 'easeOutQuart' },
     plugins: {
       legend: { position: 'bottom', labels: { color: '#fff' } },
       tooltip: {
@@ -176,7 +164,8 @@ function VestingChart() {
         stacked: true,
         title: { display: true, text: 'Time (Months)', color: '#fff' },
         ticks: { color: '#fff' },
-      },
+        grid: { color: 'rgba(255, 255, 255, 0.1)' },
+      }, // Added grid color
       y: {
         stacked: true,
         title: {
@@ -185,17 +174,15 @@ function VestingChart() {
           color: '#fff',
         },
         ticks: { color: '#fff', callback: (v) => v + '%' },
-      },
+        grid: { color: 'rgba(255, 255, 255, 0.1)' },
+      }, // Added grid color
     },
   };
   return <Bar data={data} options={options} />;
 }
 
-/**
- * Example Line Chart: Bonding Curve for Artist Tokens
- */
 function BondingCurveChart() {
-  // ... (BondingCurveChart logic remains the same) ...
+  /* ... logic ... */
   const labels = [],
     dataPoints = [],
     k = 0.0000001;
@@ -203,7 +190,6 @@ function BondingCurveChart() {
     labels.push(s.toString());
     dataPoints.push(k * s * s);
   }
-
   const data = {
     labels,
     datasets: [
@@ -211,7 +197,7 @@ function BondingCurveChart() {
         label: 'Artist Token Price (LMLT)',
         data: dataPoints,
         borderColor: '#60a5fa',
-        backgroundColor: '#60a5fa33', // Reduced opacity slightly
+        backgroundColor: '#60a5fa33',
         fill: true,
         tension: 0.3,
         pointBackgroundColor: '#fff',
@@ -219,12 +205,11 @@ function BondingCurveChart() {
         pointHoverRadius: 7,
         pointHoverBackgroundColor: '#60a5fa',
       },
-    ], // Added point styling
+    ],
   };
-
   const options = {
-    responsive: true,
-    animation: { duration: 1200, easing: 'easeOutCubic' }, // Added animation config
+    /* ... options ... */ responsive: true,
+    animation: { duration: 1200, easing: 'easeOutCubic' },
     plugins: {
       legend: { position: 'bottom', labels: { color: '#fff' } },
       tooltip: {
@@ -243,49 +228,66 @@ function BondingCurveChart() {
           color: '#fff',
         },
         ticks: { color: '#fff' },
-      },
+        grid: { color: 'rgba(255, 255, 255, 0.1)' },
+      }, // Added grid color
       y: {
         title: { display: true, text: 'Token Price (LMLT)', color: '#fff' },
         ticks: { color: '#fff', callback: (v) => v.toFixed(3) + ' LMLT' },
-      },
+        grid: { color: 'rgba(255, 255, 255, 0.1)' },
+      }, // Added grid color
     },
   };
   return <Line data={data} options={options} />;
 }
 
-// --- FAQ Components ---
+// --- FAQ Components (Using Tailwind) ---
 
 function FAQItem({ question, answer, isOpen, onToggle }) {
   return (
-    // Added motion.div for potential future item-level animations if needed
     <motion.div
-      className={`${styles.faqItem} ${isOpen ? styles.expanded : ''}`}
+      className={`bg-black/20 border border-black/50 rounded-lg mb-3 overflow-hidden ${
+        isOpen ? 'bg-black/30' : ''
+      }`}
     >
-      <div className={styles.faqQuestion} onClick={onToggle}>
-        <span>{question}</span>
-        {/* Animate the icon rotation */}
+      <div
+        className="flex items-center justify-between p-3 cursor-pointer hover:bg-black/30 transition"
+        onClick={onToggle}
+      >
+        <span className="text-sm font-medium text-white">{question}</span>
         <motion.span
-          className={styles.faqIcon}
-          animate={{ rotate: isOpen ? 180 : 0 }} // Rotate icon
+          className="text-gray-400"
+          animate={{ rotate: isOpen ? 45 : 0 }} // Rotate '+' to 'x'
           transition={{ duration: 0.3 }}
         >
-          {'+'} {/* Use '+' always, rotation handles visual change */}
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-5 w-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 4v16m8-8H4"
+            />
+          </svg>
         </motion.span>
       </div>
-      {/* Animate the answer panel */}
       <motion.div
-        className={styles.faqAnswer}
-        initial={{ height: 0, opacity: 0 }}
+        initial={false} // Prevent initial animation on load
         animate={{
           height: isOpen ? 'auto' : 0,
           opacity: isOpen ? 1 : 0,
-          paddingTop: isOpen ? '0.75rem' : '0',
-          paddingBottom: isOpen ? '0.75rem' : '0',
+          paddingTop: isOpen ? '0' : '0', // Adjust padding within the inner p tag
+          paddingBottom: isOpen ? '0.75rem' : '0', // pb-3
         }}
         transition={{ duration: 0.3, ease: 'easeInOut' }}
-        style={{ overflow: 'hidden' }} // Keep overflow hidden
+        style={{ overflow: 'hidden' }}
       >
-        <p>{answer}</p>
+        {/* Added inner padding for the text */}
+        <p className="text-xs text-gray-300 px-3 leading-relaxed">{answer}</p>
       </motion.div>
     </motion.div>
   );
@@ -294,7 +296,7 @@ function FAQItem({ question, answer, isOpen, onToggle }) {
 function FAQSection() {
   const [openIndex, setOpenIndex] = useState(null);
   const faqData = [
-    /* ... faq data remains the same ... */
+    /* ... faq data ... */
     {
       question: 'How do I launch an Artist Token?',
       answer:
@@ -318,16 +320,18 @@ function FAQSection() {
   ];
 
   return (
-    // Apply card animation variants to the whole section
+    // Use Tailwind card styles
     <motion.div
-      className={`${styles.faqSection} ${styles.card}`}
+      className="bg-black/70 backdrop-blur-md border border-black/50 rounded-lg shadow-lg p-6"
       variants={cardVariants}
       initial="hidden"
       whileInView="visible"
-      viewport={{ once: true, amount: 0.1 }} // Trigger earlier
+      viewport={{ once: true, amount: 0.1 }}
       whileHover={sectionHoverEffect}
     >
-      <h2 className={styles.faqTitle}>Frequently Asked Questions</h2>
+      <h2 className="text-xl font-semibold text-white mb-4 border-b border-black/50 pb-2">
+        Frequently Asked Questions
+      </h2>
       {faqData.map((item, idx) => (
         <FAQItem
           key={idx}
@@ -341,12 +345,12 @@ function FAQSection() {
   );
 }
 
-// --- Roadmap Components (Similar animation enhancements as FAQ) ---
+// --- Roadmap Components (Using Tailwind) ---
 
 function RoadmapSection() {
   const [openIndex, setOpenIndex] = useState(null);
   const roadmapPhases = [
-    /* ... roadmap data remains the same ... */
+    /* ... roadmap data ... */
     {
       phase: 'Phase 1: Beta Launch',
       details: `Core platform features, basic user onboarding, initial token distribution.`,
@@ -367,51 +371,67 @@ function RoadmapSection() {
 
   return (
     <motion.div
-      className={`${styles.roadmapSection} ${styles.card}`}
+      className="bg-black/70 backdrop-blur-md border border-black/50 rounded-lg shadow-lg p-6"
       variants={cardVariants}
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, amount: 0.1 }}
       whileHover={sectionHoverEffect}
     >
-      <h2 className={styles.roadmapTitle}>Our Roadmap</h2>
+      <h2 className="text-xl font-semibold text-white mb-4 border-b border-black/50 pb-2">
+        Our Roadmap
+      </h2>
       {roadmapPhases.map((item, idx) => (
-        <motion.div // Wrap item for potential stagger later
+        // Reusing FAQItem structure/styling logic with different class names if needed, but structure is same
+        <motion.div
           key={idx}
-          className={`${styles.roadmapItem} ${
-            openIndex === idx ? styles.expanded : ''
+          className={`bg-black/20 border border-black/50 rounded-lg mb-3 overflow-hidden ${
+            openIndex === idx ? 'bg-black/30' : ''
           }`}
         >
           <div
-            className={styles.roadmapQuestion}
+            className="flex items-center justify-between p-3 cursor-pointer hover:bg-black/30 transition"
             onClick={() => setOpenIndex(openIndex === idx ? null : idx)}
           >
-            <span>{item.phase}</span>
+            <span className="text-sm font-medium text-white">{item.phase}</span>
             <motion.span
-              className={styles.roadmapIcon}
-              animate={{ rotate: openIndex === idx ? 180 : 0 }}
+              className="text-gray-400"
+              animate={{ rotate: openIndex === idx ? 45 : 0 }}
               transition={{ duration: 0.3 }}
             >
-              {'+'}
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 4v16m8-8H4"
+                />
+              </svg>
             </motion.span>
           </div>
           <motion.div
-            className={styles.roadmapAnswer}
-            initial={{ height: 0, opacity: 0 }}
+            initial={false}
             animate={{
               height: openIndex === idx ? 'auto' : 0,
               opacity: openIndex === idx ? 1 : 0,
-              paddingTop: openIndex === idx ? '0.75rem' : '0',
               paddingBottom: openIndex === idx ? '0.75rem' : '0',
             }}
             transition={{ duration: 0.3, ease: 'easeInOut' }}
             style={{ overflow: 'hidden' }}
           >
-            <p>{item.details}</p>
+            <p className="text-xs text-gray-300 px-3 leading-relaxed">
+              {item.details}
+            </p>
           </motion.div>
         </motion.div>
       ))}
-      <p className={styles.roadmapCurrent}>
+      <p className="text-xs text-gray-400 italic mt-4 text-center">
         <em>Current Stage:</em> We’re wrapping up Phase 2 and preparing to
         launch Phase 3.
       </p>
@@ -419,12 +439,12 @@ function RoadmapSection() {
   );
 }
 
-// --- Animated Number (No changes needed) ---
+// --- Animated Number (Retained) ---
 function AnimatedNumber({ value }) {
   const props = useSpring({
     number: value,
     from: { number: 0 },
-    config: { duration: 2000, easing: (t) => 1 - Math.pow(1 - t, 3) }, // Added easing
+    config: { duration: 2000, easing: (t) => 1 - Math.pow(1 - t, 3) },
   });
   return (
     <animated.span>
@@ -433,17 +453,17 @@ function AnimatedNumber({ value }) {
   );
 }
 
-// --- Main Hero Component ---
+// --- Main Hero Component (Using Tailwind) ---
 export default function Hero({
   totalUsers = 24010,
   totalArtists = 3450,
-  totalFans = 7400, // Assuming this meant total streams or similar metric
+  totalFans = 7400, // Renamed to totalStreams for clarity
   totalCities = 820,
 }) {
   return (
     <>
       <Head>
-        {/* ... Head content remains the same ... */}
+        {/* ... Head content ... */}
         <title>Limelight: Shine a Spotlight on Your Music</title>
         <meta
           name="description"
@@ -458,8 +478,10 @@ export default function Hero({
           property="og:description"
           content="Shine a spotlight on your music and connect with fans worldwide on Limelight."
         />
-        <meta property="og:image" content="/images/limelight-hero.jpg" />
-        <meta property="og:url" content="https://lmlt.ai" />
+        <meta property="og:image" content="/images/limelight-hero.jpg" />{' '}
+        {/* Ensure this path is correct */}
+        <meta property="og:url" content="https://lmlt.ai" />{' '}
+        {/* Replace with actual URL */}
         <meta property="og:type" content="website" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Limelight Music Platform" />
@@ -467,21 +489,37 @@ export default function Hero({
           name="twitter:description"
           content="Upload, discover, and earn with our music ecosystem. Artists and fans unite on Limelight."
         />
-        <meta name="twitter:image" content="/images/limelight-hero.jpg" />
+        <meta name="twitter:image" content="/images/limelight-hero.jpg" />{' '}
+        {/* Ensure this path is correct */}
       </Head>
-
-      {/* Use motion.div for potential top-level animations */}
+      {/* Hero Wrapper with Gradient Background */}
       <motion.div
-        className={styles.heroWrapper}
+        className="bg-gradient-to-br from-purple-800 via-pink-700 to-blue-600 min-h-screen relative overflow-hidden" // Adjusted gradient
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
       >
-        <Wrapper>
-          <div className={styles.heroInner}>
-            {/* Animate Title and Subtitle */}
+        {/* Dark Overlay */}
+        <div className="absolute inset-0 bg-black/40 z-10"></div>
+        {/* Map Background Image */}
+        <div className="absolute inset-0 z-0 opacity-50 mix-blend-overlay">
+          {' '}
+          {/* Adjusted blend mode */}
+          <Image
+            src={map} // Ensure 'map' is imported correctly and path is valid
+            alt="Map background"
+            layout="fill"
+            objectFit="cover"
+            objectPosition="center"
+            priority
+          />
+        </div>
+        {/* Content Wrapper */}
+        <div className="relative z-20 container mx-auto px-4">
+          {/* Inner Hero Content */}
+          <div className="text-center pt-20 md:pt-28 pb-16 md:pb-20">
             <motion.h1
-              className={styles.title}
+              className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white mb-4 text-shadow-md" // Tailwind text shadow utility if configured, or use custom
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
@@ -489,7 +527,7 @@ export default function Hero({
               Welcome to Limelight
             </motion.h1>
             <motion.p
-              className={styles.subtitle}
+              className="text-lg sm:text-xl max-w-2xl mx-auto text-gray-200 mb-8 text-shadow-sm" // Tailwind text shadow
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.4 }}
@@ -497,378 +535,473 @@ export default function Hero({
               Shine a spotlight on your music and connect with fans worldwide.
             </motion.p>
 
-            <Container justifyContent="center" className={styles.buttons}>
-              {/* Animate Button */}
+            {/* Buttons Container */}
+            <div className="flex justify-center mb-16">
               <motion.div
                 whileHover={buttonHoverEffect}
                 whileTap={buttonTapEffect}
               >
-                <Link legacyBehavior passHref href="/feed">
-                  <ButtonLink className={styles.button}>
+                {/* Using standard Link with styled <a> tag */}
+                <Link href="/feed" passHref legacyBehavior>
+                  <a className="bg-black/60 backdrop-blur-md border border-black/50 text-white px-6 py-3 rounded-lg hover:opacity-90 transition text-base font-semibold shadow-md">
                     Explore Feed
-                  </ButtonLink>
+                  </a>
                 </Link>
               </motion.div>
-              {/* Add more buttons similarly if needed */}
-              <Spacer axis="horizontal" size={1} />
-            </Container>
-
-            {/* Map Background - consider subtle parallax or zoom effect if desired */}
-            <div className={styles.mapBackground}>
-              <Image
-                src={map}
-                alt="Map background"
-                layout="fill"
-                objectFit="cover"
-                objectPosition="center"
-                priority
-                // Optional: Add subtle animation/effect to image if needed
-                // style={{ transform: 'scale(1.05)' }} // Example subtle zoom
-              />
+              {/* Add more buttons here if needed, maybe with mx-2 for spacing */}
             </div>
 
-            {/* Stats Section - Animate wrapper */}
+            {/* Stats Section */}
             <motion.div
-              className={styles.statsWrapper}
+              className="max-w-4xl mx-auto p-6 md:p-8 bg-black/70 backdrop-blur-md border border-black/50 rounded-lg shadow-lg"
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.5, delay: 0.6 }}
             >
-              <div className={styles.statsContainer}>
-                {/* Individual stat items could also be animated with stagger */}
-                <div className={styles.statItem}>
-                  <h3>
+              <div className="flex flex-wrap justify-around gap-4 md:gap-8">
+                <div className="text-center">
+                  <h3 className="text-2xl md:text-3xl font-bold text-white">
                     <AnimatedNumber value={totalUsers} />
                   </h3>
-                  <p>Users</p>
+                  <p className="text-xs md:text-sm text-gray-300 mt-1">Users</p>
                 </div>
-                <div className={styles.statItem}>
-                  <h3>
+                <div className="text-center">
+                  <h3 className="text-2xl md:text-3xl font-bold text-white">
                     <AnimatedNumber value={totalArtists} />
                   </h3>
-                  <p>Artists</p>
+                  <p className="text-xs md:text-sm text-gray-300 mt-1">
+                    Artists
+                  </p>
                 </div>
-                <div className={styles.statItem}>
-                  <h3>
+                <div className="text-center">
+                  <h3 className="text-2xl md:text-3xl font-bold text-white">
                     <AnimatedNumber value={totalFans} />
                   </h3>
-                  <p>Total Streams</p> {/* Changed label for clarity */}
+                  <p className="text-xs md:text-sm text-gray-300 mt-1">
+                    Total Streams
+                  </p>
                 </div>
-                <div className={styles.statItem}>
-                  <h3>
+                <div className="text-center">
+                  <h3 className="text-2xl md:text-3xl font-bold text-white">
                     <AnimatedNumber value={totalCities} />
                   </h3>
-                  <p>Cities Reached</p>
+                  <p className="text-xs md:text-sm text-gray-300 mt-1">
+                    Cities Reached
+                  </p>
                 </div>
               </div>
             </motion.div>
+          </div>{' '}
+          {/* End heroInner */}
+          {/* Info Sections */}
+          <div className="py-12 md:py-16">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+              <motion.div
+                className="bg-black/70 backdrop-blur-md border border-black/50 rounded-lg shadow-lg p-6" // Card style
+                variants={cardVariants}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.2 }}
+                whileHover={sectionHoverEffect}
+              >
+                <h2 className="text-xl font-semibold text-white mb-3">
+                  How It Works
+                </h2>
+                <p className="text-sm text-gray-300 leading-relaxed">
+                  Limelight provides artists with powerful tools to upload and
+                  share their music, while fans discover new favorites and
+                  directly engage with creators.
+                </p>
+              </motion.div>
+              <motion.div
+                className="bg-black/70 backdrop-blur-md border border-black/50 rounded-lg shadow-lg p-6" // Card style
+                variants={cardVariants}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.2 }}
+                whileHover={sectionHoverEffect}
+              >
+                <h2 className="text-xl font-semibold text-white mb-3">
+                  Who It’s For
+                </h2>
+                <p className="text-sm text-gray-300 leading-relaxed">
+                  This platform is designed for both aspiring and established
+                  artists, as well as dedicated music lovers who want an easy
+                  way to discover fresh sounds and support their favorite
+                  creators.
+                </p>
+              </motion.div>
+              <motion.div
+                className="bg-black/70 backdrop-blur-md border border-black/50 rounded-lg shadow-lg p-6" // Card style
+                variants={cardVariants}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.2 }}
+                whileHover={sectionHoverEffect}
+              >
+                <h2 className="text-xl font-semibold text-white mb-3">
+                  How It Helps
+                </h2>
+                <p className="text-sm text-gray-300 leading-relaxed">
+                  Limelight bridges the gap between creators and their audience,
+                  offering instant feedback, organic growth, and a personalized
+                  listening experience.
+                </p>
+              </motion.div>
+            </div>
           </div>
-        </Wrapper>
-        {/* Info Sections - Wrapped with motion.section inside */}
-        <Wrapper>
-          <div className={styles.infoSections}>
-            <motion.section
-              className={`${styles.infoSection} ${styles.card}`}
+          {/* Token & Roadmap Sections */}
+          <div className="py-12 md:py-16 space-y-12 md:space-y-16">
+            {' '}
+            {/* Added spacing */}
+            {/* TOKEN DETAILS */}
+            <motion.div
+              className="bg-black/70 backdrop-blur-md border border-black/50 rounded-lg shadow-lg p-6 md:p-8" // Card style
               variants={cardVariants}
               initial="hidden"
               whileInView="visible"
-              viewport={{ once: true, amount: 0.2 }}
+              viewport={{ once: true, amount: 0.1 }}
               whileHover={sectionHoverEffect}
             >
-              <h2 className={styles.infoTitle}>How It Works</h2>
-              <p className={styles.infoText}>
-                Limelight provides artists with powerful tools...
+              <h2 className="text-2xl font-semibold text-white mb-4 border-b border-black/50 pb-3">
+                Introducing LMLT
+              </h2>
+              <p className="text-sm text-gray-300 leading-relaxed mb-6">
+                LMLT (Limelight Token) is our native ERC-20 token that powers
+                transactions and rewards within the Limelight ecosystem...
               </p>
-            </motion.section>
-            <motion.section
-              className={`${styles.infoSection} ${styles.card}`}
-              variants={cardVariants}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, amount: 0.2 }}
-              whileHover={sectionHoverEffect}
-            >
-              <h2 className={styles.infoTitle}>Who It’s For</h2>
-              <p className={styles.infoText}>
-                This platform is designed for both aspiring...
-              </p>
-            </motion.section>
-            <motion.section
-              className={`${styles.infoSection} ${styles.card}`}
-              variants={cardVariants}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, amount: 0.2 }}
-              whileHover={sectionHoverEffect}
-            >
-              <h2 className={styles.infoTitle}>How It Helps</h2>
-              <p className={styles.infoText}>
-                Limelight bridges the gap between creators...
-              </p>
-            </motion.section>
-          </div>
-        </Wrapper>
-        {/* Token & Roadmap Sections */}
-        <Wrapper>
-          {/* TOKEN DETAILS - Wrapped with motion.div */}
-          <motion.div
-            className={`${styles.tokenSection} ${styles.card}`}
-            variants={cardVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.1 }}
-            whileHover={sectionHoverEffect}
-          >
-            <h2 className={styles.tokenTitle}>Introducing LMLT</h2>
-            <p className={styles.tokenText}>
-              LMLT (Limelight Token) is our native ERC-20 token...
-            </p>
-            <ul className={styles.tokenBenefits}>
-              {/* ... list items ... */}
-              <li>
-                <strong>Symbol:</strong> LMLT
-              </li>
-              <li>
-                <strong>Standard:</strong> ERC-20
-              </li>
-              <li>
-                <strong>Total Supply:</strong> 100M tokens
-              </li>
-              <li>
-                <strong>Utility:</strong> Rewards, Governance, Premium Access
-              </li>
-            </ul>
+              <ul className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8 text-sm">
+                <li className="bg-black/30 p-3 rounded-md border border-black/50">
+                  <strong className="block text-gray-400 text-xs">
+                    Symbol:
+                  </strong>{' '}
+                  LMLT
+                </li>
+                <li className="bg-black/30 p-3 rounded-md border border-black/50">
+                  <strong className="block text-gray-400 text-xs">
+                    Standard:
+                  </strong>{' '}
+                  ERC-20
+                </li>
+                <li className="bg-black/30 p-3 rounded-md border border-black/50">
+                  <strong className="block text-gray-400 text-xs">
+                    Supply:
+                  </strong>{' '}
+                  100M
+                </li>
+                <li className="bg-black/30 p-3 rounded-md border border-black/50">
+                  <strong className="block text-gray-400 text-xs">
+                    Utility:
+                  </strong>{' '}
+                  Rewards, Governance, Access
+                </li>
+              </ul>
 
-            <div className={styles.distributionSection}>
-              <h3 className={styles.distributionTitle}>Token Distribution</h3>
-              <div className={styles.distributionContent}>
-                <div className={styles.chartWrapper}>
-                  <TokenDistributionChart />
+              {/* Distribution Section */}
+              <div className="mb-8">
+                <h3 className="text-lg font-semibold text-white mb-4">
+                  Token Distribution
+                </h3>
+                {/* Consider flex layout for chart + table on larger screens */}
+                <div className="flex flex-col lg:flex-row gap-6 items-center">
+                  <div className="w-full lg:w-1/2 max-w-sm mx-auto mb-4 lg:mb-0">
+                    <TokenDistributionChart />
+                  </div>
+                  <div className="w-full lg:flex-1 overflow-x-auto">
+                    <table className="min-w-full text-xs border border-gray-700 bg-black/30 rounded">
+                      <thead className="bg-gray-800/50">
+                        <tr>
+                          <th className="p-2 text-left font-medium text-gray-300">
+                            Category
+                          </th>
+                          <th className="p-2 text-left font-medium text-gray-300">
+                            Allocation
+                          </th>
+                          <th className="p-2 text-left font-medium text-gray-300">
+                            Description
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody className="text-gray-300">
+                        <tr className="border-t border-gray-700 hover:bg-gray-800/50">
+                          <td className="p-2">Team &amp; Advisors</td>
+                          <td className="p-2">20%</td>
+                          <td className="p-2">Core team, long-term vesting</td>
+                        </tr>
+                        <tr className="border-t border-gray-700 hover:bg-gray-800/50">
+                          <td className="p-2">Marketing</td>
+                          <td className="p-2">10%</td>
+                          <td className="p-2">Promotions, brand awareness</td>
+                        </tr>
+                        <tr className="border-t border-gray-700 hover:bg-gray-800/50">
+                          <td className="p-2">Ecosystem/Rewards</td>
+                          <td className="p-2">40%</td>
+                          <td className="p-2">
+                            In-app rewards, user incentives
+                          </td>
+                        </tr>
+                        <tr className="border-t border-gray-700 hover:bg-gray-800/50">
+                          <td className="p-2">Liquidity</td>
+                          <td className="p-2">15%</td>
+                          <td className="p-2">DEX/CEX liquidity pools</td>
+                        </tr>
+                        <tr className="border-t border-gray-700 hover:bg-gray-800/50">
+                          <td className="p-2">Partnerships</td>
+                          <td className="p-2">15%</td>
+                          <td className="p-2">
+                            Strategic integrations, expansions
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
-                <table className={styles.distributionTable}>
-                  {/* ... table content ... */}
-                  <thead>
-                    <tr>
-                      <th>Category</th>
-                      <th>Allocation</th>
-                      <th>Description</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>Team &amp; Advisors</td>
-                      <td>20%</td>
-                      <td>Core team, long-term vesting</td>
-                    </tr>
-                    <tr>
-                      <td>Marketing</td>
-                      <td>10%</td>
-                      <td>Promotions, brand awareness</td>
-                    </tr>
-                    <tr>
-                      <td>Ecosystem/Rewards</td>
-                      <td>40%</td>
-                      <td>In-app rewards, user incentives</td>
-                    </tr>
-                    <tr>
-                      <td>Liquidity</td>
-                      <td>15%</td>
-                      <td>DEX/CEX liquidity pools</td>
-                    </tr>
-                    <tr>
-                      <td>Partnerships</td>
-                      <td>15%</td>
-                      <td>Strategic integrations, expansions</td>
-                    </tr>
-                  </tbody>
-                </table>
               </div>
-            </div>
 
-            <div className={styles.vestingSection}>
-              <h3 className={styles.vestingTitle}>
-                Vesting &amp; Circulating Supply
-              </h3>
-              <div className={styles.chartWrapper}>
-                <VestingChart />
+              {/* Vesting Section */}
+              <div>
+                <h3 className="text-lg font-semibold text-white mb-4">
+                  Vesting &amp; Circulating Supply
+                </h3>
+                <div className="max-w-3xl mx-auto mb-4 bg-black/20 p-4 rounded-lg border border-black/50">
+                  <VestingChart />
+                </div>
+                <p className="text-xs text-gray-400 leading-relaxed text-center max-w-3xl mx-auto">
+                  The Team &amp; Advisors tokens (20% total) have a 3-month
+                  cliff with linear vesting over the following 12 months. Other
+                  allocations unlock immediately. This chart shows the
+                  contribution to circulating supply over time.
+                </p>
               </div>
-              <p className={styles.vestingInfo}>
-                The Team &amp; Advisors tokens (20% total)...
+            </motion.div>
+            {/* ARTIST TOKENS */}
+            <motion.div
+              className="bg-black/70 backdrop-blur-md border border-black/50 rounded-lg shadow-lg p-6 md:p-8" // Card style
+              variants={cardVariants}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.1 }}
+              whileHover={sectionHoverEffect}
+            >
+              <h2 className="text-2xl font-semibold text-white mb-4 border-b border-black/50 pb-3">
+                Artist Tokens &amp; Bonding Curves
+              </h2>
+              <p className="text-sm text-gray-300 leading-relaxed mb-4">
+                Each artist on Limelight can launch their own token, providing
+                fans with a unique way to invest and participate in the artist’s
+                growth. These <strong>Artist Tokens</strong> follow a dynamic{' '}
+                <strong>bonding curve</strong>...
               </p>
-            </div>
-          </motion.div>
-          <Spacer size={1} axis="vertical" /> {/* Added spacer */}
-          {/* ARTIST TOKENS - Wrapped with motion.div */}
-          <motion.div
-            className={`${styles.artistTokensSection} ${styles.card}`}
-            variants={cardVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.1 }}
-            whileHover={sectionHoverEffect}
-          >
-            <h2 className={styles.artistTokensTitle}>
-              Artist Tokens &amp; Bonding Curves
-            </h2>
-            <p className={styles.artistTokensText}>
-              Each artist on Limelight can launch...
-            </p>
-            <p className={styles.artistTokensText}>
-              Launching an Artist Token costs <strong>0.05 ETH</strong>...
-            </p>
-
-            <div className={styles.distributionSection}>
-              <h3 className={styles.distributionTitle}>Bonding Curve Demo</h3>
-              <div className={styles.chartWrapper}>
-                <BondingCurveChart />
-              </div>
-              <table className={styles.distributionTable}>
-                {/* ... table content ... */}
-                <thead>
-                  <tr>
-                    <th>Supply</th>
-                    <th>Price (LMLT)</th>
-                    <th>Price (USD)</th>
-                    <th>Key Benefit</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>0</td>
-                    <td>0 LMLT</td>
-                    <td>$0.00</td>
-                    <td>Initial launch price...</td>
-                  </tr>
-                  <tr>
-                    <td>1,000</td>
-                    <td>~0.0001 LMLT</td>
-                    <td>~$0.0001</td>
-                    <td>Early supporters acquire...</td>
-                  </tr>
-                  <tr>
-                    <td>5,000</td>
-                    <td>~0.0025 LMLT</td>
-                    <td>~$0.0025</td>
-                    <td>Artist gains traction...</td>
-                  </tr>
-                  <tr>
-                    <td>10,000</td>
-                    <td>~0.01 LMLT</td>
-                    <td>~$0.01</td>
-                    <td>New fans drive demand...</td>
-                  </tr>
-                  <tr>
-                    <td>50,000</td>
-                    <td>~0.10 LMLT</td>
-                    <td>~$0.10</td>
-                    <td>Significant fanbase expansion...</td>
-                  </tr>
-                  <tr>
-                    <td>100,000</td>
-                    <td>~0.25 LMLT</td>
-                    <td>~$0.25</td>
-                    <td>Artist token sees mainstream...</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-
-            <div className={styles.examplesSection}>
-              <h3 className={styles.examplesTitle}>Purchase Scenarios</h3>
-              <p>Below are a few scenarios...</p>
-              <table className={styles.purchaseTable}>
-                {/* ... table content ... */}
-                <thead>
-                  <tr>
-                    <th>Fan Purchase</th>
-                    <th>Approx. Tokens Received</th>
-                    <th>Market Impact</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>$100 purchase</td>
-                    <td>
-                      ~1,200 tokens <em>(depends...)</em>
-                    </td>
-                    <td>Incrementally raises...</td>
-                  </tr>
-                  <tr>
-                    <td>$1,000 purchase</td>
-                    <td>
-                      ~12,000 tokens <em>(depends...)</em>
-                    </td>
-                    <td>Significant price move...</td>
-                  </tr>
-                  <tr>
-                    <td>$50 sale</td>
-                    <td>
-                      ~600 tokens <em>(depends...)</em>
-                    </td>
-                    <td>Slightly decreases...</td>
-                  </tr>
-                  <tr>
-                    <td>$500 sale</td>
-                    <td>
-                      ~6,000 tokens <em>(depends...)</em>
-                    </td>
-                    <td>Noticeable price drop...</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-
-            <div className={styles.unlocksSection}>
-              <h3 className={styles.unlocksTitle}>Market Cap Unlocks</h3>
-              <p>
-                As an Artist Token’s <strong>market cap</strong>...
+              <p className="text-sm text-gray-300 leading-relaxed mb-6">
+                Launching an Artist Token costs <strong>0.05 ETH</strong> for
+                smart contract deployment and initial setup...
               </p>
-              <table className={styles.unlocksTable}>
-                {/* ... table content ... */}
-                <thead>
-                  <tr>
-                    <th>Market Cap</th>
-                    <th>Unlocked Feature</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>$50k</td>
-                    <td>Early merch drop...</td>
-                  </tr>
-                  <tr>
-                    <td>$100k</td>
-                    <td>Livestream events...</td>
-                  </tr>
-                  <tr>
-                    <td>$250k</td>
-                    <td>Exclusive singles...</td>
-                  </tr>
-                  <tr>
-                    <td>$500k</td>
-                    <td>Artist can officially release...</td>
-                  </tr>
-                  <tr>
-                    <td>$1M+</td>
-                    <td>Full-scale tours...</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </motion.div>
-          <Spacer size={1} axis="vertical" /> {/* Added spacer */}
-          {/* Roadmap Section - Already wrapped */}
-          <RoadmapSection />
-        </Wrapper>
-        <Spacer size={3} axis="vertical" />
-        {/* FAQ Section - Already wrapped */}
-        <Wrapper>
-          {' '}
-          {/* Added wrapper for consistent padding */}
-          <FAQSection />
-        </Wrapper>
-        <Spacer size={3} axis="vertical" /> {/* Footer Spacer */}
-      </motion.div>
+
+              {/* Bonding Curve Demo Section */}
+              <div className="mb-8">
+                <h3 className="text-lg font-semibold text-white mb-4">
+                  Bonding Curve Demo
+                </h3>
+                <div className="flex flex-col lg:flex-row gap-6 items-center">
+                  <div className="w-full lg:w-1/2 max-w-xl mx-auto mb-4 lg:mb-0 bg-black/20 p-4 rounded-lg border border-black/50">
+                    <BondingCurveChart />
+                  </div>
+                  <div className="w-full lg:flex-1 overflow-x-auto">
+                    <table className="min-w-full text-xs border border-gray-700 bg-black/30 rounded">
+                      <thead className="bg-gray-800/50">
+                        <tr>
+                          <th className="p-2 text-left font-medium text-gray-300">
+                            Supply
+                          </th>
+                          <th className="p-2 text-left font-medium text-gray-300">
+                            Price (LMLT)
+                          </th>
+                          <th className="p-2 text-left font-medium text-gray-300">
+                            Price (USD)
+                          </th>
+                          <th className="p-2 text-left font-medium text-gray-300">
+                            Key Benefit
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody className="text-gray-300">
+                        <tr className="border-t border-gray-700 hover:bg-gray-800/50">
+                          <td className="p-2">0</td>
+                          <td className="p-2">0 LMLT</td>
+                          <td className="p-2">$0.00</td>
+                          <td className="p-2">Initial launch price...</td>
+                        </tr>
+                        <tr className="border-t border-gray-700 hover:bg-gray-800/50">
+                          <td className="p-2">1,000</td>
+                          <td className="p-2">~0.0001 LMLT</td>
+                          <td className="p-2">~$0.0001</td>
+                          <td className="p-2">Early supporters acquire...</td>
+                        </tr>
+                        <tr className="border-t border-gray-700 hover:bg-gray-800/50">
+                          <td className="p-2">5,000</td>
+                          <td className="p-2">~0.0025 LMLT</td>
+                          <td className="p-2">~$0.0025</td>
+                          <td className="p-2">Artist gains traction...</td>
+                        </tr>
+                        <tr className="border-t border-gray-700 hover:bg-gray-800/50">
+                          <td className="p-2">10,000</td>
+                          <td className="p-2">~0.01 LMLT</td>
+                          <td className="p-2">~$0.01</td>
+                          <td className="p-2">New fans drive demand...</td>
+                        </tr>
+                        <tr className="border-t border-gray-700 hover:bg-gray-800/50">
+                          <td className="p-2">50,000</td>
+                          <td className="p-2">~0.10 LMLT</td>
+                          <td className="p-2">~$0.10</td>
+                          <td className="p-2">
+                            Significant fanbase expansion...
+                          </td>
+                        </tr>
+                        <tr className="border-t border-gray-700 hover:bg-gray-800/50">
+                          <td className="p-2">100,000</td>
+                          <td className="p-2">~0.25 LMLT</td>
+                          <td className="p-2">~$0.25</td>
+                          <td className="p-2">
+                            Artist token sees mainstream...
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              {/* Purchase Scenarios Section */}
+              <div className="mb-8">
+                <h3 className="text-lg font-semibold text-white mb-4">
+                  Purchase Scenarios
+                </h3>
+                <p className="text-xs text-gray-400 mb-3">
+                  Below are a few scenarios showing how fans might buy/sell an
+                  Artist Token.
+                </p>
+                <div className="overflow-x-auto">
+                  <table className="min-w-full text-xs border border-gray-700 bg-black/30 rounded">
+                    <thead className="bg-gray-800/50">
+                      <tr>
+                        <th className="p-2 text-left font-medium text-gray-300">
+                          Action
+                        </th>
+                        <th className="p-2 text-left font-medium text-gray-300">
+                          Approx. Tokens
+                        </th>
+                        <th className="p-2 text-left font-medium text-gray-300">
+                          Market Impact
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="text-gray-300">
+                      <tr className="border-t border-gray-700 hover:bg-gray-800/50">
+                        <td className="p-2">$100 purchase</td>
+                        <td className="p-2">
+                          ~1,200 <em className="text-gray-500">(depends...)</em>
+                        </td>
+                        <td className="p-2">Incrementally raises price</td>
+                      </tr>
+                      <tr className="border-t border-gray-700 hover:bg-gray-800/50">
+                        <td className="p-2">$1,000 purchase</td>
+                        <td className="p-2">
+                          ~12,000{' '}
+                          <em className="text-gray-500">(depends...)</em>
+                        </td>
+                        <td className="p-2">Significant price jump</td>
+                      </tr>
+                      <tr className="border-t border-gray-700 hover:bg-gray-800/50">
+                        <td className="p-2">$50 sale</td>
+                        <td className="p-2">
+                          ~600 <em className="text-gray-500">(depends...)</em>
+                        </td>
+                        <td className="p-2">Slightly decreases price</td>
+                      </tr>
+                      <tr className="border-t border-gray-700 hover:bg-gray-800/50">
+                        <td className="p-2">$500 sale</td>
+                        <td className="p-2">
+                          ~6,000 <em className="text-gray-500">(depends...)</em>
+                        </td>
+                        <td className="p-2">Noticeable price drop</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* Market Cap Unlocks Section */}
+              <div>
+                <h3 className="text-lg font-semibold text-white mb-4">
+                  Market Cap Unlocks
+                </h3>
+                <p className="text-xs text-gray-400 mb-3">
+                  As an Artist Token’s market cap grows, new features become
+                  available.
+                </p>
+                <div className="overflow-x-auto">
+                  <table className="min-w-full text-xs border border-gray-700 bg-black/30 rounded">
+                    <thead className="bg-gray-800/50">
+                      <tr>
+                        <th className="p-2 text-left font-medium text-gray-300">
+                          Market Cap
+                        </th>
+                        <th className="p-2 text-left font-medium text-gray-300">
+                          Unlocked Feature
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="text-gray-300">
+                      <tr className="border-t border-gray-700 hover:bg-gray-800/50">
+                        <td className="p-2">$50k</td>
+                        <td className="p-2">
+                          Early merch drop & limited-edition collectibles
+                        </td>
+                      </tr>
+                      <tr className="border-t border-gray-700 hover:bg-gray-800/50">
+                        <td className="p-2">$100k</td>
+                        <td className="p-2">
+                          Livestream events + token-gated Q&amp;A sessions
+                        </td>
+                      </tr>
+                      <tr className="border-t border-gray-700 hover:bg-gray-800/50">
+                        <td className="p-2">$250k</td>
+                        <td className="p-2">
+                          Exclusive singles or pre-release tracks
+                        </td>
+                      </tr>
+                      <tr className="border-t border-gray-700 hover:bg-gray-800/50">
+                        <td className="p-2">$500k</td>
+                        <td className="p-2">
+                          Official album release via Limelight (NFTs, etc.)
+                        </td>
+                      </tr>
+                      <tr className="border-t border-gray-700 hover:bg-gray-800/50">
+                        <td className="p-2">$1M+</td>
+                        <td className="p-2">
+                          Full-scale tours, festival partnerships, DAO
+                          governance
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </motion.div>
+            {/* Roadmap Section */}
+            <RoadmapSection />
+          </div>{' '}
+          {/* End Token & Roadmap Sections container */}
+          {/* FAQ Section */}
+          <div className="pb-16 md:pb-20">
+            {' '}
+            {/* Add padding at the bottom */}
+            <FAQSection />
+          </div>
+        </div>{' '}
+        {/* End Content Wrapper (container) */}
+      </motion.div>{' '}
+      {/* End Hero Wrapper */}
     </>
   );
 }

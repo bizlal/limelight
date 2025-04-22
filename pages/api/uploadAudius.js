@@ -397,7 +397,7 @@ handler.post(async (req, res) => {
       blockNumber,
       // Potentially other response fields like transcodedMasterUrl, artworkUrl etc.
     } = await audiusSdk.tracks.uploadTrack({
-      userId: userId, // Ensure this is the correct Audius User ID
+      userId: 'pjEodqX', // Ensure this is the correct Audius User ID
       trackFile: trackFileSource,
       coverArtFile: coverArtFileSource, // Pass undefined if no cover art
       metadata: audiusMetadata,
