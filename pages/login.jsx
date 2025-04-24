@@ -1,4 +1,4 @@
-import { Login } from '@/page-components/Auth';
+import { ConnectAudius } from '@/components/ConnectAudius/ConnectSpotify/ConnectAudius';
 import Head from 'next/head';
 
 const LoginPage = () => {
@@ -7,7 +7,8 @@ const LoginPage = () => {
       <Head>
         <title>Login</title>
       </Head>
-      <Login />
+
+      <ConnectAudius />
     </>
   );
 };

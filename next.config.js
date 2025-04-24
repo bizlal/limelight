@@ -13,13 +13,6 @@ module.exports = {
     ],
   },
 
-  // For API routes handling file uploads
-  api: {
-    bodyParser: false, // Required for `formidable` to work
-    responseLimit: '10mb', // Adjust based on your needs (default: 4mb)
-    externalResolver: true, // Prevents Vercel timeout warnings
-  },
-
   // Webpack polyfills (for Node.js modules in the browser)
   webpack: (config) => {
     config.resolve.fallback = {
