@@ -30,6 +30,7 @@ const validateTmpPath = (filepath) => {
 const ALLOWED_MIME_TYPES = {
   image: ['image/jpeg', 'image/png', 'image/webp', 'image/gif'], // Added gif
   audio: [
+    'mp3',
     'audio/mpeg',
     'audio/mp3',
     'audio/wav',
